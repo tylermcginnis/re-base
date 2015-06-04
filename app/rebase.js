@@ -49,7 +49,7 @@ module.exports = (function(){
   };
 
   function _validateEndpoint(endpoint){
-    var defaultError = 'The Firebase endpoint you are trying to listen to ';
+    var defaultError = 'The Firebase endpoint you are trying to listen to';
     var errorMsg;
     if(typeof endpoint !== 'string'){
       errorMsg = `${defaultError} must be a string. Instead, got ${endpoint}`;
@@ -59,6 +59,8 @@ module.exports = (function(){
       errorMsg = `${defaultError} is too long to be stored in Firebase. It be less than 768 characters.`;
     } else if(/[\[\].#$\/\u0000-\u001F\u007F]/.test(endpoint)) {
       errorMsg = `${defaultError} cannot contain any of the following characters. "# $ ] [ /" Instead, got ${defaultError}`;
+    } else if(firebaseRefs[endpoint]){
+      errorMsg = `${defaultError} (${endpoint}) has already been bound. An endpoint may only have one binding`;
     }
 
     if(typeof errorMsg !== 'undefined'){
@@ -92,7 +94,6 @@ module.exports = (function(){
   function _bind(endpoint, options, invoker){
     _validateEndpoint(endpoint);
     _validateOptions(options, invoker);
-    //should be [options.state]
     firebaseRefs[endpoint] = ref.ref();
     firebaseListeners[endpoint] = ref.child(endpoint).on('value', (snapshot) => {
       var data = snapshot.val();
@@ -111,7 +112,6 @@ module.exports = (function(){
   };
 
   function _removeBinding(endpoint){
-    //check if endpoint and not property on state.
     _validateEndpoint(endpoint);
 
     if (typeof firebaseRefs[endpoint] === "undefined") {
