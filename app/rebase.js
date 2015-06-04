@@ -32,6 +32,22 @@ module.exports = (function(){
     throw err;
   }
 
+  function _validateBaseURL(url){
+    var defaultError = 'Rebase.createClass failed.';
+    var errorMsg;
+    if(typeof url !== 'string'){
+      errorMsg = `${defaultError} URL must be a string.`;
+    } else if(!url || arguments.length > 1){
+      errorMsg = `${defaultError} Was called with more or less than 1 argument. Expects 1.`
+    } else if(url.length === ''){
+      errorMsg = `${defaultError} URL cannot be an empty string.`
+    }
+
+    if(typeof errorMsg !== 'undefined'){
+      _throwError(errorMsg, "INVALID_URL");
+    }
+  };
+
   function _validateEndpoint(endpoint){
     var defaultError = 'The Firebase endpoint you are trying to listen to ';
     var errorMsg;
@@ -39,6 +55,8 @@ module.exports = (function(){
       errorMsg = `${defaultError} must be a string. Instead, got ${endpoint}`;
     } else if(endpoint.length === 0){
       errorMsg = `${defaultError} must be a non-empty string. Instead, got ${endpoint}`;
+    } else if(endpoint.length > 768){
+      errorMsg = `${defaultError} is too long to be stored in Firebase. It be less than 768 characters.`;
     } else if(/[\[\].#$\/\u0000-\u001F\u007F]/.test(endpoint)) {
       errorMsg = `${defaultError} cannot contain any of the following characters. "# $ ] [ /" Instead, got ${defaultError}`;
     }
@@ -74,6 +92,7 @@ module.exports = (function(){
   function _bind(endpoint, options, invoker){
     _validateEndpoint(endpoint);
     _validateOptions(options, invoker);
+    //should be [options.state]
     firebaseRefs[endpoint] = ref.ref();
     firebaseListeners[endpoint] = ref.child(endpoint).on('value', (snapshot) => {
       var data = snapshot.val();
@@ -88,10 +107,11 @@ module.exports = (function(){
           _setState(data, options.context);
         }
       }
-    });
+    }, options.onConnectionLoss);
   };
 
   function _removeBinding(endpoint){
+    //check if endpoint and not property on state.
     _validateEndpoint(endpoint);
 
     if (typeof firebaseRefs[endpoint] === "undefined") {
@@ -133,6 +153,7 @@ module.exports = (function(){
         return rebase;
       }
 
+      _validateBaseURL(url);
       baseUrl = url;
       ref = new Firebase(baseUrl);
       rebase = init();

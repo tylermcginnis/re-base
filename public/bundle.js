@@ -76,14 +76,19 @@
 	        context: this,
 	        then: function then(data) {
 	          console.log('ListenTo Data', data);
+	        },
+	        onConnectionLoss: function onConnectionLoss(err) {
+	          console.log('Error!', err);
 	        }
 	      });
 
-	      //if asArray is true then state must be defined since state has to be an object
 	      base.bindToState('temp', {
 	        asArray: true,
 	        context: this,
-	        state: 'stateQueue'
+	        state: 'stateQueue',
+	        onConnectionLoss: function onConnectionLoss(err) {
+	          console.log('Error!', err);
+	        }
 	      });
 
 	      base.syncState('classes', {
@@ -20526,6 +20531,22 @@
 	    throw err;
 	  }
 
+	  function _validateBaseURL(url) {
+	    var defaultError = 'Rebase.createClass failed.';
+	    var errorMsg;
+	    if (typeof url !== 'string') {
+	      errorMsg = '' + defaultError + ' URL must be a string.';
+	    } else if (!url || arguments.length > 1) {
+	      errorMsg = '' + defaultError + ' Was called with more or less than 1 argument. Expects 1.';
+	    } else if (url.length === '') {
+	      errorMsg = '' + defaultError + ' URL cannot be an empty string.';
+	    }
+
+	    if (typeof errorMsg !== 'undefined') {
+	      _throwError(errorMsg, 'INVALID_URL');
+	    }
+	  };
+
 	  function _validateEndpoint(endpoint) {
 	    var defaultError = 'The Firebase endpoint you are trying to listen to ';
 	    var errorMsg;
@@ -20533,6 +20554,8 @@
 	      errorMsg = '' + defaultError + ' must be a string. Instead, got ' + endpoint;
 	    } else if (endpoint.length === 0) {
 	      errorMsg = '' + defaultError + ' must be a non-empty string. Instead, got ' + endpoint;
+	    } else if (endpoint.length > 768) {
+	      errorMsg = '' + defaultError + ' is too long to be stored in Firebase. It be less than 768 characters.';
 	    } else if (/[\[\].#$\/\u0000-\u001F\u007F]/.test(endpoint)) {
 	      errorMsg = '' + defaultError + ' cannot contain any of the following characters. "# $ ] [ /" Instead, got ' + defaultError;
 	    }
@@ -20568,6 +20591,7 @@
 	  function _bind(endpoint, options, invoker) {
 	    _validateEndpoint(endpoint);
 	    _validateOptions(options, invoker);
+	    //should be [options.state]
 	    firebaseRefs[endpoint] = ref.ref();
 	    firebaseListeners[endpoint] = ref.child(endpoint).on('value', function (snapshot) {
 	      var data = snapshot.val();
@@ -20582,10 +20606,11 @@
 	          _setState(data, options.context);
 	        }
 	      }
-	    });
+	    }, options.onConnectionLoss);
 	  };
 
 	  function _removeBinding(endpoint) {
+	    //check if endpoint and not property on state.
 	    _validateEndpoint(endpoint);
 
 	    if (typeof firebaseRefs[endpoint] === 'undefined') {
@@ -20627,6 +20652,7 @@
 	        return rebase;
 	      }
 
+	      _validateBaseURL(url);
 	      baseUrl = url;
 	      ref = new Firebase(baseUrl);
 	      rebase = init();

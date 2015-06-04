@@ -10,14 +10,19 @@ class App extends React.Component {
       context: this,
       then(data){
         console.log("ListenTo Data", data);
+      },
+      onConnectionLoss(err){
+        console.log('Error!', err);
       }
     });
 
-    //if asArray is true then state must be defined since state has to be an object
     base.bindToState('temp', {
       asArray: true,
       context: this,
-      state: 'stateQueue'
+      state: 'stateQueue',
+      onConnectionLoss(err){
+        console.log("Error!", err);
+      }
     });
 
     base.syncState('classes', {
