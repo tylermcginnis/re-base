@@ -1,3 +1,5 @@
+
+/*
 var fs = require('fs');
 
 var node_modules = fs.readdirSync('node_modules').filter(function(x) { return x !== '.bin' });
@@ -9,8 +11,8 @@ node_modules = node_modules.map(function(item, index) {
   }
   return obj;
 })
+*/
 
-console.log(node_modules);
 
 
 
@@ -18,9 +20,16 @@ module.exports = {
   entry: "./src/rebase.js",
   output: {
     filename: "dist/bundle.js",
-    libraryTarget: 'commonjs2'
+    libraryTarget: 'umd'
   },
-  externals: node_modules,
+  externals: [{
+    'firebase': {
+      root: 'Firebase',
+      commonjs2: 'firebase',
+      commonjs: 'firebase',
+      amd: 'firebase'
+    }
+  }],
   module: {
     loaders: [
       { test: /\.js$/, loader: 'babel'}

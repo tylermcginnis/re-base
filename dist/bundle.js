@@ -1,5 +1,14 @@
-module.exports =
-/******/ (function(modules) { // webpackBootstrap
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory(require("firebase"));
+	else if(typeof define === 'function' && define.amd)
+		define(["firebase"], factory);
+	else {
+		var a = typeof exports === 'object' ? factory(require("firebase")) : factory(root["Firebase"]);
+		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
+	}
+})(this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
+return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 
@@ -243,7 +252,9 @@ module.exports =
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = require("firebase");
+	module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
 
 /***/ }
-/******/ ]);
+/******/ ])
+});
+;
