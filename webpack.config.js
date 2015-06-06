@@ -5,10 +5,7 @@ var node_modules = fs.readdirSync('node_modules').filter(function(x) { return x 
 node_modules = node_modules.map(function(item, index) {
   var obj = {};
   obj[item] = {
-    root: item,
-    commonjs2: item,
-    commonjs: item,
-    amd: item
+    commonjs2: item
   }
   return obj;
 })
