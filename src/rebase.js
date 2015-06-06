@@ -17,6 +17,9 @@ module.exports = (function(){
   function _toArray(obj){
     var arr = [];
     for(var key in obj){
+      if(_isObject(obj[key])){
+        obj[key].key = key;
+      }
       arr.push(obj[key]);
     }
     return arr;
@@ -48,7 +51,7 @@ module.exports = (function(){
     }
   };
 
-  function _validateEndpoint(endpoint){
+  function _validateEndpoint(endpoint, onRemove){
     var defaultError = 'The Firebase endpoint you are trying to listen to';
     var errorMsg;
     if(typeof endpoint !== 'string'){
@@ -57,9 +60,7 @@ module.exports = (function(){
       errorMsg = `${defaultError} must be a non-empty string. Instead, got ${endpoint}`;
     } else if(endpoint.length > 768){
       errorMsg = `${defaultError} is too long to be stored in Firebase. It be less than 768 characters.`;
-    } else if(/[\[\].#$\/\u0000-\u001F\u007F]/.test(endpoint)) {
-      errorMsg = `${defaultError} cannot contain any of the following characters. "# $ ] [ /" Instead, got ${defaultError}`;
-    } else if(firebaseRefs[endpoint]){
+    } else if(onRemove && firebaseRefs[endpoint]){
       errorMsg = `${defaultError} (${endpoint}) has already been bound. An endpoint may only have one binding`;
     }
 
@@ -72,7 +73,7 @@ module.exports = (function(){
     var errorMsg;
     if(!_isObject(options)){
       errorMsg = `options argument must be an Object. Instead, got ${options}.`;
-    } else if(!options.context || !_isObject(options.context)){
+    } else if(invoker !== 'fetch' && (!options.context || !_isObject(options.context))){
       errorMsg = `options argument must contain a context property which is an Object. Instead, got ${options.context}.`;
     } else if(invoker === 'bindToState' && options.asArray === true && !options.state){
       errorMsg = "Because your component's state must be an object, if you use asArray you must also specify a state property to which the new array will be a value of."
@@ -80,6 +81,8 @@ module.exports = (function(){
       errorMsg = `options.then must be a function. Instead, got ${options.then}.`;
     } else if (options.then && options.state){
       errorMsg = "Since options.then is a callback function which gets invoked with the data from Firebase, you shouldn't have options.then and also specify the state with options.state.";
+    } else if (invoker === 'fetch' && !options.then){
+      errorMsg = "fetch requires a options.then property in order to invoke with the data from firebase";
     }
 
     if(typeof errorMsg !== 'undefined'){
@@ -98,7 +101,7 @@ module.exports = (function(){
     firebaseListeners[endpoint] = ref.child(endpoint).on('value', (snapshot) => {
       var data = snapshot.val();
       if(options.then){
-        options.asArray === true ? options.then(_toArray(data)) : options.then(data);
+        options.asArray === true ? options.then.call(options.context, _toArray(data)) : options.then.call(options.context, data);
       } else {
         if(options.state){
           var newState = {};
@@ -122,12 +125,34 @@ module.exports = (function(){
     firebaseRefs[endpoint].off('value', firebaseListeners[endpoint]);
     delete firebaseRefs[endpoint];
     delete firebaseListeners[endpoint];
-  }
+  };
 
   function _sync(endpoint, options){
     _validateEndpoint(endpoint);
     _validateOptions(options);
     //2 way data binding
+
+    var context = options.context;
+    var reactSetState = context.setState
+
+    firebaseListeners[endpoint] = ref.child(endpoint).on('value', (snapshot) => {
+      var data = snapshot.val();
+      data = options.asArray === true ? _toArray(data) : data;
+      reactSetState.call(context, data);
+    });
+
+    context.setState = function(data){
+      ref.child(endpoint).set(data);
+    }
+
+  };
+
+  function _fetch(endpoint, options){
+    _validateEndpoint(endpoint);
+    _validateOptions(options, 'fetch');
+    ref.child(endpoint).once('value', (snapshot) => {
+      options.then(snapshot.val());
+    }, options.onConnectionLoss);
   }
 
   function init(){
@@ -141,8 +166,11 @@ module.exports = (function(){
       syncState(endpoint, options){
         _sync(endpoint, options);
       },
+      fetch(endpoint, options){
+        _fetch(endpoint, options);
+      },
       removeBinding(endpoint){
-        _removeBinding(endpoint);
+        _removeBinding(endpoint, true);
       }
     }
   }
