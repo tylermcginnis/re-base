@@ -1,3 +1,4 @@
+module.exports =
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -242,7 +243,7 @@
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = firebase;
+	module.exports = require("firebase");
 
 /***/ }
 /******/ ]);
