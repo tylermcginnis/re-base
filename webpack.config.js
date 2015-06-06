@@ -1,12 +1,11 @@
 module.exports = {
-  entry: "./app/App.js",
+  entry: "./src/rebase.js",
   output: {
-    filename: "public/bundle.js"
+    filename: "dist/bundle.js"
   },
   module: {
     loaders: [
-      {test: /\.js$/, loader: 'jsx-loader'},
-      { test: /\.js$/, loader: 'babel', exclude: [/node_modules/] }
+      { test: /\.js$/, loader: 'babel'}
     ]
   }
 };
