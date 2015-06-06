@@ -1,3 +1,2 @@
-require('babel/register');
-module.exports = require('./src/rebase.js');
+module.exports = require('./dist/bundle.js');
 
