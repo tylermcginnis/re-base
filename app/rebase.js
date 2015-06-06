@@ -98,7 +98,7 @@ module.exports = (function(){
     firebaseListeners[endpoint] = ref.child(endpoint).on('value', (snapshot) => {
       var data = snapshot.val();
       if(options.then){
-        options.asArray === true ? options.then(_toArray(data)) : options.then(data);
+        options.asArray === true ? options.then(_toArray(data)).call(options.context) : options.then(data).call(options.context);
       } else {
         if(options.state){
           var newState = {};
