@@ -1,3 +1,3 @@
 require('babel/register');
-module.exports = require('./dist/bundle.js');
+module.exports = require('./src/bundle.js');
 
