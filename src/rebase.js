@@ -130,21 +130,26 @@ module.exports = (function(){
   function _sync(endpoint, options){
     _validateEndpoint(endpoint);
     _validateOptions(options);
-    //2 way data binding
 
     var context = options.context;
     var reactSetState = context.setState
 
+    firebaseRefs[endpoint] = ref.ref();
     firebaseListeners[endpoint] = ref.child(endpoint).on('value', (snapshot) => {
       var data = snapshot.val();
       data = options.asArray === true ? _toArray(data) : data;
-      reactSetState.call(context, data);
+      data && reactSetState.call(context, {[options.state]: data});
     });
 
     context.setState = function(data){
-      ref.child(endpoint).set(data);
+      for(var key in data){
+        if(key === options.state){
+          ref.child(endpoint).set(data[key]);
+        } else {
+          reactSetState.call(options.context, data);
+        }
+      }
     }
-
   };
 
   function _fetch(endpoint, options){
