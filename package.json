@@ -1,13 +1,13 @@
 {
-  "name": "REBASE",
+  "name": "re-base",
   "version": "0.0.1",
   "description": "",
-  "main": "App.js",
+  "main": "index.js",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/tylermcginnis/re-base"
   },
-  "author": "Tyler McGinnis",
+  "author": "Tyler McGinnis and Jacob Turner",
   "dependencies": {
     "firebase": "^2.2.6",
     "react": "*"
