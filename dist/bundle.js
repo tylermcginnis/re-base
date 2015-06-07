@@ -204,12 +204,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	    context.setState = function (data) {
 	      for (var key in data) {
 	        if (key === options.state) {
-	          ref.child(endpoint).set(data[key]);
+	          _updateSyncState(ref.child(endpoint), data[key], key);
 	        } else {
 	          reactSetState.call(options.context, data);
 	        }
 	      }
 	    };
+
+	    function _updateSyncState(ref, data, key) {
+	      if (_isObject(data)) {
+	        for (var prop in data) {
+	          _updateSyncState(ref.child(prop), data[prop], prop);
+	        }
+	      } else {
+	        ref.set(data);
+	      }
+	    }
 	  };
 
 	  function _fetch(endpoint, options) {
