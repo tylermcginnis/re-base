@@ -63,6 +63,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
+	function _defineProperty(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); }
+
 	module.exports = (function () {
 	  var Firebase = __webpack_require__(1);
 
@@ -188,20 +190,36 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function _sync(endpoint, options) {
 	    _validateEndpoint(endpoint);
 	    _validateOptions(options);
-	    //2 way data binding
 
 	    var context = options.context;
 	    var reactSetState = context.setState;
 
+	    firebaseRefs[endpoint] = ref.ref();
 	    firebaseListeners[endpoint] = ref.child(endpoint).on('value', function (snapshot) {
 	      var data = snapshot.val();
 	      data = options.asArray === true ? _toArray(data) : data;
-	      reactSetState.call(context, data);
+	      data && reactSetState.call(context, _defineProperty({}, options.state, data));
 	    });
 
 	    context.setState = function (data) {
-	      ref.child(endpoint).set(data);
+	      for (var key in data) {
+	        if (key === options.state) {
+	          _updateSyncState(ref.child(endpoint), data[key], key);
+	        } else {
+	          reactSetState.call(options.context, data);
+	        }
+	      }
 	    };
+
+	    function _updateSyncState(ref, data, key) {
+	      if (_isObject(data)) {
+	        for (var prop in data) {
+	          _updateSyncState(ref.child(prop), data[prop], prop);
+	        }
+	      } else {
+	        ref.set(data);
+	      }
+	    }
 	  };
 
 	  function _fetch(endpoint, options) {
