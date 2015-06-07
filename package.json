@@ -9,8 +9,7 @@
   },
   "author": "Tyler McGinnis",
   "dependencies": {
-    "firebase": "^2.2.6",
-    "react": "*"
+    "firebase": "^2.2.6"
   },
   "devDependencies": {
     "babel": "^5.4.7",
