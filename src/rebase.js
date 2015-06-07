@@ -141,16 +141,26 @@ module.exports = (function(){
       data && reactSetState.call(context, {[options.state]: data});
     });
 
-    context.setState = function(data){
-      for(var key in data){
-        if(key === options.state){
-          ref.child(endpoint).set(data[key]);
-        } else {
-          reactSetState.call(options.context, data);
+	  context.setState = function (data) {
+	    for (var key in data) {
+	      if (key === options.state) {
+          _updateSyncState(ref.child(endpoint), data[key], key)
+       } else {
+         reactSetState.call(options.context, data);
+       }
+     }
+   };
+
+   function _updateSyncState(ref, data, key){
+      if(_isObject(data)) {
+        for(var prop in data){
+          _updateSyncState(ref.child(prop), data[prop], prop);
         }
+      } else {
+        ref.set(data);
       }
     }
-  };
+ };
 
   function _fetch(endpoint, options){
     _validateEndpoint(endpoint);
