@@ -196,9 +196,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    firebaseRefs[endpoint] = ref.ref();
 	    firebaseListeners[endpoint] = ref.child(endpoint).on('value', function (snapshot) {
-	      var data = snapshot.val();
-	      data = options.asArray === true ? _toArray(data) : data;
-	      data && reactSetState.call(context, _defineProperty({}, options.state, data));
+	      if (data === null) {
+	        reactSetState.call(context, _defineProperty({}, options.state, options.asArray === true ? [] : {}));
+	      } else {
+	        data = options.asArray === true ? _toArray(data) : data;
+	        reactSetState.call(context, _defineProperty({}, options.state, data));
+	      }
 	    });
 
 	    context.setState = function (data) {

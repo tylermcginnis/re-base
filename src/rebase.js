@@ -136,14 +136,17 @@ module.exports = (function(){
 
     firebaseRefs[endpoint] = ref.ref();
     firebaseListeners[endpoint] = ref.child(endpoint).on('value', (snapshot) => {
-      var data = snapshot.val();
-      data = options.asArray === true ? _toArray(data) : data;
-      data && reactSetState.call(context, {[options.state]: data});
+      if(data === null){
+        reactSetState.call(context, {[options.state]: options.asArray === true ? [] : {}});
+      } else {
+        data = options.asArray === true ? _toArray(data) : data;
+        reactSetState.call(context, {[options.state]: data});
+      }
     });
 
-	  context.setState = function (data) {
-	    for (var key in data) {
-	      if (key === options.state) {
+    context.setState = function (data) {
+      for (var key in data) {
+        if (key === options.state) {
           _updateSyncState(ref.child(endpoint), data[key], key)
        } else {
          reactSetState.call(options.context, data);
