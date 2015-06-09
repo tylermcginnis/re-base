@@ -8,6 +8,13 @@ module.exports = function(config) {
     ],
     reporters: ["spec", "failed", "coverage"],
     browsers: ['Chrome'],
+    preprocessors: {
+    'specs/re-base.spec.js': ['webpack'],
+    },
+    webpack: {},
+    webpackMiddleware: {
+      noInfo: true
+    },
     coverageReporter: {
       reporters: [
         {
