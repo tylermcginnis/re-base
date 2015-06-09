@@ -30,6 +30,6 @@
   },
   "scripts": {
     "test": "./node_modules/karma/bin/karma start tests/karma.conf.js",
-    "travis" "npm run test"
+    "travis": "./node_modules/karma/bin/karma start tests/karma.conf.js"
   }
 }
