@@ -3,6 +3,7 @@
   bindToState: Listens to a Firebase endpoint and updates a specified property (if an array) or the whole state if an Object.
   removeBinding: Removes bindings. Used in componentDidUnmount.
   syncState: todo. Create a 2 way data binding between Firebase and your State.
+  fetch: Get data from endpoint without establishing socket connection.
 */
 
 module.exports = (function(){
@@ -90,9 +91,17 @@ module.exports = (function(){
     }
   };
 
-  function _setState(newState, context){
-    context.setState(newState);
-  }
+  function _fetch(endpoint, options){
+    _validateEndpoint(endpoint);
+    _validateOptions(options, 'fetch');
+    ref.child(endpoint).once('value', (snapshot) => {
+      options.then(snapshot.val());
+    }, options.onConnectionLoss);
+  };
+
+  function _setState(newState){
+    this.setState(newState);
+  };
 
   function _bind(endpoint, options, invoker){
     _validateEndpoint(endpoint);
@@ -106,25 +115,12 @@ module.exports = (function(){
         if(options.state){
           var newState = {};
           options.asArray === true ? newState[options.state] = _toArray(data) : newState[options.state] = data;
-          _setState(newState, options.context);
+          _setState.call(options.context, newState);
         } else {
-          _setState(data, options.context);
+          _setState.call(options.context, data);
         }
       }
     }, options.onConnectionLoss);
-  };
-
-  function _removeBinding(endpoint){
-    _validateEndpoint(endpoint);
-
-    if (typeof firebaseRefs[endpoint] === "undefined") {
-      var errorMsg = `Unexpected value for endpoint. ${endpoint} was either never bound or has already been unbound.`;
-      _throwError(errorMsg, "UNBOUND_ENDPOINT_VARIABLE");
-    }
-
-    firebaseRefs[endpoint].off('value', firebaseListeners[endpoint]);
-    delete firebaseRefs[endpoint];
-    delete firebaseListeners[endpoint];
   };
 
   function _sync(endpoint, options){
@@ -136,6 +132,7 @@ module.exports = (function(){
 
     firebaseRefs[endpoint] = ref.ref();
     firebaseListeners[endpoint] = ref.child(endpoint).on('value', (snapshot) => {
+      var data = snapshot.val();
       if(data === null){
         reactSetState.call(context, {[options.state]: options.asArray === true ? [] : {}});
       } else {
@@ -163,15 +160,21 @@ module.exports = (function(){
         ref.set(data);
       }
     }
- };
+  };
 
-  function _fetch(endpoint, options){
+
+  function _removeBinding(endpoint){
     _validateEndpoint(endpoint);
-    _validateOptions(options, 'fetch');
-    ref.child(endpoint).once('value', (snapshot) => {
-      options.then(snapshot.val());
-    }, options.onConnectionLoss);
-  }
+
+    if (typeof firebaseRefs[endpoint] === "undefined") {
+      var errorMsg = `Unexpected value for endpoint. ${endpoint} was either never bound or has already been unbound.`;
+      _throwError(errorMsg, "UNBOUND_ENDPOINT_VARIABLE");
+    }
+
+    firebaseRefs[endpoint].off('value', firebaseListeners[endpoint]);
+    delete firebaseRefs[endpoint];
+    delete firebaseListeners[endpoint];
+  };
 
   function init(){
     return {
