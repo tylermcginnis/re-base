@@ -7,7 +7,7 @@ module.exports = function(config) {
       'specs/re-base.spec.js'
     ],
     reporters: ["spec", "failed", "coverage"],
-    browsers: ['Chrome'],
+    browsers: ['Firefox'],
     preprocessors: {
     'specs/re-base.spec.js': ['webpack'],
     },
