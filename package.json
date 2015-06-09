@@ -29,6 +29,7 @@
     "webpack": "^1.9.10"
   },
   "scripts": {
-    "test": "./node_modules/karma/bin/karma start tests/karma.conf.js"
+    "test": "./node_modules/karma/bin/karma start tests/karma.conf.js",
+    "travis" "npm run test"
   }
 }
