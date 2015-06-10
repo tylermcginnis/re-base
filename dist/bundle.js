@@ -60,6 +60,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  removeBinding: Removes bindings. Used in componentDidUnmount.
 	  syncState: todo. Create a 2 way data binding between Firebase and your State.
 	  fetch: Get data from endpoint without establishing socket connection.
+	  post: Update firebase endpoint just once.
 	*/
 
 	'use strict';
@@ -163,6 +164,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.setState(newState);
 	  };
 
+	  function _post(endpoint, options) {
+	    //WIP
+	    _validateEndpoint(endpoint);
+	    // _validateOptions(options);
+	    if (options.then) {
+	      ref.child(endpoint).set(options.data, options.then);
+	    } else {
+	      ref.child(endpoint).set(options.data);
+	    }
+	  }
+
 	  function _bind(endpoint, options, invoker) {
 	    _validateEndpoint(endpoint);
 	    _validateOptions(options, invoker);
@@ -248,6 +260,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      },
 	      fetch: function fetch(endpoint, options) {
 	        _fetch(endpoint, options);
+	      },
+	      post: function post(endpoint, options) {
+	        _post(endpoint, options);
 	      },
 	      removeBinding: function removeBinding(endpoint) {
 	        _removeBinding(endpoint, true);

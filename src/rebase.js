@@ -4,6 +4,7 @@
   removeBinding: Removes bindings. Used in componentDidUnmount.
   syncState: todo. Create a 2 way data binding between Firebase and your State.
   fetch: Get data from endpoint without establishing socket connection.
+  post: Update firebase endpoint just once.
 */
 
 module.exports = (function(){
@@ -103,6 +104,17 @@ module.exports = (function(){
     this.setState(newState);
   };
 
+  function _post(endpoint, options){
+    //WIP
+    _validateEndpoint(endpoint);
+    // _validateOptions(options);
+    if(options.then){
+      ref.child(endpoint).set(options.data, options.then);
+    } else {
+      ref.child(endpoint).set(options.data);
+    }
+  }
+
   function _bind(endpoint, options, invoker){
     _validateEndpoint(endpoint);
     _validateOptions(options, invoker);
@@ -188,6 +200,9 @@ module.exports = (function(){
       },
       fetch(endpoint, options){
         _fetch(endpoint, options);
+      },
+      post(endpoint, options){
+        _post(endpoint, options);
       },
       removeBinding(endpoint){
         _removeBinding(endpoint, true);
