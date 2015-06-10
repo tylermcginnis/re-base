@@ -108,7 +108,7 @@ module.exports = (function(){
     _validateOptions(options, invoker);
     firebaseRefs[endpoint] = ref.ref();
     firebaseListeners[endpoint] = ref.child(endpoint).on('value', (snapshot) => {
-      var data = snapshot.val();
+      var data = snapshot.val() || (options.asArray === true ? [] : {});
       if(options.then){
         options.asArray === true ? options.then.call(options.context, _toArray(data)) : options.then.call(options.context, data);
       } else {
@@ -161,7 +161,6 @@ module.exports = (function(){
       }
     }
   };
-
 
   function _removeBinding(endpoint){
     _validateEndpoint(endpoint);
