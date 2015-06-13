@@ -11,7 +11,17 @@ module.exports = function(config) {
     preprocessors: {
     'specs/re-base.spec.js': ['webpack'],
     },
-    webpack: {},
+    webpack: {
+      module: {
+        loaders: [
+          {
+            test: /\.js$/,
+            loader: 'babel',
+            exclude: /node_modules/
+          }
+        ]
+      }
+    },
     webpackMiddleware: {
       noInfo: true
     },

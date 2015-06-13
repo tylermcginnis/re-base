@@ -1,21 +1,3 @@
-
-/*
-var fs = require('fs');
-
-var node_modules = fs.readdirSync('node_modules').filter(function(x) { return x !== '.bin' });
-
-node_modules = node_modules.map(function(item, index) {
-  var obj = {};
-  obj[item] = {
-    commonjs2: item
-  }
-  return obj;
-})
-*/
-
-
-
-
 module.exports = {
   entry: "./src/rebase.js",
   output: {
@@ -32,7 +14,11 @@ module.exports = {
   }],
   module: {
     loaders: [
-      { test: /\.js$/, loader: 'babel'}
+      {
+        test: /\.js$/,
+        loader: 'babel',
+        exclude: /node_modules/
+      }
     ]
   }
 };

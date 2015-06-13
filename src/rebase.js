@@ -163,7 +163,7 @@ module.exports = (function(){
      }
    };
 
-   function _updateSyncState(ref, data, key){
+    function _updateSyncState(ref, data, key){
       if(_isObject(data)) {
         for(var prop in data){
           _updateSyncState(ref.child(prop), data[prop], prop);
@@ -171,7 +171,7 @@ module.exports = (function(){
       } else {
         ref.set(data);
       }
-    }
+    };
   };
 
   function _removeBinding(endpoint){
