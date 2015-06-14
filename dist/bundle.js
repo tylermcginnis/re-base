@@ -231,7 +231,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      } else {
 	        ref.set(data);
 	      }
-	    }
+	    };
 	  };
 
 	  function _removeBinding(endpoint) {
