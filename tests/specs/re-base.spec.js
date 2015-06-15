@@ -1,18 +1,21 @@
 var Rebase = require('../../dist/bundle');
 var React = require('react/addons');
 var TestUtils = React.addons.TestUtils;
+var Firebase = require('firebase');
 
 var invalidFirebaseURLs = [null, undefined, true, false, [], 0, 5, "", "a", ["hi", 1]];
 var invalidEndpoints = ['', 'ab.cd', 'ab#cd', 'ab$cd', 'ab[cd', 'ab]cd'];
 var firebaseUrl = 'https://rebase-demo.firebaseio.com/';
 
 describe('re-base Tests:', function(){
-  beforeEach(function(){
-
-  });
-
-  afterEach(function(){
-
+  beforeEach(function(done){
+    var base = Rebase.createClass(firebaseUrl);
+    base.post('test', {
+      data: null,
+      then(){
+        done()
+      }
+    });
   });
 
   describe('createClass()', function(){
@@ -73,6 +76,21 @@ describe('re-base Tests:', function(){
           expect(err.code).toEqual('INVALID_OPTIONS');
         }
       });
+    });
+
+    it('post() updates Firebase correctly', function(done){
+      var base = Rebase.createClass(firebaseUrl);
+      var ref = new Firebase(firebaseUrl);
+      base.post('test/child', {
+        data: 'This is a test',
+        then(thing){
+          ref.child('test/child').once('value', (snapshot) => {
+            var data = snapshot.val();
+            expect(data).toBe('This is a test');
+            done();
+          });
+        }
+      })
     });
   });
 });

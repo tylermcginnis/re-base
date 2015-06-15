@@ -66,7 +66,7 @@ module.exports = (function(){
       errorMsg = `${defaultError} is too long to be stored in Firebase. It be less than 768 characters.`;
     } else if(onRemove && firebaseRefs[endpoint]){
       errorMsg = `${defaultError} (${endpoint}) has already been bound. An endpoint may only have one binding`;
-    } else if(/[\[\].#$\/\u0000-\u001F\u007F]/.test(endpoint)){
+    } else if(/^$|[\[\]\.\#\$]/.test(endpoint)){
       errorMsg = `${defaultError} in invalid. Paths must be non-empty strings and can't contain ".", "#", "$", "[", or "]".`
     }
 
