@@ -131,9 +131,12 @@ module.exports = (function(){
   function _fetch(endpoint, options){
     _validateEndpoint(endpoint);
     _validateFetchOptions(options);
-    //add asArray?. If so, might have to do some recursion data prepping
     ref.child(endpoint).once('value', (snapshot) => {
-      options.then(snapshot.val());
+      if(options.asArray === true){
+        options.then(_toArray(snapshot.val()));
+      } else {
+        options.then(snapshot.val());
+      }
     }, options.onConnectionLoss);
   };
 

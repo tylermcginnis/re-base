@@ -8,6 +8,8 @@ var ref = new Firebase(firebaseUrl);
 var invalidFirebaseURLs = [null, undefined, true, false, [], 0, 5, "", "a", ["hi", 1]];
 var invalidEndpoints = ['', 'ab.cd', 'ab#cd', 'ab$cd', 'ab[cd', 'ab]cd'];
 var dummyObjData = {name: 'Tyler McGinnis', age: 25};
+var dummyNestedObjData = {about: {name: 'Tyler', age: 25}, friends: {jacob: {name: 'Jacob Turner', age: 23}}};
+var nestedObjArrResult = [{age: 25, key: 'about', name: 'Tyler'}, {key: 'friends', jacob: {age: 23, name: 'Jacob Turner'}}];
 var dummyArrData = ['Tyler McGinnis', 'Jacob Turner', 'Ean Platter'];
 var testEndpoint = 'test/child';
 
@@ -129,6 +131,7 @@ describe('re-base Tests:', function(){
 
       afterEach((done) => {
         ref.set(null);
+        done();
       });
 
       it('fetch()\'s .then gets invoked with the data from Firebase once the data is retrieved', function(done){
@@ -138,6 +141,31 @@ describe('re-base Tests:', function(){
             expect(data).toEqual(dummyObjData);
             done();
           }
+        });
+      });
+
+      it('fetch()\'s asArray property should return the data from Firebase as an array', function(done){
+        var base = Rebase.createClass(firebaseUrl);
+        base.fetch(testEndpoint, {
+          asArray: true,
+          then(data){
+            expect(data.indexOf('Tyler McGinnis')).not.toBe(-1);
+            expect(data.indexOf(25)).not.toBe(-1);
+            done();
+          }
+        });
+      });
+
+      it('fetch()\'s asArray property should add a key property on nested objects', function(done){
+        var base = Rebase.createClass(firebaseUrl);
+        ref.child(testEndpoint).set(dummyNestedObjData, () => {
+          base.fetch(testEndpoint, {
+            asArray: true,
+            then(data){
+              expect(data).toEqual(nestedObjArrResult);
+              done();
+            }
+          })
         });
       });
     });
