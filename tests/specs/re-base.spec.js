@@ -6,6 +6,9 @@ var Firebase = require('firebase');
 var invalidFirebaseURLs = [null, undefined, true, false, [], 0, 5, "", "a", ["hi", 1]];
 var invalidEndpoints = ['', 'ab.cd', 'ab#cd', 'ab$cd', 'ab[cd', 'ab]cd'];
 var firebaseUrl = 'https://rebase-demo.firebaseio.com/';
+var dummyObjData = {name: 'Tyler McGinnis', age: 25};
+var dummyArrData = ['Tyler McGinnis', 'Jacob Turner', 'Ean Platter'];
+var testEndpoint = 'test/child';
 
 describe('re-base Tests:', function(){
   beforeEach(function(done){
@@ -58,7 +61,7 @@ describe('re-base Tests:', function(){
       invalidEndpoints.forEach((endpoint) => {
         try {
           base.post(endpoint, {
-            data: {1: 'one', 2: 'two', 3: 'three'}
+            data: dummyObjData
           })
         } catch(err) {
           expect(err.code).toEqual('INVALID_ENDPOINT');
@@ -71,7 +74,7 @@ describe('re-base Tests:', function(){
       var invalidOptions = [[], {}, {then: function(){}}, {data: undefined}, {data: 123, then: 123}];
       invalidOptions.forEach((option) => {
         try {
-          base.post('testEndpoint', option);
+          base.post(testEndpoint, option);
         } catch(err) {
           expect(err.code).toEqual('INVALID_OPTIONS');
         }
@@ -81,16 +84,65 @@ describe('re-base Tests:', function(){
     it('post() updates Firebase correctly', function(done){
       var base = Rebase.createClass(firebaseUrl);
       var ref = new Firebase(firebaseUrl);
-      base.post('test/child', {
-        data: 'This is a test',
+      base.post(testEndpoint, {
+        data: dummyObjData,
         then(thing){
-          ref.child('test/child').once('value', (snapshot) => {
+          ref.child(testEndpoint).once('value', (snapshot) => {
             var data = snapshot.val();
-            expect(data).toBe('This is a test');
+            expect(data).toBe(dummyObjData);
             done();
           });
         }
       })
+    });
+  });
+
+  describe('fetch', function(){
+    it('fetch() throws an error given a invalid endpoint', function(done){
+      var base = Rebase.createClass(firebaseUrl);
+      invalidEndpoints.forEach((endpoint) => {
+        try {
+          base.fetch(endpoint, {
+            then(data){
+              done();
+            }
+          })
+        } catch(err) {
+          expect(err.code).toEqual('INVALID_ENDPOINT');
+          done();
+        }
+      });
+    });
+
+    it('fetch() throws an error given an invalid options object', function(){
+      var base = Rebase.createClass(firebaseUrl);
+      var invalidOptions = [[], {}, {then: undefined}, {then: 'strNotFn'}, {then: function(){}}, {onConnectionLoss: 'strNotFn'}];
+      invalidOptions.forEach((option) => {
+        try {
+          base.fetch('test', option);
+        } catch(err) {
+          expect(err.code).toEqual('INVALID_OPTIONS');
+        }
+      });
+    });
+
+    describe('Async tests', function(){
+      beforeEach((done) => {
+        var ref = new Firebase(firebaseUrl);
+        ref.child(testEndpoint).set(dummyObjData, () => {
+          done();
+        });
+      });
+
+      it('fetch()\'s .then gets invoked with the data from Firebase once the data is retrieved', function(done){
+        var base = Rebase.createClass(firebaseUrl);
+        base.fetch(testEndpoint, {
+          then(data){
+            expect(data).toEqual(dummyObjData);
+            done();
+          }
+        });
+      });
     });
   });
 });

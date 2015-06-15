@@ -139,7 +139,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var errorMsg;
 	    if (!_isObject(options)) {
 	      errorMsg = 'options argument must be an Object. Instead, got ' + options + '.';
-	    } else if (invoker !== 'fetch' && (!options.context || !_isObject(options.context))) {
+	    } else if (!options.context || !_isObject(options.context)) {
 	      errorMsg = 'options argument must contain a context property which is an Object. Instead, got ' + options.context + '.';
 	    } else if (invoker === 'bindToState' && options.asArray === true && !options.state) {
 	      errorMsg = 'Because your component\'s state must be an object, if you use asArray you must also specify a state property to which the new array will be a value of.';
@@ -147,8 +147,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	      errorMsg = 'options.then must be a function. Instead, got ' + options.then + '.';
 	    } else if (options.then && options.state) {
 	      errorMsg = 'Since options.then is a callback function which gets invoked with the data from Firebase, you shouldn\'t have options.then and also specify the state with options.state.';
-	    } else if (invoker === 'fetch' && !options.then) {
-	      errorMsg = 'fetch requires a options.then property in order to invoke with the data from firebase';
+	    }
+
+	    if (typeof errorMsg !== 'undefined') {
+	      _throwError(errorMsg, 'INVALID_OPTIONS');
+	    }
+	  };
+
+	  //Combine with _validateOptions on Refactor
+	  function _validateFetchOptions(options) {
+	    var errorMsg;
+	    if (!_isObject(options)) {
+	      errorMsg = 'options argument must be an Object. Instead, got ' + options + '.';
+	    } else if (typeof options.then === 'undefined') {
+	      errorMsg = 'options.then is required with fetch';
+	    } else if (typeof options.then !== 'function') {
+	      errorMsg = 'options.then must be a function.';
+	    } else if (options.onConnectionLoss && typeof options.onConnectionLoss !== 'function') {
+	      errorMsg = 'options.onConnectionLoss must be a function';
 	    }
 
 	    if (typeof errorMsg !== 'undefined') {
@@ -174,7 +190,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function _fetch(endpoint, options) {
 	    _validateEndpoint(endpoint);
-	    _validateOptions(options, 'fetch');
+	    _validateFetchOptions(options);
+	    //add asArray?. If so, might have to do some recursion data prepping
 	    ref.child(endpoint).once('value', function (snapshot) {
 	      options.then(snapshot.val());
 	    }, options.onConnectionLoss);
