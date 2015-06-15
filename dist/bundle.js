@@ -140,13 +140,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (!_isObject(options)) {
 	      errorMsg = 'options argument must be an Object. Instead, got ' + options + '.';
 	    } else if (!options.context || !_isObject(options.context)) {
-	      errorMsg = 'options argument must contain a context property which is an Object. Instead, got ' + options.context + '.';
+	      errorMsg = 'options argument must contain a context property which is an object. Instead, got ' + options.context + '.';
 	    } else if (invoker === 'bindToState' && options.asArray === true && !options.state) {
 	      errorMsg = 'Because your component\'s state must be an object, if you use asArray you must also specify a state property to which the new array will be a value of.';
 	    } else if (options.then && typeof options.then !== 'function') {
 	      errorMsg = 'options.then must be a function. Instead, got ' + options.then + '.';
 	    } else if (options.then && options.state) {
 	      errorMsg = 'Since options.then is a callback function which gets invoked with the data from Firebase, you shouldn\'t have options.then and also specify the state with options.state.';
+	    }
+
+	    if (typeof errorMsg !== 'undefined') {
+	      _throwError(errorMsg, 'INVALID_OPTIONS');
+	    }
+	  };
+
+	  //Combine with _validateOptions on Refactor
+	  function _validateListenToOptions(options) {
+	    var errorMsg;
+	    if (!_isObject(options)) {
+	      errorMsg = 'options argument must be an Object. Instead, got ' + options + '.';
+	    } else if (typeof options.then === 'undefined') {
+	      errorMsg = 'options.then is required with listenTo';
+	    } else if (typeof options.then !== 'function') {
+	      errorMsg = 'options.then must be a function.';
+	    } else if (!options.context || !_isObject(options.context)) {
+	      errorMsg = 'options argument must contain a context property which is an object. Instead, got ' + options.context + '.';
 	    }
 
 	    if (typeof errorMsg !== 'undefined') {
@@ -216,7 +234,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function _bind(endpoint, options, invoker) {
 	    _validateEndpoint(endpoint);
-	    _validateOptions(options, invoker);
+	    //REFACTOR
+	    if (invoker === 'listenTo') {
+	      _validateListenToOptions(options);
+	    } else {
+	      _validateOptions(options, invoker);
+	    }
 	    firebaseRefs[endpoint] = ref.ref();
 	    firebaseListeners[endpoint] = ref.child(endpoint).on('value', function (snapshot) {
 	      var data = snapshot.val() || (options.asArray === true ? [] : {});
@@ -286,6 +309,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	    delete firebaseListeners[endpoint];
 	  };
 
+	  function _reset() {
+	    baseUrl = '';
+	    ref = undefined;
+	    rebase = undefined;
+	    for (var key in firebaseListeners) {
+	      firebaseRefs[key].off('value', firebaseListeners[key]);
+	      delete firebaseListeners[key];
+	      delete firebaseRefs[key];
+	    }
+	    firebaseListeners = {};
+	    firebaseRefs = {};
+	  }
+
 	  function init() {
 	    return {
 	      listenTo: function listenTo(endpoint, options) {
@@ -305,6 +341,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      },
 	      removeBinding: function removeBinding(endpoint) {
 	        _removeBinding(endpoint, true);
+	      },
+	      reset: function reset() {
+	        _reset();
 	      }
 	    };
 	  }

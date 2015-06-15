@@ -12,10 +12,18 @@ var dummyNestedObjData = {about: {name: 'Tyler', age: 25}, friends: {jacob: {nam
 var nestedObjArrResult = [{age: 25, key: 'about', name: 'Tyler'}, {key: 'friends', jacob: {age: 23, name: 'Jacob Turner'}}];
 var dummyArrData = ['Tyler McGinnis', 'Jacob Turner', 'Ean Platter'];
 var testEndpoint = 'test/child';
+var base;
 
 describe('re-base Tests:', function(){
   beforeEach(function(done){
     ref.set(null, done);
+    base = Rebase.createClass(firebaseUrl);
+  });
+
+  afterEach(function(){
+    base.reset();
+    base = null;
+    console.log('')
   });
 
   describe('createClass()', function(){
@@ -30,7 +38,6 @@ describe('re-base Tests:', function(){
     });
 
     it('createClass() returns an object with the correct API', function(){
-      var base = Rebase.createClass(firebaseUrl);
       expect(base.listenTo).toBeDefined();
       expect(base.bindToState).toBeDefined();
       expect(base.syncState).toBeDefined();
@@ -46,7 +53,6 @@ describe('re-base Tests:', function(){
     });
 
     it('createClass() returns a singleton if it\'s already been invoked', function(){
-      var base = Rebase.createClass(firebaseUrl);
       var newBase = Rebase.createClass(firebaseUrl);
       expect(base).toEqual(newBase);
     });
@@ -54,7 +60,6 @@ describe('re-base Tests:', function(){
 
   describe('post()', function(){
     it('post() throws an error given a invalid endpoint', function(){
-      var base = Rebase.createClass(firebaseUrl);
       invalidEndpoints.forEach((endpoint) => {
         try {
           base.post(endpoint, {
@@ -67,7 +72,6 @@ describe('re-base Tests:', function(){
     });
 
     it('post() throws an error given an invalid options object', function(){
-      var base = Rebase.createClass(firebaseUrl);
       var invalidOptions = [[], {}, {then: function(){}}, {data: undefined}, {data: 123, then: 123}];
       invalidOptions.forEach((option) => {
         try {
@@ -79,10 +83,9 @@ describe('re-base Tests:', function(){
     });
 
     it('post() updates Firebase correctly', function(done){
-      var base = Rebase.createClass(firebaseUrl);
       base.post(testEndpoint, {
         data: dummyObjData,
-        then(thing){
+        then(){
           ref.child(testEndpoint).once('value', (snapshot) => {
             var data = snapshot.val();
             expect(data).toEqual(dummyObjData);
@@ -95,7 +98,6 @@ describe('re-base Tests:', function(){
 
   describe('fetch()', function(){
     it('fetch() throws an error given a invalid endpoint', function(done){
-      var base = Rebase.createClass(firebaseUrl);
       invalidEndpoints.forEach((endpoint) => {
         try {
           base.fetch(endpoint, {
@@ -111,7 +113,6 @@ describe('re-base Tests:', function(){
     });
 
     it('fetch() throws an error given an invalid options object', function(){
-      var base = Rebase.createClass(firebaseUrl);
       var invalidOptions = [[], {}, {then: undefined}, {then: 'strNotFn'}, {then: function(){}}, {onConnectionLoss: 'strNotFn'}];
       invalidOptions.forEach((option) => {
         try {
@@ -130,12 +131,10 @@ describe('re-base Tests:', function(){
       });
 
       afterEach((done) => {
-        ref.set(null);
-        done();
+        ref.set(null, done);
       });
 
       it('fetch()\'s .then gets invoked with the data from Firebase once the data is retrieved', function(done){
-        var base = Rebase.createClass(firebaseUrl);
         base.fetch(testEndpoint, {
           then(data){
             expect(data).toEqual(dummyObjData);
@@ -145,7 +144,6 @@ describe('re-base Tests:', function(){
       });
 
       it('fetch()\'s asArray property should return the data from Firebase as an array', function(done){
-        var base = Rebase.createClass(firebaseUrl);
         base.fetch(testEndpoint, {
           asArray: true,
           then(data){
@@ -157,7 +155,6 @@ describe('re-base Tests:', function(){
       });
 
       it('fetch()\'s asArray property should add a key property on nested objects', function(done){
-        var base = Rebase.createClass(firebaseUrl);
         ref.child(testEndpoint).set(dummyNestedObjData, () => {
           base.fetch(testEndpoint, {
             asArray: true,
@@ -173,7 +170,6 @@ describe('re-base Tests:', function(){
 
   describe('listenTo()', function(){
     it('listenTo() throws an error given a invalid endpoint', function(done){
-      var base = Rebase.createClass(firebaseUrl);
       invalidEndpoints.forEach((endpoint) => {
         try {
           base.listenTo(endpoint, {
@@ -186,6 +182,84 @@ describe('re-base Tests:', function(){
           expect(err.code).toEqual('INVALID_ENDPOINT');
           done();
         }
+      });
+    });
+
+    it('listenTo() throws an error given an invalid options object', function(){
+      var invalidOptions = [[], {}, {then: function(){}}, {context: undefined}, {context: 'strNotObj'}, {context: window, then: undefined}, {context: window, then: 'strNotFn'}];
+      invalidOptions.forEach((option) => {
+        try {
+          base.post(testEndpoint, option);
+        } catch(err) {
+          expect(err.code).toEqual('INVALID_OPTIONS');
+        }
+      });
+    });
+
+    describe('Async tests', function(){
+      beforeEach(function(done){
+        base.reset();
+        base = null;
+        console.log('BASE', base);
+        base = Rebase.createClass(firebaseUrl);
+        ref.set(null, done);
+      });
+
+      it('listenTo()\'s .then method gets invoked when the Firebase endpoint changes', function(done){
+        console.log('Test 1:1')
+        base.listenTo(testEndpoint, {
+          context: {},
+          then(data){
+            console.log('Test 1:2')
+            debugger
+            base.reset();
+            console.log('LISTENER REMOVED');
+            base = null;
+            expect(data).toEqual(dummyObjData);
+            done()
+          }
+        });
+        ref.child(testEndpoint).set(dummyObjData);
+      });
+
+      it('listenTo\'s .then method gets invoked when the Firebase endpoint changes and correctly updates the component\'s state', function(done){
+        class TestComponent extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              data: {}
+            }
+          }
+          componentWillMount(){
+            console.log('Test 2:1')
+            base.listenTo(testEndpoint, {
+              context: this,
+              then(data){
+                this.setState({data})
+              }
+            });
+          }
+          componentDidMount(){
+            console.log('New Data');
+            ref.child(testEndpoint).set(dummyObjData);
+          }
+          componentDidUpdate(){
+            expect(this.state.data).toEqual(dummyObjData);
+            done();
+          }
+          componentWillUnmount(){
+            base.removeBinding(testEndpoint);
+          }
+          render(){
+            return (
+              <div>
+                Name: {this.state.name} <br />
+                Age: {this.state.age}
+              </div>
+            )
+          }
+        }
+        React.render(<TestComponent />, document.body);
       });
     });
   });
