@@ -3,6 +3,7 @@ var React = require('react/addons');
 var TestUtils = React.addons.TestUtils;
 
 var invalidFirebaseURLs = [null, undefined, true, false, [], 0, 5, "", "a", ["hi", 1]];
+var invalidEndpoints = ['', 'ab.cd', 'ab#cd', 'ab$cd', 'ab[cd', 'ab]cd'];
 var firebaseUrl = 'https://rebase-demo.firebaseio.com/';
 
 describe('re-base Tests:', function(){
@@ -15,7 +16,7 @@ describe('re-base Tests:', function(){
   });
 
   describe('createClass()', function(){
-    it('createClass() throws an error given a invalid Firebase URL', function(){
+    it('createClass() throws an error given an invalid Firebase URL', function(){
       invalidFirebaseURLs.forEach(function(URL){
         try {
           Rebase.createClass(URL)
@@ -45,6 +46,33 @@ describe('re-base Tests:', function(){
       var base = Rebase.createClass(firebaseUrl);
       var newBase = Rebase.createClass(firebaseUrl);
       expect(base).toEqual(newBase);
+    });
+  });
+
+  describe('post()', function(){
+    it('post() throws an error given a invalid endpoint', function(){
+      var base = Rebase.createClass(firebaseUrl);
+      invalidEndpoints.forEach((endpoint) => {
+        try {
+          base.post(endpoint, {
+            data: {1: 'one', 2: 'two', 3: 'three'}
+          })
+        } catch(err) {
+          expect(err.code).toEqual('INVALID_ENDPOINT');
+        }
+      });
+    });
+
+    it('post() throws an error given an invalid options object', function(){
+      var base = Rebase.createClass(firebaseUrl);
+      var invalidOptions = [[], {}, {then: function(){}}, {data: undefined}, {data: 123, then: 123}];
+      invalidOptions.forEach((option) => {
+        try {
+          base.post('testEndpoint', option);
+        } catch(err) {
+          expect(err.code).toEqual('INVALID_OPTIONS');
+        }
+      });
     });
   });
 });

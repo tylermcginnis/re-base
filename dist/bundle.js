@@ -126,6 +126,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      errorMsg = '' + defaultError + ' is too long to be stored in Firebase. It be less than 768 characters.';
 	    } else if (onRemove && firebaseRefs[endpoint]) {
 	      errorMsg = '' + defaultError + ' (' + endpoint + ') has already been bound. An endpoint may only have one binding';
+	    } else if (/[\[\].#$\/\u0000-\u001F\u007F]/.test(endpoint)) {
+	      errorMsg = '' + defaultError + ' in invalid. Paths must be non-empty strings and can\'t contain ".", "#", "$", "[", or "]".';
 	    }
 
 	    if (typeof errorMsg !== 'undefined') {
@@ -154,6 +156,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  };
 
+	  //Combine with Validate Options on Refactor
+	  function _validatePostOptions(options) {
+	    var errorMsg;
+	    if (!_isObject(options)) {
+	      errorMsg = 'options argument must be an object.';
+	    } else if (options.then && typeof options.then !== 'function') {
+	      errorMsg = 'options.then must be a function. Instead, got ' + options.then + '.';
+	    } else if (typeof options.data === 'undefined') {
+	      errorMsg = 'data property cannot be undefined.';
+	    }
+
+	    if (typeof errorMsg !== 'undefined') {
+	      _throwError(errorMsg, 'INVALID_OPTIONS');
+	    }
+	  }
+
 	  function _fetch(endpoint, options) {
 	    _validateEndpoint(endpoint);
 	    _validateOptions(options, 'fetch');
@@ -167,9 +185,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  function _post(endpoint, options) {
-	    //WIP
 	    _validateEndpoint(endpoint);
-	    // _validateOptions(options);
+	    _validatePostOptions(options);
 	    if (options.then) {
 	      ref.child(endpoint).set(options.data, options.then);
 	    } else {
