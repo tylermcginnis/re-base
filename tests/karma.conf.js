@@ -2,12 +2,12 @@ module.exports = function(config) {
   config.set({
     frameworks: ["jasmine"],
     autowatch: true,
-    singleRun: true,
+    singleRun: false,
     files: [
       'specs/re-base.spec.js'
     ],
     reporters: ["spec", "failed", "coverage"],
-    browsers: ['Firefox'],
+    browsers: ['Chrome'],
     preprocessors: {
     'specs/re-base.spec.js': ['webpack'],
     },
