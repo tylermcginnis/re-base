@@ -93,7 +93,7 @@ describe('re-base Tests:', function(){
     });
   });
 
-  describe('fetch', function(){
+  describe('fetch()', function(){
     it('fetch() throws an error given a invalid endpoint', function(done){
       var base = Rebase.createClass(firebaseUrl);
       invalidEndpoints.forEach((endpoint) => {
@@ -167,6 +167,25 @@ describe('re-base Tests:', function(){
             }
           })
         });
+      });
+    });
+  });
+
+  describe('listenTo()', function(){
+    it('listenTo() throws an error given a invalid endpoint', function(done){
+      var base = Rebase.createClass(firebaseUrl);
+      invalidEndpoints.forEach((endpoint) => {
+        try {
+          base.listenTo(endpoint, {
+            context: this,
+            then(data){
+              done();
+            }
+          })
+        } catch(err) {
+          expect(err.code).toEqual('INVALID_ENDPOINT');
+          done();
+        }
       });
     });
   });
