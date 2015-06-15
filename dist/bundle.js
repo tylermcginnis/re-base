@@ -106,6 +106,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      errorMsg = '' + defaultError + ' Was called with more or less than 1 argument. Expects 1.';
 	    } else if (url.length === '') {
 	      errorMsg = '' + defaultError + ' URL cannot be an empty string.';
+	    } else if (url.indexOf('.firebaseio.com') === -1) {
+	      errorMsg = '' + defaultError + ' URL must be in the format of https://<YOUR FIREBASE>.firebaseio.com. Instead, got ' + url + '.';
 	    }
 
 	    if (typeof errorMsg !== 'undefined') {

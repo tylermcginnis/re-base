@@ -2,7 +2,7 @@ var Rebase = require('../../dist/bundle');
 var React = require('react/addons');
 var TestUtils = React.addons.TestUtils;
 
-var invalidFirebaseURLs = ["a", ["hi", 1]];
+var invalidFirebaseURLs = [null, undefined, true, false, [], 0, 5, "", "a", ["hi", 1]];
 var firebaseUrl = 'https://rebase-demo.firebaseio.com/';
 
 describe('re-base Tests:', function(){
