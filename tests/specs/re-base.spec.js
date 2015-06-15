@@ -89,7 +89,7 @@ describe('re-base Tests:', function(){
         then(thing){
           ref.child(testEndpoint).once('value', (snapshot) => {
             var data = snapshot.val();
-            expect(data).toBe(dummyObjData);
+            expect(data).toEqual(dummyObjData);
             done();
           });
         }
