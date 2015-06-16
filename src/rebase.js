@@ -195,6 +195,9 @@ module.exports = (function(){
         }
       }
     }, options.onConnectionLoss);
+
+   return  _returnRef(endpoint, invoker);
+
   };
 
   function _sync(endpoint, options){
@@ -225,6 +228,8 @@ module.exports = (function(){
      }
    };
 
+   return _returnRef(endpoint, 'syncState');
+
     function _updateSyncState(ref, data, key){
       if(_isObject(data)) {
         for(var prop in data){
@@ -235,6 +240,10 @@ module.exports = (function(){
       }
     };
   };
+
+  function _returnRef(endpoint, method){
+    return { endpoint, method };
+  }
 
   function _removeBinding(endpoint){
     _validateEndpoint(endpoint);
@@ -265,13 +274,13 @@ module.exports = (function(){
   function init(){
     return {
       listenTo(endpoint, options){
-        _bind(endpoint, options, 'listenTo');
+        return _bind(endpoint, options, 'listenTo');
       },
       bindToState(endpoint, options){
-        _bind(endpoint, options, 'bindToState');
+        return _bind(endpoint, options, 'bindToState');
       },
       syncState(endpoint, options){
-        _sync(endpoint, options);
+        return _sync(endpoint, options);
       },
       fetch(endpoint, options){
         _fetch(endpoint, options);
