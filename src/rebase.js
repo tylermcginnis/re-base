@@ -13,16 +13,8 @@ module.exports = (function(){
   var baseUrl = '';
   var ref = null;
   var rebase;
-  var firebaseRefs = {
-    listenTo: {},
-    bindToState: {},
-    syncState: {}
-  };
-  var firebaseListeners = {
-    listenTo: {},
-    bindToState: {},
-    syncState: {}
-  };
+  var firebaseRefs = {};
+  var firebaseListeners = {};
 
   function _toArray(obj){
     var arr = [];
@@ -178,15 +170,7 @@ module.exports = (function(){
     }
   }
 
-  function _bind(endpoint, options, invoker){
-    _validateEndpoint(endpoint);
-    //REFACTOR
-    if(invoker === 'listenTo'){
-      _validateListenToOptions(options);
-    } else {
-      _validateOptions(options, invoker);
-    }
-    firebaseRefs[endpoint][invoker] = ref.ref();
+  function _addListener(endpoint, invoker, ref, options){
     firebaseListeners[endpoint][invoker] = ref.child(endpoint).on('value', (snapshot) => {
       var data = snapshot.val() || (options.asArray === true ? [] : {});
       if(options.then){
@@ -201,9 +185,36 @@ module.exports = (function(){
         }
       }
     }, options.onConnectionLoss);
+  }
 
-   return  _returnRef(endpoint, invoker);
+  function _endpointMixin(endpoint, invoker, ref){
+    var flag = false;
+    if(!_isObject(firebaseRefs[endpoint])){
+      firebaseRefs[endpoint] = {
+        [invoker]: ref.ref()
+      };
+      firebaseListeners[endpoint] = {};
+      flag = true;
+    } else if(!firebaseRefs[endpoint][invoker]){
+      firebaseRefs[endpoint][invoker] = ref.ref();
+      flag = true;
+    } else {
+      _throwError(`Endpoint (${endpoint}) already has listener ${invoker}`, "INVALID_ENDPOINT");
+    }
+    return flag;
+  };
 
+  function _bind(endpoint, options, invoker){
+    _validateEndpoint(endpoint);
+    //REFACTOR
+    if(invoker === 'listenTo'){
+      _validateListenToOptions(options);
+    } else {
+      _validateOptions(options, invoker);
+    }
+    var flag = _endpointMixin(endpoint, invoker, ref);
+    flag && _addListener(endpoint, invoker, ref, options);
+    return  _returnRef(endpoint, invoker);
   };
 
   function _sync(endpoint, options){
@@ -212,17 +223,18 @@ module.exports = (function(){
 
     var context = options.context;
     var reactSetState = context.setState
-
-    firebaseRefs[endpoint].syncState = ref.ref();
-    firebaseListeners[endpoint].syncState = ref.child(endpoint).on('value', (snapshot) => {
-      var data = snapshot.val();
-      if(data === null){
-        reactSetState.call(context, {[options.state]: options.asArray === true ? [] : {}});
-      } else {
-        data = options.asArray === true ? _toArray(data) : data;
-        reactSetState.call(context, {[options.state]: data});
-      }
-    });
+    var flag = _endpointMixin(endpoint, 'syncState', ref);
+    if(flag === true){
+      firebaseListeners[endpoint].syncState = ref.child(endpoint).on('value', (snapshot) => {
+        var data = snapshot.val();
+        if(data === null){
+          reactSetState.call(context, {[options.state]: options.asArray === true ? [] : {}});
+        } else {
+          data = options.asArray === true ? _toArray(data) : data;
+          reactSetState.call(context, {[options.state]: data});
+        }
+      });
+    }
 
     context.setState = function (data) {
       for (var key in data) {
@@ -268,23 +280,15 @@ module.exports = (function(){
     baseUrl = '';
     ref = undefined;
     rebase = undefined;
-    for(var key in firebaseListeners){
-      for(var prop in firebaseListeners[key]){
-        firebaseListeners[key][prop].off('value', firebaseListeners[key][prop]);
-        delete firebaseListeners[key][prop];
+    for(var key in firebaseRefs){
+      for(var prop in firebaseRefs[key]){
+        firebaseRefs[key][prop].off('value', firebaseListeners[key][prop]);
         delete firebaseRefs[key][prop];
+        delete firebaseListeners[key][prop];
       }
     }
-    firebaseRefs = {
-      listenTo: {},
-      bindToState: {},
-      syncState: {}
-    };
-    firebaseListeners = {
-      listenTo: {},
-      bindToState: {},
-      syncState: {}
-    };
+    firebaseRefs = {};
+    firebaseListeners = {};
   }
 
   function init(){
