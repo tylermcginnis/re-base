@@ -170,6 +170,7 @@ describe('re-base Tests:', function(){
   describe('listenTo()', function(){
 
     it('listenTo() returns a valid ref', function(){
+      console.log(base);
       var ref = base.listenTo(testEndpoint, {
         context: this,
         then(data){
