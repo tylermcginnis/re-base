@@ -328,12 +328,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	    ref = undefined;
 	    rebase = undefined;
 	    for (var key in firebaseListeners) {
-	      firebaseRefs[key].off('value', firebaseListeners[key]);
-	      delete firebaseListeners[key];
-	      delete firebaseRefs[key];
+	      for (var prop in firebaseListeners[key]) {
+	        firebaseListeners[key][prop].off('value', firebaseListeners[key][prop]);
+	        delete firebaseListeners[key][prop];
+	        delete firebaseRefs[key][prop];
+	      }
 	    }
-	    firebaseListeners = {};
-	    firebaseRefs = {};
+	    firebaseRefs = {
+	      listenTo: {},
+	      bindToState: {},
+	      syncState: {}
+	    };
+	    firebaseListeners = {
+	      listenTo: {},
+	      bindToState: {},
+	      syncState: {}
+	    };
 	  }
 
 	  function init() {
@@ -380,7 +390,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 1 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
 

@@ -173,7 +173,7 @@ describe('re-base Tests:', function(){
       var ref = base.listenTo(testEndpoint, {
         context: this,
         then(data){
-          
+
         }
       });
       expect(ref).toEqual({ endpoint: testEndpoint, method: 'listenTo' });
