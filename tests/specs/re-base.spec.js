@@ -223,7 +223,7 @@ describe('re-base Tests:', function(){
       //     ref.child(testEndpoint).set(dummyObjData);
       //   }, 1000)
       // });
-      
+
       afterEach(function(done){
         React.unmountComponentAtNode(document.body);
         done();
@@ -268,7 +268,7 @@ describe('re-base Tests:', function(){
       });
 
 
-      it('.listenTo should return an array when options.asArray === true', function(done){
+      it('listenTo should return the data as an array if the asArray property of options is set to true', function(done){
         class TestComponent extends React.Component{
           constructor(props){
             super(props);
@@ -308,6 +308,74 @@ describe('re-base Tests:', function(){
         }
         React.render(<TestComponent />, document.body);
       });
+
+      it('listenTo should remove the firebase listener once it unmounts', function(){
+
+      });
+    });
+  });
+
+  describe('bindToState()', function(){
+    it('bindToState() throws an error given a invalid endpoint', function(done){
+      invalidEndpoints.forEach((endpoint) => {
+        try {
+          base.bindToState(endpoint, {
+            then(data){
+              done();
+            }
+          })
+        } catch(err) {
+          expect(err.code).toEqual('INVALID_ENDPOINT');
+          done();
+        }
+      });
+    });
+
+    it('bindToState() throws an error given an invalid options object', function(){
+      var invalidOptions = [[], {}, {context: undefined}, {context: 'strNotObj'}, {context: window, state: undefined}, {context: window, state: function(){}}, {context: window, state: 'test', then: function(){}}];
+      invalidOptions.forEach((option) => {
+        try {
+          base.bindToState('test', option);
+        } catch(err) {
+          expect(err.code).toEqual('INVALID_OPTIONS');
+        }
+      });
+    });
+
+    describe('Async tests', function(){
+
+    });
+  });
+
+  describe('syncState()', function(){
+    it('syncState() throws an error given a invalid endpoint', function(done){
+      invalidEndpoints.forEach((endpoint) => {
+        try {
+          base.syncState(endpoint, {
+            then(data){
+              done();
+            }
+          })
+        } catch(err) {
+          expect(err.code).toEqual('INVALID_ENDPOINT');
+          done();
+        }
+      });
+    });
+
+    it('syncState() throws an error given an invalid options object', function(){
+      var invalidOptions = [[], {}, {context: undefined}, {context: 'strNotObj'}, {context: window, state: undefined}, {context: window, state: function(){}}, {context: window, state: 'test', then: function(){}}];
+      invalidOptions.forEach((option) => {
+        try {
+          base.syncState('test', option);
+        } catch(err) {
+          expect(err.code).toEqual('INVALID_OPTIONS');
+        }
+      });
+    });
+
+    describe('Async tests', function(){
+
     });
   });
 });
