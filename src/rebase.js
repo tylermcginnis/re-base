@@ -13,8 +13,16 @@ module.exports = (function(){
   var baseUrl = '';
   var ref = null;
   var rebase;
-  var firebaseRefs = {};
-  var firebaseListeners = {};
+  var firebaseRefs = {
+    listenTo: {},
+    bindToState: {},
+    syncState: {}
+  };
+  var firebaseListeners = {
+    listenTo: {},
+    bindToState: {},
+    syncState: {}
+  };
 
   function _toArray(obj){
     var arr = [];
@@ -64,8 +72,6 @@ module.exports = (function(){
       errorMsg = `${defaultError} must be a non-empty string. Instead, got ${endpoint}`;
     } else if(endpoint.length > 768){
       errorMsg = `${defaultError} is too long to be stored in Firebase. It be less than 768 characters.`;
-    } else if(onRemove && firebaseRefs[endpoint]){
-      errorMsg = `${defaultError} (${endpoint}) has already been bound. An endpoint may only have one binding`;
     } else if(/^$|[\[\]\.\#\$]/.test(endpoint)){
       errorMsg = `${defaultError} in invalid. Paths must be non-empty strings and can't contain ".", "#", "$", "[", or "]".`
     }
@@ -180,8 +186,8 @@ module.exports = (function(){
     } else {
       _validateOptions(options, invoker);
     }
-    firebaseRefs[endpoint] = ref.ref();
-    firebaseListeners[endpoint] = ref.child(endpoint).on('value', (snapshot) => {
+    firebaseRefs[endpoint][invoker] = ref.ref();
+    firebaseListeners[endpoint][invoker] = ref.child(endpoint).on('value', (snapshot) => {
       var data = snapshot.val() || (options.asArray === true ? [] : {});
       if(options.then){
         options.asArray === true ? options.then.call(options.context, _toArray(data)) : options.then.call(options.context, data);
@@ -207,8 +213,8 @@ module.exports = (function(){
     var context = options.context;
     var reactSetState = context.setState
 
-    firebaseRefs[endpoint] = ref.ref();
-    firebaseListeners[endpoint] = ref.child(endpoint).on('value', (snapshot) => {
+    firebaseRefs[endpoint].syncState = ref.ref();
+    firebaseListeners[endpoint].syncState = ref.child(endpoint).on('value', (snapshot) => {
       var data = snapshot.val();
       if(data === null){
         reactSetState.call(context, {[options.state]: options.asArray === true ? [] : {}});
@@ -245,17 +251,17 @@ module.exports = (function(){
     return { endpoint, method };
   }
 
-  function _removeBinding(endpoint){
-    _validateEndpoint(endpoint);
+  function _removeBinding(refObj){
+    _validateEndpoint(refObj.endpoint);
 
-    if (typeof firebaseRefs[endpoint] === "undefined") {
-      var errorMsg = `Unexpected value for endpoint. ${endpoint} was either never bound or has already been unbound.`;
+    if (typeof firebaseRefs[refObj.endpoint][refObj.method] === "undefined") {
+      var errorMsg = `Unexpected value for endpoint. ${refObj.endpoint} was either never bound or has already been unbound.`;
       _throwError(errorMsg, "UNBOUND_ENDPOINT_VARIABLE");
     }
 
-    firebaseRefs[endpoint].off('value', firebaseListeners[endpoint]);
-    delete firebaseRefs[endpoint];
-    delete firebaseListeners[endpoint];
+    firebaseRefs[refObj.endpoint][refObj.method].off('value', firebaseListeners[refObj.endpoint][refObj.method]);
+    delete firebaseRefs[refObj.endpoint][refObj.method];
+    delete firebaseListeners[refObj.endpoint][refObj.method];
   };
 
   function _reset(){
