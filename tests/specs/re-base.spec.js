@@ -50,7 +50,6 @@ describe('re-base Tests:', function(){
       expect(base.post).toEqual(jasmine.any(Function));
       expect(base.removeBinding).toEqual(jasmine.any(Function));
     });
-
     it('createClass() returns a singleton if it\'s already been invoked', function(){
       var newBase = Rebase.createClass(firebaseUrl);
       expect(base).toEqual(newBase);
@@ -224,6 +223,11 @@ describe('re-base Tests:', function(){
       //     ref.child(testEndpoint).set(dummyObjData);
       //   }, 1000)
       // });
+      
+      afterEach(function(done){
+        React.unmountComponentAtNode(document.body);
+        done();
+      });
 
       it('listenTo\'s .then method gets invoked when the Firebase endpoint changes and correctly updates the component\'s state', function(done){
         class TestComponent extends React.Component{
@@ -234,7 +238,7 @@ describe('re-base Tests:', function(){
             }
           }
           componentWillMount(){
-            base.listenTo(testEndpoint, {
+            this.ref = base.listenTo(testEndpoint, {
               context: this,
               then(data){
                 this.setState({data})
@@ -249,7 +253,49 @@ describe('re-base Tests:', function(){
             done();
           }
           componentWillUnmount(){
-            base.removeBinding(testEndpoint);
+            base.removeBinding(this.ref);
+          }
+          render(){
+            return (
+              <div>
+                Name: {this.state.name} <br />
+                Age: {this.state.age}
+              </div>
+            )
+          }
+        }
+        React.render(<TestComponent />, document.body);
+      });
+
+
+      it('.listenTo should return an array when options.asArray === true', function(done){
+        class TestComponent extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              data: {}
+            }
+          }
+          componentWillMount(){
+            this.ref = base.listenTo(testEndpoint, {
+              context: this,
+              then(data){
+                this.setState({data})
+              },
+              asArray: true
+            });
+          }
+          componentDidMount(){
+            var flag = true;
+            ref.child(testEndpoint).set(dummyObjData);
+          }
+          componentDidUpdate(){
+            expect(this.state.data.indexOf(25)).not.toBe(-1);
+            expect(this.state.data.indexOf('Tyler McGinnis')).not.toBe(-1);
+            done();
+          }
+          componentWillUnmount(){
+            base.removeBinding(this.ref);
           }
           render(){
             return (
