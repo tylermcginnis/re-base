@@ -261,6 +261,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	      }
 	    }, options.onConnectionLoss);
+
+	    return _returnRef(endpoint, invoker);
 	  };
 
 	  function _sync(endpoint, options) {
@@ -291,6 +293,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    };
 
+	    return _returnRef(endpoint, 'syncState');
+
 	    function _updateSyncState(ref, data, key) {
 	      if (_isObject(data)) {
 	        for (var prop in data) {
@@ -301,6 +305,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    };
 	  };
+
+	  function _returnRef(endpoint, method) {
+	    return { endpoint: endpoint, method: method };
+	  }
 
 	  function _removeBinding(refObj) {
 	    _validateEndpoint(refObj.endpoint);
@@ -331,13 +339,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function init() {
 	    return {
 	      listenTo: function listenTo(endpoint, options) {
-	        _bind(endpoint, options, 'listenTo');
+	        return _bind(endpoint, options, 'listenTo');
 	      },
 	      bindToState: function bindToState(endpoint, options) {
-	        _bind(endpoint, options, 'bindToState');
+	        return _bind(endpoint, options, 'bindToState');
 	      },
 	      syncState: function syncState(endpoint, options) {
-	        _sync(endpoint, options);
+	        return _sync(endpoint, options);
 	      },
 	      fetch: function fetch(endpoint, options) {
 	        _fetch(endpoint, options);
@@ -372,7 +380,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
 

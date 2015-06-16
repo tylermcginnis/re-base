@@ -23,7 +23,6 @@ describe('re-base Tests:', function(){
   afterEach(function(){
     base.reset();
     base = null;
-    console.log('')
   });
 
   describe('createClass()', function(){
@@ -169,6 +168,17 @@ describe('re-base Tests:', function(){
   });
 
   describe('listenTo()', function(){
+
+    it('listenTo() returns a valid ref', function(){
+      var ref = base.listenTo(testEndpoint, {
+        context: this,
+        then(data){
+          
+        }
+      });
+      expect(ref).toEqual({ endpoint: testEndpoint, method: 'listenTo' });
+    })
+
     it('listenTo() throws an error given a invalid endpoint', function(done){
       invalidEndpoints.forEach((endpoint) => {
         try {
