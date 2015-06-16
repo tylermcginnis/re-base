@@ -1,13 +1,15 @@
+var travis = process.env.TRAVIS;
+
 module.exports = function(config) {
   config.set({
     frameworks: ["jasmine"],
     autowatch: true,
-    singleRun: true,
+    singleRun: !!travis,
     files: [
       'specs/re-base.spec.js'
     ],
     reporters: ["spec", "failed", "coverage"],
-    browsers: ['Firefox'],
+    browsers: [travis ? 'Firefox' : 'Chrome'],
     preprocessors: {
     'specs/re-base.spec.js': ['webpack'],
     },
