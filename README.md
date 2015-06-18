@@ -28,6 +28,16 @@ $ npm install re-base
 
 #### For more in depth examples of the API, see the `examples` folder.
 
+### createClass
+
+Purpose: Accepts a firebase URL as its only parameter and returns a singleton with the re-base API.
+
+```js
+var Rebase = require('re-base');
+var base = Rebase.createClass('https://myapp.firebaseio.com');
+//base is now an object with an API of the methods below.
+```
+
 ### syncState
 
 Purpose: Allows you to set up two way data binding between your component's state and your Firebase. Whenever your Firebase changes, your component's state will change. Whenever your component's state changes, Firebase will change.
