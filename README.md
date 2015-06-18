@@ -35,9 +35,9 @@ Purpose: Allows you to set up two way data binding between your component's stat
 ```js
 /* Syncs your Firebase users endpoint (`https://myapp.firebaseio.com/users/someUserId`) with your components `user` property on your state */
 base.syncState(`users/${userId}`, {
-  context: this, //The context of your component (required)
-  state: 'user', //The state property you want to sync with Firebase (required)
-  asArray: false //Returns the Firebase data at the specified endpoint as an Array instead of an Object (optional)
+  context: this, // (required) The context of your component
+  state: 'user', // (required) The state property you want to sync with Firebase
+  asArray: false // (optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
 });
 ```
 
@@ -54,9 +54,9 @@ Purpose: One way data binding from Firebase to your component's state. Allows yo
 
 ```js
 base.bindToState('tasks', {
-  context: this, //The context of your component (required)
-  state: 'tasks' //The state property which will update when the 'tasks' endpoint in Firebase changes. (required)
-  asArray: true //Returns the Firebase data at the specified endpoint as an Array instead of an Object (optional)
+  context: this, // (required) The context of your component
+  state: 'tasks' // (required) The state property which will update when the 'tasks' endpoint in Firebase changes
+  asArray: true // (optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
 });
 ```
 
@@ -84,9 +84,9 @@ Purpose: Allows you to retrieve the data from a Firebase endpoint just once with
 
 ```js
 base.fetch('sales', {
-  context: this, //The context of your component (required)
-  asArray: true, //Returns the Firebase data at the specified endpoint as an Array instead of an Object (optional)
-  then(data){ //The function that will get invoked once when the data is received from Firebase (required)
+  context: this, // (required) The context of your component
+  asArray: true, // (optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
+  then(data){ // (required) The function that will get invoked once when the data is received from Firebase
     parseSales(data);
   }
 });
@@ -98,8 +98,8 @@ Purpose: Allows you to update a Firebase endpoint with new data.
 
 ```js
 base.post('users', {
-  data: {name: 'Tyler McGinnis', age: 25}, // The new data for Firebase (required)
-  then(){ // A callback that will get invoked once the new data has been added to Firebase (optional)
+  data: {name: 'Tyler McGinnis', age: 25}, // (required) The new data for Firebase
+  then(){ // (optional) A callback that will get invoked once the new data has been added to Firebase
     dataAdded(true);
   }
 });
