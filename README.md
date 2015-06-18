@@ -12,7 +12,7 @@ I spent a few weeks trying to figure out the cleanest way to implement Firebase 
 
 ## Features
 
-- *syncState*: Two way data binding between any property on your component's state and any endpoint in Firebase. Use the same API you're used to to update your component's state (`setState`), and Firebase will also update.
+- *syncState*: Two way data binding between any property on your component's state and any endpoint in Firebase. Use the same API you're used to to update your component's state (setState), and Firebase will also update.
 - *bindToState*: One way data binding. Whenever your Firebase endpoint changes, the property on your state will update as well.
 - *listenTo*: Whenever your Firebase endpoint changes, it will invoke a callback passing it the new data from Firebase.
 - *fetch*: Retrieve data from Firebase without setting up any binding or listeners.
@@ -21,7 +21,7 @@ I spent a few weeks trying to figure out the cleanest way to implement Firebase 
 ## Installing
 
 ```bash
-$ npm install axios
+$ npm install re-base
 ```
 
 ## API
@@ -41,8 +41,8 @@ base.syncState(`users/${userId}`, {
 });
 ```
 
-/* Calling `setState` as you normally would will now update your local state and the `users/${userId}` Firebase endpoint */
 ```js
+/* Calling `setState` as you normally would will now update your local state and the `users/${userId}` Firebase endpoint */
 this.setState({
   user: {name: 'Tyler McGinnis', age: 25}
 });
