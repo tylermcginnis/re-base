@@ -41,10 +41,8 @@ Purpose: Accepts a firebase URL as its only parameter and returns a singleton wi
     An object with syncState, bindToState, listenTo, fetch, post, removeBinding, and reset methods.
 
 ##### Example
-    ```js
     var Rebase = require('re-base');
     var base = Rebase.createClass('https://myapp.firebaseio.com');
-    ```
 
 ### syncState
 
