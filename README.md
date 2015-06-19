@@ -34,7 +34,7 @@ $ npm install re-base
   Accepts a firebase URL as its only parameter and returns a singleton with the re-base API.
 
 ##### Arguments
-  * firebaseUrl:
+  1. firebaseUrl:
       - type: string
       - The absolute, HTTPS URL of your Firebase project
 
