@@ -2,15 +2,15 @@
 [![Build Status](https://travis-ci.org/tylermcginnis/re-base.svg?branch=master)](https://travis-ci.org/tylermcginnis/re-base)
 [![Coverage Status](https://coveralls.io/repos/tylermcginnis/re-base/badge.svg)](https://coveralls.io/r/tylermcginnis/re-base)
 
-## What is re-base?
+# What is re-base?
 
 React.js makes managing state easy to reason about. Firebase makes persisting your data easy to implement. re-base combines the two ideas by allowing you to bind your component's state to a Firebase endpoint and much more.
 
-## Why re-base?
+# Why re-base?
 
 I spent a few weeks trying to figure out the cleanest way to implement Firebase into my React/Flux application. After struggling for a bit, I [tweeted](https://twitter.com/tylermcginnis33/status/605838057825132549) my frustrations. I was enlightened to the fact that Firebase and Flux really don't work well together. It makes sense why they don't work together, because they're both trying to accomplish roughly the same thing. So I did away with my reliance upon Flux and tried to think of a clean way to implement React with Firebase. I came across ReactFire built by Jacob Wenger at Firebase and loved his idea. Sync a Firebase endpoint with a property on your component's state. So whenever your data changes, your state will be updated. Simple as that. The problem with ReactFire is because it uses Mixins, it's not compatible with ES6 classes. After chatting with Jacob Turner, we wanted to create a way to allow the one way binding of ReactFire with ES6 classes along some more features like two way data binding and listening to Firebase endpoints without actually binding a state property to them. Thus, re-base was built.
 
-## Features
+# Features
 
 - *syncState*: Two way data binding between any property on your component's state and any endpoint in Firebase. Use the same API you're used to to update your component's state (setState), and Firebase will also update.
 - *bindToState*: One way data binding. Whenever your Firebase endpoint changes, the property on your state will update as well.
@@ -18,19 +18,20 @@ I spent a few weeks trying to figure out the cleanest way to implement Firebase 
 - *fetch*: Retrieve data from Firebase without setting up any binding or listeners.
 - *post*: Add new data to Firebase.
 
-## Installing
+# Installing
 
 ```bash
 $ npm install re-base
 ```
 
-## API
+# API
 
 #### For more in depth examples of the API, see the `examples` folder.
 
-### createClass(firebaseUrl)
+## createClass(firebaseUrl)
 
-Purpose: Accepts a firebase URL as its only parameter and returns a singleton with the re-base API.
+##### Purpose
+    Accepts a firebase URL as its only parameter and returns a singleton with the re-base API.
 
 ##### Arguments
     firebaseUrl:
@@ -43,6 +44,7 @@ Purpose: Accepts a firebase URL as its only parameter and returns a singleton wi
 ##### Example
     var Rebase = require('re-base');
     var base = Rebase.createClass('https://myapp.firebaseio.com');
+
 
 ### syncState
 
