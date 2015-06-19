@@ -32,22 +32,19 @@ $ npm install re-base
 
 Purpose: Accepts a firebase URL as its only parameter and returns a singleton with the re-base API.
 
-##### Arguments
+  ##### Arguments
+    firebaseUrl:
+      - type: string
+      - The absolute, HTTPS URL of your Firebase project
 
-firebaseUrl:
-  - type: string
-  - The absolute, HTTPS URL of your Firebase project
+  ##### Return Value
+    An object with syncState, bindToState, listenTo, fetch, post, removeBinding, and reset methods.
 
-##### Return Value
-
-An object with syncState, bindToState, listenTo, fetch, post, removeBinding, and reset methods.
-
-##### Example
-
-```js
-var Rebase = require('re-base');
-var base = Rebase.createClass('https://myapp.firebaseio.com');
-```
+  ##### Example
+    ```js
+    var Rebase = require('re-base');
+    var base = Rebase.createClass('https://myapp.firebaseio.com');
+    ```
 
 ### syncState
 
