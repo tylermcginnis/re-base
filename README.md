@@ -4,7 +4,7 @@
 
 # What is re-base?
 
-React.js makes managing state easy to reason about. Firebase makes persisting your data easy to implement. re-base combines the two ideas by allowing you to bind your component's state to a Firebase endpoint and much more.
+React.js makes managing state easy to reason about. Firebase makes persisting your data easy to implement. re-base combines the two ideas by allowing you to bind your component's state to a Firebase endpoint and much more. Forget about your data persistance and focus on what really matters, your application's state.
 
 # Why re-base?
 
