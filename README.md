@@ -47,28 +47,42 @@ $ npm install re-base
 
 <br />
 
-## syncState
+## syncState(endpoint, options)
 
 ##### Purpose
-    Allows you to set up two way data binding between your component's state and your Firebase. Whenever your Firebase changes, your component's state will change. Whenever your component's state changes, Firebase will change.
+  Allows you to set up two way data binding between your component's state and your Firebase. Whenever your Firebase changes, your component's state will change. Whenever your component's state changes, Firebase will change.
 
-```js
-/* Syncs your Firebase users endpoint (`https://myapp.firebaseio.com/users/someUserId`) with your components `user` property on your state */
-base.syncState(`users/${userId}`, {
-  context: this, // (required) The context of your component
-  state: 'user', // (required) The state property you want to sync with Firebase
-  asArray: false // (optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
-});
-```
+#### Arguments
+  1. endpoint
+    - type: string
+    - The relative Firebase endpoint to which you'd like to bind your component's state
+  2. options
+    - type: object
+    - properties:
+      - context: (object - required) The context of your component
+      - state: (string - required) The state property you want to sync with Firebase
+      - asArray: (boolean - optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
 
-```js
-/* Calling `setState` as you normally would will now update your local state and the `users/${userId}` Firebase endpoint */
-this.setState({
-  user: {name: 'Tyler McGinnis', age: 25}
-});
-```
+#### Return Value
+  An object which you can pass to `clearBinding` when your component unmounts to remove the Firebase listeners.
 
-### bindToState
+#### Example
+    componentDidMount(){
+      base.syncState(`shoppingList`, {
+        context: this,
+        state: 'items',
+        asArray: true
+      });
+    }
+    addItem(newItem){
+      this.setState({
+        items: this.state.items.concat([newItem]) //updates Firebase and the local state
+      });
+    }
+
+<br />
+
+## bindToState
 
 Purpose: One way data binding from Firebase to your component's state. Allows you to bind a component's state property to a Firebase endpoint so whenever that Firebase endpoint changes, your component's state will be updated with that change.
 
