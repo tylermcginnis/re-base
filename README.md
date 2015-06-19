@@ -82,79 +82,159 @@ $ npm install re-base
 
 <br />
 
-## bindToState
+## bindToState(endpoint, options)
 
-Purpose: One way data binding from Firebase to your component's state. Allows you to bind a component's state property to a Firebase endpoint so whenever that Firebase endpoint changes, your component's state will be updated with that change.
+#### Purpose
+  One way data binding from Firebase to your component's state. Allows you to bind a component's state property to a Firebase endpoint so whenever that Firebase endpoint changes, your component's state will be updated with that change.
 
-```js
-base.bindToState('tasks', {
-  context: this, // (required) The context of your component
-  state: 'tasks' // (required) The state property which will update when the 'tasks' endpoint in Firebase changes
-  asArray: true // (optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
-});
-```
+#### Arguments
+  1. endpoint
+    - type: string
+    - The relative Firebase endpoint that you'd like your component's state property to listen for changes
+  2. options
+    - type: object
+    - properties:
+      - context: (object - required) The context of your component
+      - state: (string - required) The state property you want to sync with Firebase
+      - asArray: (boolean - optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
 
-### listenTo
+#### Return Value
+  An object which you can pass to `clearBinding` when your component unmounts to remove the Firebase listeners.
 
-Purpose: Allows you to listen to Firebase endpoints without binding those changes to a state property. Instead, a callback will be invoked with said changes.
+#### Example
+    componentDidMount(){
+      base.bindToState('tasks', {
+        context: this,
+        state: 'tasks'
+        asArray: true
+      });
+    }
 
-```js
-base.listenTo('votes', {
-  context: this, //The context of your component (required)
-  asArray: true, //Returns the Firebase data at the specified endpoint as an Array instead of an Object (optional)
-  then(votesData){ //The callback function that will be invoked with the data from the specified endpoint when the endpoint changes (required)
-    var total = 0;
-    votesData.forEach((vote, index) => {
-      total += vote
-    });
-    this.setState({total});
-  }
-})
-```
+<br />
 
-### fetch
+## listenTo(endpoint, options)
 
-Purpose: Allows you to retrieve the data from a Firebase endpoint just once without subscribing or listening for data changes.
+#### Purpose
+  Allows you to listen to Firebase endpoints without binding those changes to a state property. Instead, a callback will be invoked with the newly updated data.
 
-```js
-base.fetch('sales', {
-  context: this, // (required) The context of your component
-  asArray: true, // (optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
-  then(data){ // (required) The function that will get invoked once when the data is received from Firebase
-    parseSales(data);
-  }
-});
-```
+#### Arguments
+  1. endpoint
+    - type: string
+    - The relative Firebase endpoint which contains the data with which you'd like to invoke your callback function
+  2. options
+    - type: object
+    - properties:
+      - context: (object - required) The context of your component
+      - asArray: (boolean - optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
+      - then: (function - required) The callback function that will be invoked with the data from the specified endpoint when the endpoint changes
 
-### post
+#### Return Value
+  An object which you can pass to `clearBinding` when your component unmounts to remove the Firebase listeners.
 
-Purpose: Allows you to update a Firebase endpoint with new data.
+#### Example
+    componentDidMount(){
+      base.listenTo('votes', {
+        context: this,
+        asArray: true,
+        then(votesData){
+          var total = 0;
+          votesData.forEach((vote, index) => {
+            total += vote
+          });
+          this.setState({total});
+        }
+      })
+    }
 
-```js
-base.post('users', {
-  data: {name: 'Tyler McGinnis', age: 25}, // (required) The new data for Firebase
-  then(){ // (optional) A callback that will get invoked once the new data has been added to Firebase
-    dataAdded(true);
-  }
-});
-```
+<br />
 
-### removeBinding
+## fetch(endpoint, options)
 
-Purpose: Remove the listeners to Firebase when your component unmounts.
+#### Purpose
+  Allows you to retrieve the data from a Firebase endpoint just once without subscribing or listening for data changes.
 
-```js
-componentDidMount(){
-  this.ref = base.syncState('users', {
-    context: this,
-    state: 'users'
-  });
-}
-componentWillUnmount(){
-  base.removeListener(this.ref);
-}
-```
+#### Arguments
+  1. endpoint
+    - type: string
+    - The relative Firebase endpoint which contains the data you're wanting to fetch
+  2. options
+    - type: object
+    - properties:
+      - context: (object - required) The context of your component
+      - asArray: (boolean - optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
+      - then: (function - required) The callback function that will be invoked with the data from the specified endpoint when the endpoint changes
 
+#### Return Value
+  No return value
+
+#### Example
+    getSales(){
+      base.fetch('sales', {
+        context: this,
+        asArray: true,
+        then(data){
+          console.log(data);
+        }
+      });
+    }
+
+<br />
+
+## post(endpoint, options)
+
+#### Purpose
+  Allows you to update a Firebase endpoint with new data. *Replace all the data at this endpoint with the new data*
+
+#### Arguments
+  1. endpoint
+    - type: string
+    - The relative Firebase endpoint that you'd like to update with the new data
+  2. options
+    - type: object
+    - properties:
+      - data: (any - required) The data you're wanting to persist to Firebase
+      - then: (function - optional) A callback that will get invoked once the new data has been saved to Firebase
+
+#### Return Value
+  No return value
+
+#### Example
+    addUser(){
+      base.post('users/${userId}', {
+        data: {name: 'Tyler McGinnis', age: 25},
+        then(){
+          Router.transitionTo('dashboard');
+        }
+      });
+    }
+
+<br />
+
+## removeBinding(ref)
+
+#### Purpose
+  Remove the listeners to Firebase when your component unmounts.
+
+#### Arguments
+  1. ref
+    - type: Object
+    - The return value of syncState, bindToState, or listenTo
+
+#### Return Value
+  No return value
+
+#### Example
+    componentDidMount(){
+      this.ref = base.syncState('users', {
+        context: this,
+        state: 'users'
+      });
+    }
+    componentWillUnmount(){
+      base.removeBinding(this.ref);
+    }
+
+<br />
 
 ## Credits
 
