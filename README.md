@@ -115,6 +115,20 @@ base.post('users', {
 });
 ```
 
+### removeBinding
+
+Purpose: Remove the listeners to Firebase when your component unmounts.
+
+```js
+this.ref = base.syncState('users', {
+  context: this,
+  state: 'users'
+});
+
+base.removeListener(this.ref);
+```
+
+
 ## Credits
 
 re-base is inspired by ReactFire from Firebase. Jacob Turner is also a core contributor and this wouldn't have been possible without his assistance.

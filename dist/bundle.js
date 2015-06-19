@@ -54,15 +54,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/*
-	  listenTo: Listens to a Firebase endpoint and invokes a callback function when that endpoint changes.
-	  bindToState: Listens to a Firebase endpoint and updates a specified property (if an array) or the whole state if an Object.
-	  removeBinding: Removes bindings. Used in componentDidUnmount.
-	  syncState: todo. Create a 2 way data binding between Firebase and your State.
-	  fetch: Get data from endpoint without establishing socket connection.
-	  post: Update firebase endpoint just once.
-	*/
-
 	'use strict';
 
 	function _defineProperty(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); }
@@ -209,6 +200,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _validateFetchOptions(options);
 	    ref.child(endpoint).once('value', function (snapshot) {
 	      if (options.asArray === true) {
+	        //should call with context since they might setState
 	        options.then(_toArray(snapshot.val()));
 	      } else {
 	        options.then(snapshot.val());
@@ -393,7 +385,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 1 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
 

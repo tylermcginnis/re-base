@@ -1,12 +1,3 @@
-/*
-  listenTo: Listens to a Firebase endpoint and invokes a callback function when that endpoint changes.
-  bindToState: Listens to a Firebase endpoint and updates a specified property (if an array) or the whole state if an Object.
-  removeBinding: Removes bindings. Used in componentDidUnmount.
-  syncState: todo. Create a 2 way data binding between Firebase and your State.
-  fetch: Get data from endpoint without establishing socket connection.
-  post: Update firebase endpoint just once.
-*/
-
 module.exports = (function(){
   var Firebase = require('firebase');
 
