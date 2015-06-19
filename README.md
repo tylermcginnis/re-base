@@ -17,6 +17,8 @@ I spent a few weeks trying to figure out the cleanest way to implement Firebase 
 - *listenTo*: Whenever your Firebase endpoint changes, it will invoke a callback passing it the new data from Firebase.
 - *fetch*: Retrieve data from Firebase without setting up any binding or listeners.
 - *post*: Add new data to Firebase.
+- *removeBinding*: Remove all of the Firebase listeners when your component unmounts.
+- *reset*: Removes all of the Firebase listeners and resets the singleton (for testing purposes).
 
 # Installing
 
@@ -233,6 +235,19 @@ $ npm install re-base
     componentWillUnmount(){
       base.removeBinding(this.ref);
     }
+
+<br />
+
+## reset()
+
+#### Purpose
+  Removes every Firebase listener and resets all private variables. Used for testing purposes.
+
+#### Arguments
+  No Arguments
+
+#### Return Value
+  No return value
 
 <br />
 
