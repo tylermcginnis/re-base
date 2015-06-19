@@ -134,6 +134,7 @@ describe('re-base Tests:', function(){
 
       it('fetch()\'s .then gets invoked with the data from Firebase once the data is retrieved', function(done){
         base.fetch(testEndpoint, {
+          context: {},
           then(data){
             expect(data).toEqual(dummyObjData);
             done();
@@ -144,6 +145,7 @@ describe('re-base Tests:', function(){
       it('fetch()\'s asArray property should return the data from Firebase as an array', function(done){
         base.fetch(testEndpoint, {
           asArray: true,
+          context: {},
           then(data){
             expect(data.indexOf('Tyler McGinnis')).not.toBe(-1);
             expect(data.indexOf(25)).not.toBe(-1);
@@ -156,12 +158,17 @@ describe('re-base Tests:', function(){
         ref.child(testEndpoint).set(dummyNestedObjData, () => {
           base.fetch(testEndpoint, {
             asArray: true,
+            context: {},
             then(data){
               expect(data).toEqual(nestedObjArrResult);
               done();
             }
           })
         });
+      });
+
+      it('correctly update the state of the component with data from fetch', function(){
+        //todo
       });
     });
   });

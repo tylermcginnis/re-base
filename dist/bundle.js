@@ -67,6 +67,41 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var firebaseRefs = {};
 	  var firebaseListeners = {};
 
+	  var optionValidators = {
+	    notObject: function notObject(options) {
+	      if (!_isObject(options)) {
+	        _throwError('The options argument must be an object. Instead, got ' + options, 'INVALID_OPTIONS');
+	      }
+	    },
+	    context: function context(options) {
+	      this.notObject(options);
+	      if (!options.context || !_isObject(options.context)) {
+	        this.makeError('context', 'object', options.context);
+	      }
+	    },
+	    state: function state(options) {
+	      this.notObject(options);
+	      if (!options.state || typeof options.state !== 'string') {
+	        this.makeError('state', 'string', options.state);
+	      }
+	    },
+	    then: function then(options) {
+	      this.notObject(options);
+	      if (typeof options.then === 'undefined' || typeof options.then !== 'function') {
+	        this.makeError('then', 'function', options.then);
+	      }
+	    },
+	    data: function data(options) {
+	      this.notObject(options);
+	      if (typeof options.data === 'undefined') {
+	        this.makeError('data', 'ANY', options.data);
+	      }
+	    },
+	    makeError: function makeError(prop, type, actual) {
+	      _throwError('The options argument must contain a ' + prop + ' property of type ' + type + '. Instead, got ' + actual, 'INVALID_OPTIONS');
+	    }
+	  };
+
 	  function _toArray(obj) {
 	    var arr = [];
 	    for (var key in obj) {
@@ -106,7 +141,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  };
 
-	  function _validateEndpoint(endpoint, onRemove) {
+	  function _validateEndpoint(endpoint) {
 	    var defaultError = 'The Firebase endpoint you are trying to listen to';
 	    var errorMsg;
 	    if (typeof endpoint !== 'string') {
@@ -124,80 +159,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  };
 
-	  function _validateOptions(options, invoker) {
-	    var errorMsg;
-	    if (!_isObject(options)) {
-	      errorMsg = 'options argument must be an Object. Instead, got ' + options + '.';
-	    } else if (!options.context || !_isObject(options.context)) {
-	      errorMsg = 'options argument must contain a context property which is an object. Instead, got ' + options.context + '.';
-	    } else if (invoker === 'bindToState' && options.asArray === true && !options.state) {
-	      errorMsg = 'Because your component\'s state must be an object, if you use asArray you must also specify a state property to which the new array will be a value of.';
-	    } else if (options.then && typeof options.then !== 'function') {
-	      errorMsg = 'options.then must be a function. Instead, got ' + options.then + '.';
-	    } else if (options.then && options.state) {
-	      errorMsg = 'Since options.then is a callback function which gets invoked with the data from Firebase, you shouldn\'t have options.then and also specify the state with options.state.';
-	    }
-
-	    if (typeof errorMsg !== 'undefined') {
-	      _throwError(errorMsg, 'INVALID_OPTIONS');
-	    }
-	  };
-
-	  //Combine with _validateOptions on Refactor
-	  function _validateListenToOptions(options) {
-	    var errorMsg;
-	    if (!_isObject(options)) {
-	      errorMsg = 'options argument must be an Object. Instead, got ' + options + '.';
-	    } else if (typeof options.then === 'undefined') {
-	      errorMsg = 'options.then is required with listenTo';
-	    } else if (typeof options.then !== 'function') {
-	      errorMsg = 'options.then must be a function.';
-	    } else if (!options.context || !_isObject(options.context)) {
-	      errorMsg = 'options argument must contain a context property which is an object. Instead, got ' + options.context + '.';
-	    }
-
-	    if (typeof errorMsg !== 'undefined') {
-	      _throwError(errorMsg, 'INVALID_OPTIONS');
-	    }
-	  };
-
-	  //Combine with _validateOptions on Refactor
-	  function _validateFetchOptions(options) {
-	    var errorMsg;
-	    if (!_isObject(options)) {
-	      errorMsg = 'options argument must be an Object. Instead, got ' + options + '.';
-	    } else if (typeof options.then === 'undefined') {
-	      errorMsg = 'options.then is required with fetch';
-	    } else if (typeof options.then !== 'function') {
-	      errorMsg = 'options.then must be a function.';
-	    } else if (options.onConnectionLoss && typeof options.onConnectionLoss !== 'function') {
-	      errorMsg = 'options.onConnectionLoss must be a function';
-	    }
-
-	    if (typeof errorMsg !== 'undefined') {
-	      _throwError(errorMsg, 'INVALID_OPTIONS');
-	    }
-	  };
-
-	  //Combine with Validate Options on Refactor
-	  function _validatePostOptions(options) {
-	    var errorMsg;
-	    if (!_isObject(options)) {
-	      errorMsg = 'options argument must be an object.';
-	    } else if (options.then && typeof options.then !== 'function') {
-	      errorMsg = 'options.then must be a function. Instead, got ' + options.then + '.';
-	    } else if (typeof options.data === 'undefined') {
-	      errorMsg = 'data property cannot be undefined.';
-	    }
-
-	    if (typeof errorMsg !== 'undefined') {
-	      _throwError(errorMsg, 'INVALID_OPTIONS');
-	    }
-	  }
-
 	  function _fetch(endpoint, options) {
 	    _validateEndpoint(endpoint);
-	    _validateFetchOptions(options);
+	    optionValidators.context(options);
+	    optionValidators.then(options);
 	    ref.child(endpoint).once('value', function (snapshot) {
 	      if (options.asArray === true) {
 	        //should call with context since they might setState
@@ -205,7 +170,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      } else {
 	        options.then(snapshot.val());
 	      }
-	    }, options.onConnectionLoss);
+	    });
 	  };
 
 	  function _setState(newState) {
@@ -214,7 +179,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function _post(endpoint, options) {
 	    _validateEndpoint(endpoint);
-	    _validatePostOptions(options);
+	    optionValidators.then(options);
+	    optionValidators.data(options);
 	    if (options.then) {
 	      ref.child(endpoint).set(options.data, options.then);
 	    } else {
@@ -258,9 +224,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _validateEndpoint(endpoint);
 	    //REFACTOR
 	    if (invoker === 'listenTo') {
-	      _validateListenToOptions(options);
-	    } else {
-	      _validateOptions(options, invoker);
+	      optionValidators.context(options);
+	      optionValidators.then(options);
+	    } else if (invoker === 'bindToState') {
+	      optionValidators.context(options);
+	      optionValidators.state(options);
 	    }
 	    var flag = _endpointMixin(endpoint, invoker, ref);
 	    flag && _addListener(endpoint, invoker, ref, options);
@@ -269,8 +237,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function _sync(endpoint, options) {
 	    _validateEndpoint(endpoint);
-	    _validateOptions(options);
-
+	    optionValidators.context(options);
+	    optionValidators.state(options);
 	    var context = options.context;
 	    var reactSetState = context.setState;
 	    var flag = _endpointMixin(endpoint, 'syncState', ref);
