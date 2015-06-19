@@ -159,6 +159,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  };
 
+	  function _setState(newState) {
+	    this.setState(newState);
+	  };
+
+	  function _returnRef(endpoint, method) {
+	    return { endpoint: endpoint, method: method };
+	  }
+
 	  function _fetch(endpoint, options) {
 	    _validateEndpoint(endpoint);
 	    optionValidators.context(options);
@@ -172,21 +180,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    });
 	  };
-
-	  function _setState(newState) {
-	    this.setState(newState);
-	  };
-
-	  function _post(endpoint, options) {
-	    _validateEndpoint(endpoint);
-	    optionValidators.then(options);
-	    optionValidators.data(options);
-	    if (options.then) {
-	      ref.child(endpoint).set(options.data, options.then);
-	    } else {
-	      ref.child(endpoint).set(options.data);
-	    }
-	  }
 
 	  function _addListener(endpoint, invoker, ref, options) {
 	    firebaseListeners[endpoint][invoker] = ref.child(endpoint).on('value', function (snapshot) {
@@ -202,7 +195,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          _setState.call(options.context, data);
 	        }
 	      }
-	    }, options.onConnectionLoss);
+	    });
 	  }
 
 	  function _endpointMixin(endpoint, invoker, ref) {
@@ -254,18 +247,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      });
 	    }
 
-	    context.setState = function (data) {
-	      for (var key in data) {
-	        if (key === options.state) {
-	          _updateSyncState(ref.child(endpoint), data[key], key);
-	        } else {
-	          reactSetState.call(options.context, data);
-	        }
-	      }
-	    };
-
-	    return _returnRef(endpoint, 'syncState');
-
 	    function _updateSyncState(ref, data, key) {
 	      if (_isObject(data)) {
 	        for (var prop in data) {
@@ -275,20 +256,36 @@ return /******/ (function(modules) { // webpackBootstrap
 	        ref.set(data);
 	      }
 	    };
+
+	    context.setState = function (data) {
+	      for (var key in data) {
+	        if (key === options.state) {
+	          _updateSyncState(ref.child(endpoint), data[key], key);
+	        } else {
+	          reactSetState.call(options.context, data);
+	        }
+	      }
+	    };
+	    return _returnRef(endpoint, 'syncState');
 	  };
 
-	  function _returnRef(endpoint, method) {
-	    return { endpoint: endpoint, method: method };
+	  function _post(endpoint, options) {
+	    _validateEndpoint(endpoint);
+	    optionValidators.then(options);
+	    optionValidators.data(options);
+	    if (options.then) {
+	      ref.child(endpoint).set(options.data, options.then);
+	    } else {
+	      ref.child(endpoint).set(options.data);
+	    }
 	  }
 
 	  function _removeBinding(refObj) {
 	    _validateEndpoint(refObj.endpoint);
-
 	    if (typeof firebaseRefs[refObj.endpoint][refObj.method] === 'undefined') {
 	      var errorMsg = 'Unexpected value for endpoint. ' + refObj.endpoint + ' was either never bound or has already been unbound.';
 	      _throwError(errorMsg, 'UNBOUND_ENDPOINT_VARIABLE');
 	    }
-
 	    firebaseRefs[refObj.endpoint][refObj.method].off('value', firebaseListeners[refObj.endpoint][refObj.method]);
 	    delete firebaseRefs[refObj.endpoint][refObj.method];
 	    delete firebaseListeners[refObj.endpoint][refObj.method];
