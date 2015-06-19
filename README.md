@@ -45,10 +45,12 @@ $ npm install re-base
     var Rebase = require('re-base');
     var base = Rebase.createClass('https://myapp.firebaseio.com');
 
+<br />
 
-### syncState
+## syncState
 
-Purpose: Allows you to set up two way data binding between your component's state and your Firebase. Whenever your Firebase changes, your component's state will change. Whenever your component's state changes, Firebase will change.
+##### Purpose
+    Allows you to set up two way data binding between your component's state and your Firebase. Whenever your Firebase changes, your component's state will change. Whenever your component's state changes, Firebase will change.
 
 ```js
 /* Syncs your Firebase users endpoint (`https://myapp.firebaseio.com/users/someUserId`) with your components `user` property on your state */
