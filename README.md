@@ -28,14 +28,23 @@ $ npm install re-base
 
 #### For more in depth examples of the API, see the `examples` folder.
 
-### createClass
+### createClass(firebaseUrl)
 
 Purpose: Accepts a firebase URL as its only parameter and returns a singleton with the re-base API.
+
+##### Arguments
+
+firebaseUrl:
+  - type: string
+  - The absolute, HTTPS URL of your Firebase project
+
+##### Return Value
+
+An object with syncState, bindToState, listenTo, fetch, post, removeBinding, and reset methods.
 
 ```js
 var Rebase = require('re-base');
 var base = Rebase.createClass('https://myapp.firebaseio.com');
-//base is now an object with an API of the methods below.
 ```
 
 ### syncState
@@ -120,12 +129,15 @@ base.post('users', {
 Purpose: Remove the listeners to Firebase when your component unmounts.
 
 ```js
-this.ref = base.syncState('users', {
-  context: this,
-  state: 'users'
-});
-
-base.removeListener(this.ref);
+componentDidMount(){
+  this.ref = base.syncState('users', {
+    context: this,
+    state: 'users'
+  });
+}
+componentWillUnmount(){
+  base.removeListener(this.ref);
+}
 ```
 
 
