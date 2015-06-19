@@ -113,10 +113,9 @@ module.exports = (function(){
     optionValidators.then(options);
     ref.child(endpoint).once('value', (snapshot) => {
       if(options.asArray === true){
-        //should call with context since they might setState
-        options.then(_toArray(snapshot.val()));
+        options.then.call(options.context, _toArray(snapshot.val()))
       } else {
-        options.then(snapshot.val());
+        options.then.call(options.context, snapshot.val());
       }
     });
   };
