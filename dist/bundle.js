@@ -172,11 +172,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    optionValidators.context(options);
 	    optionValidators.then(options);
 	    ref.child(endpoint).once('value', function (snapshot) {
-	      if (options.asArray === true) {
-	        options.then.call(options.context, _toArray(snapshot.val()));
-	      } else {
-	        options.then.call(options.context, snapshot.val());
-	      }
+	      var data = options.asArray === true ? _toArray(snapshot.val()) : snapshot.val();
+	      options.then.call(options.context, data);
 	    });
 	  };
 
