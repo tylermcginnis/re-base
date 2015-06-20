@@ -70,9 +70,10 @@ describe('re-base Tests:', function(){
     });
 
     it('post() throws an error given an invalid options object', function(){
-      var invalidOptions = [[], {}, {then: function(){}}, {data: undefined}, {data: 123, then: 123}];
+      var invalidOptions = [[], {}, {then: function(){}}, {data: undefined}];
       invalidOptions.forEach((option) => {
         try {
+          console.log('OPTION', option);
           base.post(testEndpoint, option);
         } catch(err) {
           expect(err.code).toEqual('INVALID_OPTIONS');
