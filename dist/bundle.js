@@ -198,34 +198,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (invoker === 'listenTo') {
 	        options.asArray === true ? options.then.call(options.context, _toArray(data)) : options.then.call(options.context, data);
 	      } else if (invoker === 'syncState') {
-	        if (date === null) {
-	          reactSetState.call(context, _defineProperty({}, options.state, options.asArray === true ? [] : {}));
-	        } else {
-	          data = options.asArray === true ? _toArray(data) : data;
-	          reactSetState.call(context, _defineProperty({}, options.state, data));
-	        }
+	        data = options.asArray === true ? _toArray(data) : data;
+	        reactSetState.call(context, _defineProperty({}, options.state, data));
 	      } else if (invoker === 'bindToState') {
-	        if (options.state) {
-	          var newState = {};
-	          options.asArray === true ? newState[options.state] = _toArray(data) : newState[options.state] = data;
-	          _setState.call(options.context, newState);
-	        } else {
-	          _setState.call(options.context, data);
-	        }
+	        var newState = {};
+	        options.asArray === true ? newState[options.state] = _toArray(data) : newState[options.state] = data;
+	        _setState.call(options.context, newState);
 	      }
 	    });
 	  };
 
 	  function _bind(endpoint, options, invoker) {
 	    _validateEndpoint(endpoint);
-	    //REFACTOR
-	    if (invoker === 'listenTo') {
-	      optionValidators.context(options);
-	      optionValidators.then(options);
-	    } else if (invoker === 'bindToState') {
-	      optionValidators.context(options);
-	      optionValidators.state(options);
-	    }
+	    optionValidators.context(options);
+	    invoker === 'listenTo' && optionValidators.then(options);
+	    invoker === 'bindToState' && optionValidators.state(options);
 	    _firebaseRefsMixin(endpoint, invoker) && _addListener(endpoint, invoker, options);
 	    return _returnRef(endpoint, invoker);
 	  };
