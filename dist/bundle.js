@@ -111,17 +111,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	      arr.push(obj[key]);
 	    }
 	    return arr;
-	  }
+	  };
 
 	  function _isObject(obj) {
 	    return Object.prototype.toString.call(obj) === '[object Object]' ? true : false;
-	  }
+	  };
 
 	  function _throwError(msg, code) {
 	    var err = new Error('REBASE: ' + msg);
 	    err.code = code;
 	    throw err;
-	  }
+	  };
 
 	  function _validateBaseURL(url) {
 	    var defaultError = 'Rebase.createClass failed.';
@@ -165,7 +165,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function _returnRef(endpoint, method) {
 	    return { endpoint: endpoint, method: method };
-	  }
+	  };
 
 	  function _fetch(endpoint, options) {
 	    _validateEndpoint(endpoint);
@@ -180,12 +180,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	  };
 
-	  function _addListener(endpoint, invoker, ref, options) {
+	  function _firebaseRefsMixin(endpoint, invoker) {
+	    if (!_isObject(firebaseRefs[endpoint])) {
+	      firebaseRefs[endpoint] = _defineProperty({}, invoker, ref.ref());
+	      firebaseListeners[endpoint] = {};
+	    } else if (!firebaseRefs[endpoint][invoker]) {
+	      firebaseRefs[endpoint][invoker] = ref.ref();
+	    } else {
+	      _throwError('Endpoint (' + endpoint + ') already has listener ' + invoker, 'INVALID_ENDPOINT');
+	    }
+	    return true;
+	  };
+
+	  function _addListener(endpoint, invoker, options) {
 	    firebaseListeners[endpoint][invoker] = ref.child(endpoint).on('value', function (snapshot) {
 	      var data = snapshot.val() || (options.asArray === true ? [] : {});
-	      if (options.then) {
+	      if (invoker === 'listenTo') {
 	        options.asArray === true ? options.then.call(options.context, _toArray(data)) : options.then.call(options.context, data);
-	      } else {
+	      } else if (invoker === 'syncState') {
+	        if (date === null) {
+	          reactSetState.call(context, _defineProperty({}, options.state, options.asArray === true ? [] : {}));
+	        } else {
+	          data = options.asArray === true ? _toArray(data) : data;
+	          reactSetState.call(context, _defineProperty({}, options.state, data));
+	        }
+	      } else if (invoker === 'bindToState') {
 	        if (options.state) {
 	          var newState = {};
 	          options.asArray === true ? newState[options.state] = _toArray(data) : newState[options.state] = data;
@@ -195,21 +214,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	      }
 	    });
-	  }
-
-	  function _endpointMixin(endpoint, invoker, ref) {
-	    var flag = false;
-	    if (!_isObject(firebaseRefs[endpoint])) {
-	      firebaseRefs[endpoint] = _defineProperty({}, invoker, ref.ref());
-	      firebaseListeners[endpoint] = {};
-	      flag = true;
-	    } else if (!firebaseRefs[endpoint][invoker]) {
-	      firebaseRefs[endpoint][invoker] = ref.ref();
-	      flag = true;
-	    } else {
-	      _throwError('Endpoint (' + endpoint + ') already has listener ' + invoker, 'INVALID_ENDPOINT');
-	    }
-	    return flag;
 	  };
 
 	  function _bind(endpoint, options, invoker) {
@@ -222,8 +226,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      optionValidators.context(options);
 	      optionValidators.state(options);
 	    }
-	    var flag = _endpointMixin(endpoint, invoker, ref);
-	    flag && _addListener(endpoint, invoker, ref, options);
+	    _firebaseRefsMixin(endpoint, invoker) && _addListener(endpoint, invoker, options);
 	    return _returnRef(endpoint, invoker);
 	  };
 
@@ -233,18 +236,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    optionValidators.state(options);
 	    var context = options.context;
 	    var reactSetState = context.setState;
-	    var flag = _endpointMixin(endpoint, 'syncState', ref);
-	    if (flag === true) {
-	      firebaseListeners[endpoint].syncState = ref.child(endpoint).on('value', function (snapshot) {
-	        var data = snapshot.val();
-	        if (data === null) {
-	          reactSetState.call(context, _defineProperty({}, options.state, options.asArray === true ? [] : {}));
-	        } else {
-	          data = options.asArray === true ? _toArray(data) : data;
-	          reactSetState.call(context, _defineProperty({}, options.state, data));
-	        }
-	      });
-	    }
+	    _firebaseRefsMixin(endpoint, 'syncState') && _addListener(endpoint, 'syncState', options);
 
 	    function _updateSyncState(ref, data, key) {
 	      if (_isObject(data)) {

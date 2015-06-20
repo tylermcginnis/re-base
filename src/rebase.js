@@ -34,7 +34,7 @@ module.exports = (function(){
     data(options){
       this.notObject(options);
       if(typeof options.data === 'undefined'){
-        this.makeError('data', 'ANY', options.data)
+        this.makeError('data', 'ANY', options.data);
       }
     },
     makeError(prop, type, actual){
@@ -51,17 +51,17 @@ module.exports = (function(){
       arr.push(obj[key]);
     }
     return arr;
-  }
+  };
 
   function _isObject(obj){
     return Object.prototype.toString.call(obj) === '[object Object]' ? true : false;
-  }
+  };
 
   function _throwError(msg, code){
     var err = new Error(`REBASE: ${msg}`);
     err.code = code;
     throw err;
-  }
+  };
 
   function _validateBaseURL(url){
     var defaultError = 'Rebase.createClass failed.';
@@ -69,11 +69,11 @@ module.exports = (function(){
     if(typeof url !== 'string'){
       errorMsg = `${defaultError} URL must be a string.`;
     } else if(!url || arguments.length > 1){
-      errorMsg = `${defaultError} Was called with more or less than 1 argument. Expects 1.`
+      errorMsg = `${defaultError} Was called with more or less than 1 argument. Expects 1.`;
     } else if(url.length === ''){
-      errorMsg = `${defaultError} URL cannot be an empty string.`
+      errorMsg = `${defaultError} URL cannot be an empty string.`;
     } else if(url.indexOf('.firebaseio.com') === -1){
-      errorMsg = `${defaultError} URL must be in the format of https://<YOUR FIREBASE>.firebaseio.com. Instead, got ${url}.`
+      errorMsg = `${defaultError} URL must be in the format of https://<YOUR FIREBASE>.firebaseio.com. Instead, got ${url}.`;
     }
 
     if(typeof errorMsg !== 'undefined'){
@@ -91,7 +91,7 @@ module.exports = (function(){
     } else if(endpoint.length > 768){
       errorMsg = `${defaultError} is too long to be stored in Firebase. It be less than 768 characters.`;
     } else if(/^$|[\[\]\.\#\$]/.test(endpoint)){
-      errorMsg = `${defaultError} in invalid. Paths must be non-empty strings and can't contain ".", "#", "$", "[", or "]".`
+      errorMsg = `${defaultError} in invalid. Paths must be non-empty strings and can't contain ".", "#", "$", "[", or "]".`;
     }
 
     if(typeof errorMsg !== 'undefined'){
@@ -105,7 +105,7 @@ module.exports = (function(){
 
   function _returnRef(endpoint, method){
     return { endpoint, method };
-  }
+  };
 
   function _fetch(endpoint, options){
     _validateEndpoint(endpoint);
@@ -113,19 +113,40 @@ module.exports = (function(){
     optionValidators.then(options);
     ref.child(endpoint).once('value', (snapshot) => {
       if(options.asArray === true){
-        options.then.call(options.context, _toArray(snapshot.val()))
+        options.then.call(options.context, _toArray(snapshot.val()));
       } else {
         options.then.call(options.context, snapshot.val());
       }
     });
   };
 
-  function _addListener(endpoint, invoker, ref, options){
+  function _firebaseRefsMixin(endpoint, invoker){
+    if(!_isObject(firebaseRefs[endpoint])){
+      firebaseRefs[endpoint] = {
+        [invoker]: ref.ref()
+      };
+      firebaseListeners[endpoint] = {};
+    } else if(!firebaseRefs[endpoint][invoker]){
+      firebaseRefs[endpoint][invoker] = ref.ref();
+    } else {
+      _throwError(`Endpoint (${endpoint}) already has listener ${invoker}`, "INVALID_ENDPOINT");
+    }
+    return true;
+  };
+
+  function _addListener(endpoint, invoker, options){
     firebaseListeners[endpoint][invoker] = ref.child(endpoint).on('value', (snapshot) => {
       var data = snapshot.val() || (options.asArray === true ? [] : {});
-      if(options.then){
+      if(invoker === 'listenTo'){
         options.asArray === true ? options.then.call(options.context, _toArray(data)) : options.then.call(options.context, data);
-      } else {
+      } else if(invoker === 'syncState'){
+        if(date === null){
+          reactSetState.call(context, {[options.state]: options.asArray === true ? [] : {}});
+        } else {
+          data = options.asArray === true ? _toArray(data) : data;
+          reactSetState.call(context, {[options.state]: data});
+        }
+      } else if(invoker === 'bindToState') {
         if(options.state){
           var newState = {};
           options.asArray === true ? newState[options.state] = _toArray(data) : newState[options.state] = data;
@@ -135,23 +156,6 @@ module.exports = (function(){
         }
       }
     });
-  }
-
-  function _endpointMixin(endpoint, invoker, ref){
-    var flag = false;
-    if(!_isObject(firebaseRefs[endpoint])){
-      firebaseRefs[endpoint] = {
-        [invoker]: ref.ref()
-      };
-      firebaseListeners[endpoint] = {};
-      flag = true;
-    } else if(!firebaseRefs[endpoint][invoker]){
-      firebaseRefs[endpoint][invoker] = ref.ref();
-      flag = true;
-    } else {
-      _throwError(`Endpoint (${endpoint}) already has listener ${invoker}`, "INVALID_ENDPOINT");
-    }
-    return flag;
   };
 
   function _bind(endpoint, options, invoker){
@@ -164,8 +168,7 @@ module.exports = (function(){
       optionValidators.context(options);
       optionValidators.state(options);
     }
-    var flag = _endpointMixin(endpoint, invoker, ref);
-    flag && _addListener(endpoint, invoker, ref, options);
+    _firebaseRefsMixin(endpoint, invoker) && _addListener(endpoint, invoker, options);
     return  _returnRef(endpoint, invoker);
   };
 
@@ -175,18 +178,7 @@ module.exports = (function(){
     optionValidators.state(options);
     var context = options.context;
     var reactSetState = context.setState
-    var flag = _endpointMixin(endpoint, 'syncState', ref);
-    if(flag === true){
-      firebaseListeners[endpoint].syncState = ref.child(endpoint).on('value', (snapshot) => {
-        var data = snapshot.val();
-        if(data === null){
-          reactSetState.call(context, {[options.state]: options.asArray === true ? [] : {}});
-        } else {
-          data = options.asArray === true ? _toArray(data) : data;
-          reactSetState.call(context, {[options.state]: data});
-        }
-      });
-    }
+    _firebaseRefsMixin(endpoint, 'syncState') && _addListener(endpoint, 'syncState', options);
 
     function _updateSyncState(ref, data, key){
       if(_isObject(data)) {
