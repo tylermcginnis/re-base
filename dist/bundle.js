@@ -199,7 +199,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        options.asArray === true ? options.then.call(options.context, _toArray(data)) : options.then.call(options.context, data);
 	      } else if (invoker === 'syncState') {
 	        data = options.asArray === true ? _toArray(data) : data;
-	        reactSetState.call(context, _defineProperty({}, options.state, data));
+	        options.reactSetState.call(options.context, _defineProperty({}, options.state, data));
 	      } else if (invoker === 'bindToState') {
 	        var newState = {};
 	        options.asArray === true ? newState[options.state] = _toArray(data) : newState[options.state] = data;
@@ -222,7 +222,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    optionValidators.context(options);
 	    optionValidators.state(options);
 	    var context = options.context;
-	    var reactSetState = context.setState;
+	    options.reactSetState = context.setState;
 	    _firebaseRefsMixin(endpoint, 'syncState') && _addListener(endpoint, 'syncState', options);
 
 	    function _updateSyncState(ref, data, key) {
@@ -240,7 +240,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (key === options.state) {
 	          _updateSyncState(ref.child(endpoint), data[key], key);
 	        } else {
-	          reactSetState.call(options.context, data);
+	          options.reactSetState.call(options.context, data);
 	        }
 	      }
 	    };
@@ -249,7 +249,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function _post(endpoint, options) {
 	    _validateEndpoint(endpoint);
-	    optionValidators.then(options);
 	    optionValidators.data(options);
 	    if (options.then) {
 	      ref.child(endpoint).set(options.data, options.then);
