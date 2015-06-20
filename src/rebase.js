@@ -141,7 +141,7 @@ module.exports = (function(){
         options.asArray === true ? options.then.call(options.context, _toArray(data)) : options.then.call(options.context, data);
       } else if(invoker === 'syncState'){
           data = options.asArray === true ? _toArray(data) : data;
-          reactSetState.call(context, {[options.state]: data});
+          options.reactSetState.call(options.context, {[options.state]: data});
       } else if(invoker === 'bindToState') {
           var newState = {};
           options.asArray === true ? newState[options.state] = _toArray(data) : newState[options.state] = data;
@@ -164,7 +164,7 @@ module.exports = (function(){
     optionValidators.context(options);
     optionValidators.state(options);
     var context = options.context;
-    var reactSetState = context.setState;
+    options.reactSetState = context.setState;
     _firebaseRefsMixin(endpoint, 'syncState') && _addListener(endpoint, 'syncState', options);
 
     function _updateSyncState(ref, data, key){
@@ -182,7 +182,7 @@ module.exports = (function(){
         if (key === options.state) {
           _updateSyncState(ref.child(endpoint), data[key], key)
        } else {
-          reactSetState.call(options.context, data);
+          options.reactSetState.call(options.context, data);
        }
      }
     };
@@ -191,7 +191,6 @@ module.exports = (function(){
 
   function _post(endpoint, options){
     _validateEndpoint(endpoint);
-    optionValidators.then(options);
     optionValidators.data(options);
     if(options.then){
       ref.child(endpoint).set(options.data, options.then);
