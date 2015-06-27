@@ -73,7 +73,6 @@ describe('re-base Tests:', function(){
       var invalidOptions = [[], {}, {then: function(){}}, {data: undefined}];
       invalidOptions.forEach((option) => {
         try {
-          console.log('OPTION', option);
           base.post(testEndpoint, option);
         } catch(err) {
           expect(err.code).toEqual('INVALID_OPTIONS');
@@ -214,23 +213,22 @@ describe('re-base Tests:', function(){
     });
 
     describe('Async tests', function(){
-      //This test below doesn't pass when the other one is nested with it and we have no idea.
-      // it('listenTo()\'s .then method gets invoked when the Firebase endpoint changes', function(done){
-      //   var flag = false;
-      //   base.listenTo(testEndpoint, {
-      //     context: {},
-      //     then(data){
-      //       if(flag === true){
-      //         expect(data).toEqual(dummyObjData);
-      //         done()
-      //       }
-      //     }
-      //   });
-      //   setTimeout(() => {
-      //     flag = true;
-      //     ref.child(testEndpoint).set(dummyObjData);
-      //   }, 1000)
-      // });
+      it('listenTo()\'s .then method gets invoked when the Firebase endpoint changes', function(done){
+        var flag = false;
+        base.listenTo(testEndpoint, {
+          context: {},
+          then(data){
+            if(flag === true){
+              expect(data).toEqual(dummyObjData);
+              done()
+            }
+          }
+        });
+        setTimeout(() => {
+          flag = true;
+          ref.child(testEndpoint).set(dummyObjData);
+        }, 1000)
+      });
 
       afterEach(function(done){
         React.unmountComponentAtNode(document.body);

@@ -62,7 +62,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var Firebase = __webpack_require__(1);
 
 	  var baseUrl = '';
-	  var ref = null;
 	  var rebase;
 	  var firebaseRefs = {};
 	  var firebaseListeners = {};
@@ -171,13 +170,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _validateEndpoint(endpoint);
 	    optionValidators.context(options);
 	    optionValidators.then(options);
-	    ref.child(endpoint).once('value', function (snapshot) {
+	    var ref = new Firebase('' + baseUrl + '/' + endpoint);
+	    ref.once('value', function (snapshot) {
 	      var data = options.asArray === true ? _toArray(snapshot.val()) : snapshot.val();
 	      options.then.call(options.context, data);
 	    });
 	  };
 
-	  function _firebaseRefsMixin(endpoint, invoker) {
+	  function _firebaseRefsMixin(endpoint, invoker, ref) {
 	    if (!_isObject(firebaseRefs[endpoint])) {
 	      firebaseRefs[endpoint] = _defineProperty({}, invoker, ref.ref());
 	      firebaseListeners[endpoint] = {};
@@ -189,8 +189,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return true;
 	  };
 
-	  function _addListener(endpoint, invoker, options) {
-	    firebaseListeners[endpoint][invoker] = ref.child(endpoint).on('value', function (snapshot) {
+	  function _addListener(endpoint, invoker, options, ref) {
+	    firebaseListeners[endpoint][invoker] = ref.on('value', function (snapshot) {
 	      var data = snapshot.val() || (options.asArray === true ? [] : {});
 	      if (invoker === 'listenTo') {
 	        options.asArray === true ? options.then.call(options.context, _toArray(data)) : options.then.call(options.context, data);
@@ -210,7 +210,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    optionValidators.context(options);
 	    invoker === 'listenTo' && optionValidators.then(options);
 	    invoker === 'bindToState' && optionValidators.state(options);
-	    _firebaseRefsMixin(endpoint, invoker) && _addListener(endpoint, invoker, options);
+	    var ref = new Firebase('' + baseUrl + '/' + endpoint);
+	    _firebaseRefsMixin(endpoint, invoker, ref) && _addListener(endpoint, invoker, options, ref);
 	    return _returnRef(endpoint, invoker);
 	  };
 
@@ -220,7 +221,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    optionValidators.state(options);
 	    var context = options.context;
 	    options.reactSetState = context.setState;
-	    _firebaseRefsMixin(endpoint, 'syncState') && _addListener(endpoint, 'syncState', options);
+	    var ref = new Firebase('' + baseUrl + '/' + endpoint);
+	    _firebaseRefsMixin(endpoint, 'syncState', ref) && _addListener(endpoint, 'syncState', options, ref);
 
 	    function _updateSyncState(ref, data, key) {
 	      if (_isObject(data)) {
@@ -247,10 +249,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function _post(endpoint, options) {
 	    _validateEndpoint(endpoint);
 	    optionValidators.data(options);
+	    var ref = new Firebase('' + baseUrl + '/' + endpoint);
 	    if (options.then) {
-	      ref.child(endpoint).set(options.data, options.then);
+	      ref.set(options.data, options.then);
 	    } else {
-	      ref.child(endpoint).set(options.data);
+	      ref.set(options.data);
 	    }
 	  }
 
@@ -267,7 +270,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function _reset() {
 	    baseUrl = '';
-	    ref = undefined;
 	    rebase = undefined;
 	    for (var key in firebaseRefs) {
 	      for (var prop in firebaseRefs[key]) {
@@ -314,7 +316,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      _validateBaseURL(url);
 	      baseUrl = url;
-	      ref = new Firebase(baseUrl);
 	      rebase = init();
 
 	      return rebase;
