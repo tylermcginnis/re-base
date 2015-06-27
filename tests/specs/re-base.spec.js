@@ -317,7 +317,7 @@ describe('re-base Tests:', function(){
         React.render(<TestComponent />, document.body);
       });
 
-      it('listenTo should remove the firebase listener once it unmounts', function(){
+      it('listenTo should remove the firebase listener once the component unmounts', function(){
 
       });
     });
