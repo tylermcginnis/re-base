@@ -1,0 +1,19 @@
+{
+  "name": "webpack-stuffs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "http-server dist"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "babel": "^5.6.4",
+    "babel-loader": "^5.1.4",
+    "re-base": "0.0.10",
+    "react": "^0.13.3",
+    "react-tween-state": "^0.1.1"
+  }
+}
