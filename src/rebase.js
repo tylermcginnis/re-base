@@ -44,10 +44,12 @@ module.exports = (function(){
   function _toArray(obj){
     var arr = [];
     for(var key in obj){
-      if(_isObject(obj[key])){
-        obj[key].key = key;
+      if(obj.hasOwnProperty(key)){
+        if(_isObject(obj[key])){
+          obj[key].key = key;
+        }
+        arr.push(obj[key]);
       }
-      arr.push(obj[key]);
     }
     return arr;
   };
@@ -178,11 +180,13 @@ module.exports = (function(){
 
     context.setState = function (data) {
       for (var key in data) {
-        if (key === options.state) {
-          _updateSyncState(ref.child(endpoint), data[key], key)
-       } else {
-          options.reactSetState.call(options.context, data);
-       }
+        if(data.hasOwnProperty(key)){
+          if (key === options.state) {
+            _updateSyncState(ref, data[key], key)
+         } else {
+            options.reactSetState.call(options.context, data);
+         }
+        }
      }
     };
     return _returnRef(endpoint, 'syncState');
@@ -214,10 +218,14 @@ module.exports = (function(){
     baseUrl = '';
     rebase = undefined;
     for(var key in firebaseRefs){
-      for(var prop in firebaseRefs[key]){
-        firebaseRefs[key][prop].off('value', firebaseListeners[key][prop]);
-        delete firebaseRefs[key][prop];
-        delete firebaseListeners[key][prop];
+      if(firebaseRefs.hasOwnProperty(key)){
+        for(var prop in firebaseRefs[key]){
+          if(firebaseRefs[key].hasOwnProperty(prop)){
+            firebaseRefs[key][prop].off('value', firebaseListeners[key][prop]);
+            delete firebaseRefs[key][prop];
+            delete firebaseListeners[key][prop];
+          }
+        }
       }
     }
     firebaseRefs = {};

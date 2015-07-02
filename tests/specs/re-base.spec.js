@@ -381,7 +381,171 @@ describe('re-base Tests:', function(){
     });
 
     describe('Async tests', function(){
+      beforeEach(function(done){
+        ref.set(null, done);
+      });
+      afterEach(function (done) {
+        React.unmountComponentAtNode(document.body);
+        done();
+      });
 
+      it('syncState() returns an empty object when there is no Firebase data and asArray is false', function(done){
+        class TestComponent extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              data: {}
+            }
+          }
+          componentWillMount(){
+            this.ref = base.syncState(testEndpoint, {
+              context: this,
+              state: 'data',
+            });
+          }
+          componentDidMount(){
+            ref.child(testEndpoint).set(null);
+          }
+          componentDidUpdate(){
+            expect(this.state.data).toEqual({});
+            done();
+          }
+          componentWillUnmount(){
+            base.removeBinding(this.ref);
+          }
+          render(){
+            return (
+              <div>
+                No Data
+              </div>
+            )
+          }
+        }
+        React.render(<TestComponent />, document.body);
+      });
+
+      it('syncState() returns an empty array when there is no Firebase data and asArray is true', function(done){
+        class TestComponent extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              messages: []
+            }
+          }
+          componentWillMount(){
+            this.ref = base.syncState(testEndpoint, {
+              context: this,
+              state: 'messages',
+              asArray: true
+            });
+          }
+          componentDidMount(){
+            ref.child(testEndpoint).set(null);
+          }
+          componentDidUpdate(){
+            expect(this.state.messages).toEqual([]);
+            done();
+          }
+          componentWillUnmount(){
+            base.removeBinding(this.ref);
+          }
+          render(){
+            return (
+              <div>
+                No Data
+              </div>
+            )
+          }
+        }
+        React.render(<TestComponent />, document.body);
+      });
+
+      it('syncState() syncs its local state with Firebase', function(done){
+        class TestComponent extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              user: {}
+            }
+          }
+          componentWillMount(){
+            this.ref = base.syncState('userData', {
+              context: this,
+              state: 'user',
+            });
+          }
+          componentDidMount(){
+            this.setState({
+              user: {name: 'Tyler'}
+            });
+          }
+          componentDidUpdate(){
+            ref.child('userData').once('value', (snapshot) => {
+              var data = snapshot.val();
+              expect(data).toEqual(this.state.user);
+              expect(data).toEqual({name: 'Tyler'});
+              done();
+            });
+          };
+          componentWillUnmount(){
+              base.removeBinding(this.ref);
+          }
+          render(){
+            return (
+              <div>
+                No Data
+              </div>
+            )
+          }
+        }
+        React.render(<TestComponent />, document.body);
+      });
+
+      it('syncState() syncs its local state with Firebase as an Array', function(done){
+        class TestComponent extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              friends: []
+            }
+          }
+          componentWillMount(){
+            this.ref = base.syncState('myFriends', {
+              context: this,
+              state: 'friends',
+              asArray: true
+            });
+          }
+          componentDidMount(){
+            this.setState({
+              friends: dummyArrData
+            });
+          }
+          componentDidUpdate(){
+            ref.child('myFriends').once('value', (snapshot) => {
+              var data = snapshot.val();
+              expect(data).toEqual(this.state.friends);
+              expect(data).toEqual(dummyArrData);
+              done();
+            });
+          }
+          componentWillUnmount(){
+            base.removeBinding(this.ref);
+          }
+          render(){
+            return (
+              <div>
+                No Data
+              </div>
+            )
+          }
+        }
+        React.render(<TestComponent />, document.body);
+      });
+
+      // it('syncState() updates its local state as well as Firebase when unbinding then binding again to a new state', function(done){
+
+      // });
     });
   });
 });
