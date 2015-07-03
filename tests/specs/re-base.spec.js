@@ -543,9 +543,59 @@ describe('re-base Tests:', function(){
         React.render(<TestComponent />, document.body);
       });
 
-      // it('syncState() updates its local state as well as Firebase when unbinding then binding again to a new state', function(done){
+      it('syncState() functions properly with a nested object data structure', function(done){
+        var nestedObj = {
+          name: 'Tyler',
+          age: 25,
+          friends: ['Joey', 'Mikenzi', 'Jacob'],
+          foo: {
+            bar: 'bar',
+            foobar: 'barfoo'
+          }
+        };
+        class TestComponent extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              user: {}
+            }
+          }
+          componentWillMount(){
+            this.ref = base.syncState('userData', {
+              context: this,
+              state: 'user',
+            });
+          }
+          componentDidMount(){
+            this.setState({
+              user: nestedObj
+            });
+          }
+          componentDidUpdate(){
+            ref.child('userData').once('value', (snapshot) => {
+              var data = snapshot.val();
+              expect(data).toEqual(this.state.user);
+              expect(data).toEqual(nestedObj);
+              done();
+            });
+          };
+          componentWillUnmount(){
+            base.removeBinding(this.ref);
+          }
+          render(){
+            return (
+              <div>
+                No Data
+              </div>
+            )
+          }
+        }
+        React.render(<TestComponent />, document.body);
+      });
 
-      // });
+      it('syncState() updates its local state as well as Firebase when unbinding then binding again to a new state', function(done){
+
+      });
     });
   });
 });
