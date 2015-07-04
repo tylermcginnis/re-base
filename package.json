@@ -1,6 +1,6 @@
 {
   "name": "re-base",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "A Relay/Falcor inspired library for building React.js + Firebase applications in ES5/6",
   "main": "index.js",
   "repository": {
