@@ -1,12 +1,11 @@
 import React from 'react';
-window.React = React;
 
 import Container from './components/container.jsx';
 import NewChat from './components/new-chat.jsx';
 
-import rebase from 're-base';
+import Rebase from 're-base';
 
-var base = rebase.createClass('https://jt-ts.firebaseio.com/rebase-chat');
+var base = Rebase.createClass('https://jt-ts.firebaseio.com/rebase-chat');
 
 class Main extends React.Component {
   constructor(props){
@@ -24,7 +23,7 @@ class Main extends React.Component {
    * overwrite local changes.
    */
 
-    base.bindToState('/chats', {
+    base.bindToState('chats', {
       context: this,
       state: 'messages',
       asArray: true
