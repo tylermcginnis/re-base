@@ -17,7 +17,7 @@ class Profile extends React.Component{
     };
   }
   init(){
-    this.ref = base.bindToState(this.router.getCurrentParams().username, {
+    this.ref = base.syncState(this.router.getCurrentParams().username, {
       context: this,
       asArray: true,
       state: 'notes'
@@ -45,9 +45,9 @@ class Profile extends React.Component{
     this.init();
   }
   handleAddNote(newNote){
-    base.post(this.router.getCurrentParams().username, {
-      data: this.state.notes.concat([newNote])
-    });
+    this.setState({
+      notes: this.state.notes.concat([newNote])
+    })
   }
   render(){
     var username = this.router.getCurrentParams().username;
