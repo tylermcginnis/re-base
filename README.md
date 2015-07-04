@@ -1,10 +1,10 @@
-# re-base (WIP)
+# re-base
 [![Build Status](https://travis-ci.org/tylermcginnis/re-base.svg?branch=master)](https://travis-ci.org/tylermcginnis/re-base)
 [![Coverage Status](https://coveralls.io/repos/tylermcginnis/re-base/badge.svg)](https://coveralls.io/r/tylermcginnis/re-base)
 
 # What is re-base?
 
-React.js makes managing state easy to reason about. Firebase makes persisting your data easy to implement. re-base combines the two ideas by allowing you to bind your component's state to a Firebase endpoint and much more. Forget about your data persistance and focus on what really matters, your application's state.
+React.js makes managing state easy to reason about. Firebase makes persisting your data easy to implement. re-base, inspired by Relay, combines the benefits of React and Firebase by allowing each component to specify its own data dependency. Forget about your data persistance and focus on what really matters, your application's state.
 
 # Why re-base?
 
