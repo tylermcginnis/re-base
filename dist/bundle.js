@@ -217,36 +217,41 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return _returnRef(endpoint, invoker);
 	  };
 
+	  function _updateSyncState(ref, data, key) {
+	    if (_isObject(data)) {
+	      for (var prop in data) {
+	        _updateSyncState(ref.child(prop), data[prop], prop);
+	      }
+	    } else {
+	      ref.set(data);
+	    }
+	  };
+
 	  function _sync(endpoint, options) {
 	    _validateEndpoint(endpoint);
 	    optionValidators.context(options);
 	    optionValidators.state(options);
-	    var context = options.context;
-	    options.reactSetState = context.setState;
+	    if (_sync.called === true) {
+	      options.context.setState = _sync.reactSetState;
+	      options.reactSetState = _sync.reactSetState;
+	    } else {
+	      _sync.reactSetState = options.context.setState;
+	      options.reactSetState = options.context.setState;
+	    }
 	    var ref = new Firebase(baseUrl + '/' + endpoint);
 	    _firebaseRefsMixin(endpoint, 'syncState', ref) && _addListener(endpoint, 'syncState', options, ref);
-
-	    function _updateSyncState(ref, data, key) {
-	      if (_isObject(data)) {
-	        for (var prop in data) {
-	          _updateSyncState(ref.child(prop), data[prop], prop);
-	        }
-	      } else {
-	        ref.set(data);
-	      }
-	    };
-
-	    context.setState = function (data) {
+	    options.context.setState = function (data) {
 	      for (var key in data) {
 	        if (data.hasOwnProperty(key)) {
 	          if (key === options.state) {
-	            _updateSyncState(ref, data[key], key);
+	            _updateSyncState.call(this, ref, data[key], key);
 	          } else {
 	            options.reactSetState.call(options.context, data);
 	          }
 	        }
 	      }
 	    };
+	    _sync.called = true;
 	    return _returnRef(endpoint, 'syncState');
 	  };
 
