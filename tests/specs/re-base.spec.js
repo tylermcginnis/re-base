@@ -592,10 +592,6 @@ describe('re-base Tests:', function(){
         }
         React.render(<TestComponent />, document.body);
       });
-
-      it('syncState() updates its local state as well as Firebase when unbinding then binding again to a new state', function(done){
-
-      });
     });
   });
 });
