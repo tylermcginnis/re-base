@@ -77,10 +77,11 @@ class Container extends React.Component {
           show={ this.state.show === index }
           removeMessage={ this._removeMessage.bind(this, index) }
           handleClick={ this._toggleView.bind(this, index) }
-          key={ index } />;
+          key={ index } />
       );
-    }
-      return (
+    });
+
+    return (
       <div className='col-md-12'>
         <div className='col-md-2'></div>
         <div className='col-md-8'>
