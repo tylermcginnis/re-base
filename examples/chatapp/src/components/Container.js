@@ -28,7 +28,8 @@ class Container extends React.Component {
 
     this.ref = base.syncState('chats', {
       context: this,
-      state: 'messages'
+      state: 'messages',
+      asArray: true
     });
   }
   componentWillUnmount(){
@@ -83,12 +84,10 @@ class Container extends React.Component {
 
     return (
       <div className='col-md-12'>
-        <div className='col-md-2'></div>
         <div className='col-md-8'>
           <h1>{ (this.state.messages.length || 0) + ' messages' }</h1>
           <ul>{ messages }</ul>
         </div>
-        <div className='col-md-2'></div>
       </div>
     );
   }

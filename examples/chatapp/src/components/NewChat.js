@@ -41,13 +41,11 @@ class NewChat extends React.Component {
   render(){
     return (
       <div className='col-md-12'>
-        <div className='col-md-2'></div>
         <form onSubmit={ this._newChat.bind(this) } className='form-group col-md-8'>
           <input ref='title' type='text' placeholder='Title' className='form-control' />
           <textarea ref='message'  placeholder='Message' className='form-control' />
           <input type='submit' className='btn btn-success' />
         </form>
-        <div className='col-md-2'></div>
       </div>
     )
   }
