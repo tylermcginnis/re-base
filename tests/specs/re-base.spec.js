@@ -322,6 +322,15 @@ describe('re-base Tests:', function(){
   });
 
   describe('bindToState()', function(){
+    beforeEach(function(done){
+      ref.set(null, done);
+    });
+
+    afterEach(function (done) {
+      React.unmountComponentAtNode(document.body);
+      done();
+    });
+
     it('bindToState() throws an error given a invalid endpoint', function(done){
       invalidEndpoints.forEach((endpoint) => {
         try {
@@ -349,7 +358,154 @@ describe('re-base Tests:', function(){
     });
 
     describe('Async tests', function(){
+      it('bindToState() updates its local state with an empty array and object when the Firebase endpoint is null', function(done){
+        class TestComponent extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              emptyObj: {},
+              emptyArr: [],
+              kickOffUpdate: false
+            }
+          }
+          componentWillMount(){
+            this.firstRef = base.bindToState('abcdefg', {
+              context: this,
+              state: 'emptyObj',
+            });
 
+            this.secondRef = base.bindToState('hijklmnop', {
+              context: this,
+              state: 'emptyArr',
+              asArray: true
+            });
+          }
+          componentDidMount(){
+            this.forceUpdate();
+          }
+          componentDidUpdate(){
+            expect(this.state.emptyObj).toEqual({});
+            expect(this.state.emptyArr).toEqual([]);
+            done();
+          }
+          componentWillUnmount(){
+            base.removeBinding(this.firstRef);
+            base.removeBinding(this.secondRef);
+          }
+          render(){
+            return (
+              <div>
+                No Data
+              </div>
+            )
+          }
+        }
+        React.render(<TestComponent />, document.body);
+      });
+
+      it('bindToState() properly updates the local state property when the Firebase endpoint changes', function(done){
+        class TestComponent extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              data: {}
+            }
+          }
+          componentWillMount(){
+            this.ref = base.bindToState(testEndpoint, {
+              context: this,
+              state: 'data',
+            });
+          }
+          componentDidMount(){
+            ref.child(testEndpoint).set(dummyObjData);
+          }
+          componentDidUpdate(){
+            expect(this.state.data).toEqual(dummyObjData);
+            done();
+          }
+          componentWillUnmount(){
+            base.removeBinding(this.ref);
+          }
+          render(){
+            return (
+              <div>
+                No Data
+              </div>
+            )
+          }
+        }
+        React.render(<TestComponent />, document.body);
+      });
+
+      it('bindToState() properly updates the local state property when the Firebase endpoint changes and asArray is true', function(done){
+        class TestComponent extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              friends: []
+            }
+          }
+          componentWillMount(){
+            this.ref = base.bindToState('myFriends', {
+              context: this,
+              state: 'friends',
+              asArray: true
+            });
+          }
+          componentDidMount(){
+            ref.child('myFriends').set(dummyArrData);
+          }
+          componentDidUpdate(){
+            expect(this.state.friends).toEqual(dummyArrData);
+            done();
+          }
+          componentWillUnmount(){
+            base.removeBinding(this.ref);
+          }
+          render(){
+            return (
+              <div>
+                No Data
+              </div>
+            )
+          }
+        }
+        React.render(<TestComponent />, document.body);
+      });
+    });
+
+    it('bindToState() properly updates the local state property even when Firebase has initial date before bindToState is called', function(done){
+      ref.child(testEndpoint).set(dummyObjData);
+      class TestComponent extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = {
+            data: {}
+          }
+        }
+        componentDidMount(){
+          this.ref = base.bindToState(testEndpoint, {
+            context: this,
+            state: 'data',
+          });
+        }
+        componentDidUpdate(){
+          expect(this.state.data).toEqual(dummyObjData);
+          done();
+        }
+        componentWillUnmount(){
+          base.removeBinding(this.ref);
+        }
+        render(){
+          return (
+            <div>
+              No Data
+            </div>
+          )
+        }
+      }
+      React.render(<TestComponent />, document.body);
     });
   });
 
