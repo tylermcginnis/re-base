@@ -20,9 +20,11 @@ describe('re-base Tests:', function(){
     ref.set(null, done);
   });
 
-  afterEach(function(){
+  afterEach(function(done){
+    React.unmountComponentAtNode(document.body);
     base.reset();
     base = null;
+    done();
   });
 
   describe('createClass()', function(){
@@ -128,10 +130,6 @@ describe('re-base Tests:', function(){
         });
       });
 
-      afterEach((done) => {
-        ref.set(null, done);
-      });
-
       it('fetch()\'s .then gets invoked with the data from Firebase once the data is retrieved', function(done){
         base.fetch(testEndpoint, {
           context: {},
@@ -167,8 +165,69 @@ describe('re-base Tests:', function(){
         });
       });
 
-      it('correctly update the state of the component with data from fetch', function(){
-        //todo
+      it('fetch() correctly updates the state of the component with data from fetch', function(done){
+        ref.child(testEndpoint).set(dummyObjData);
+        class TestComponent extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              data: {}
+            }
+          }
+          componentDidMount(){
+            base.fetch(testEndpoint, {
+              context: this,
+              then(data){
+                this.setState({data})
+              }
+            });
+          }
+          componentDidUpdate(){
+            expect(this.state.data).toEqual(dummyObjData);
+            done();
+          }
+          render(){
+            return (
+              <div>
+                No Data
+              </div>
+            )
+          }
+        }
+        React.render(<TestComponent />, document.body);
+      });
+
+      it('fetch() correctly updates the state of the component with data from fetch and asArray set to true', function(done){
+        ref.child(testEndpoint).set(dummyArrData);
+        class TestComponent extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              friends: []
+            }
+          }
+          componentDidMount(){
+            base.fetch(testEndpoint, {
+              context: this,
+              asArray: true,
+              then(friends){
+                this.setState({friends})
+              }
+            });
+          }
+          componentDidUpdate(){
+            expect(this.state.friends).toEqual(dummyArrData);
+            done();
+          }
+          render(){
+            return (
+              <div>
+                No Data
+              </div>
+            )
+          }
+        }
+        React.render(<TestComponent />, document.body);
       });
     });
   });
@@ -228,11 +287,6 @@ describe('re-base Tests:', function(){
           flag = true;
           ref.child(testEndpoint).set(dummyObjData);
         }, 1000)
-      });
-
-      afterEach(function(done){
-        React.unmountComponentAtNode(document.body);
-        done();
       });
 
       it('listenTo\'s .then method gets invoked when the Firebase endpoint changes and correctly updates the component\'s state', function(done){
@@ -314,22 +368,10 @@ describe('re-base Tests:', function(){
         }
         React.render(<TestComponent />, document.body);
       });
-
-      it('listenTo should remove the firebase listener once the component unmounts', function(){
-
-      });
     });
   });
 
   describe('bindToState()', function(){
-    beforeEach(function(done){
-      ref.set(null, done);
-    });
-
-    afterEach(function (done) {
-      React.unmountComponentAtNode(document.body);
-      done();
-    });
 
     it('bindToState() throws an error given a invalid endpoint', function(done){
       invalidEndpoints.forEach((endpoint) => {
@@ -537,14 +579,6 @@ describe('re-base Tests:', function(){
     });
 
     describe('Async tests', function(){
-      beforeEach(function(done){
-        ref.set(null, done);
-      });
-      afterEach(function (done) {
-        React.unmountComponentAtNode(document.body);
-        done();
-      });
-
       it('syncState() returns an empty object when there is no Firebase data and asArray is false', function(done){
         class TestComponent extends React.Component{
           constructor(props){

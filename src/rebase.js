@@ -173,13 +173,13 @@ module.exports = (function(){
     _validateEndpoint(endpoint);
     optionValidators.context(options);
     optionValidators.state(options);
-    if(_sync.called === true){
-      options.context.setState = _sync.reactSetState;
-      options.reactSetState = _sync.reactSetState;
-    } else {
+    if(_sync.called !== true){
       _sync.reactSetState = options.context.setState;
-      options.reactSetState = options.context.setState;
+      _sync.called = true;
+    } else {
+      options.context.setState = _sync.reactSetState;
     }
+    options.reactSetState = options.context.setState;
     var ref = new Firebase(`${baseUrl}/${endpoint}`);
     _firebaseRefsMixin(endpoint, 'syncState', ref) && _addListener(endpoint, 'syncState', options, ref);
     options.context.setState = function (data) {
@@ -193,7 +193,6 @@ module.exports = (function(){
         }
      }
     };
-    _sync.called = true;
     return _returnRef(endpoint, 'syncState');
   };
 
