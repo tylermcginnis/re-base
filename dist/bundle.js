@@ -188,7 +188,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    } else {
 	      _throwError('Endpoint (' + endpoint + ') already has listener ' + invoker, 'INVALID_ENDPOINT');
 	    }
-	    return true;
 	  };
 
 	  function _addListener(endpoint, invoker, options, ref) {
@@ -213,7 +212,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    invoker === 'listenTo' && optionValidators.then(options);
 	    invoker === 'bindToState' && optionValidators.state(options);
 	    var ref = new Firebase(baseUrl + '/' + endpoint);
-	    _firebaseRefsMixin(endpoint, invoker, ref) && _addListener(endpoint, invoker, options, ref);
+	    _firebaseRefsMixin(endpoint, invoker, ref);
+	    _addListener(endpoint, invoker, options, ref);
 	    return _returnRef(endpoint, invoker);
 	  };
 
@@ -239,7 +239,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    options.reactSetState = options.context.setState;
 	    var ref = new Firebase(baseUrl + '/' + endpoint);
-	    _firebaseRefsMixin(endpoint, 'syncState', ref) && _addListener(endpoint, 'syncState', options, ref);
+	    _firebaseRefsMixin(endpoint, 'syncState', ref);
+	    _addListener(endpoint, 'syncState', options, ref);
 	    options.context.setState = function (data) {
 	      for (var key in data) {
 	        if (data.hasOwnProperty(key)) {
