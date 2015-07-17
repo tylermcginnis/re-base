@@ -145,6 +145,7 @@ module.exports = (function(){
   };
 
   function _addListener(endpoint, invoker, options, ref){
+    ref = _addQueries(ref, options.queries);
     firebaseListeners[endpoint][invoker] = ref.on('value', (snapshot) => {
       var data = snapshot.val() || (options.asArray === true ? [] : {});
       if(invoker === 'listenTo'){
@@ -167,7 +168,6 @@ module.exports = (function(){
     invoker === 'bindToState' && optionValidators.state(options);
     options.queries && optionValidators.query(options);
     var ref = new Firebase(`${baseUrl}/${endpoint}`);
-    ref = _addQueries(ref, options.queries);
     _firebaseRefsMixin(endpoint, invoker, ref);
     _addListener(endpoint, invoker, options, ref);
     return  _returnRef(endpoint, invoker);
@@ -196,7 +196,6 @@ module.exports = (function(){
     }
     options.reactSetState = options.context.setState;
     var ref = new Firebase(`${baseUrl}/${endpoint}`);
-    ref = _addQueries(ref, options.queries);
     _firebaseRefsMixin(endpoint, 'syncState', ref);
     _addListener(endpoint, 'syncState', options, ref);
     options.context.setState = function (data) {
