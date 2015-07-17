@@ -36,10 +36,20 @@ module.exports = (function(){
         this.makeError('data', 'ANY', options.data);
       }
     },
+    query(options){
+      this.notObject(options);
+      var validQueries = ['limitToFirst', 'limitToLast', 'orderByChild', 'orderByValue', 'orderByKey', 'orderByPriority', 'startAt', 'endAt', 'equalTo'];
+      var queries = options.queries;
+      for(var key in queries){
+        if(queries.hasOwnProperty(key) && validQueries.indexOf(key) === -1){
+          _throwError(`The query field must contain valid Firebase queries.  Expected one of [${validQueries.join(', ')}]. Instead, got ${key}`, 'INVALID_OPTIONS');
+        }
+      }
+    },
     makeError(prop, type, actual){
       _throwError(`The options argument must contain a ${prop} property of type ${type}. Instead, got ${actual}`, 'INVALID_OPTIONS');
     }
-  }
+  };
 
   function _toArray(obj){
     var arr = [];
@@ -112,7 +122,9 @@ module.exports = (function(){
     _validateEndpoint(endpoint);
     optionValidators.context(options);
     optionValidators.then(options);
+    options.queries && optionValidators.query(options);
     var ref = new Firebase(`${baseUrl}/${endpoint}`);
+    ref = _addQueries(ref, options.queries);
     ref.once('value', (snapshot) => {
       var data = options.asArray === true ? _toArray(snapshot.val()) : snapshot.val();
       options.then.call(options.context, data);
@@ -133,6 +145,7 @@ module.exports = (function(){
   };
 
   function _addListener(endpoint, invoker, options, ref){
+    ref = _addQueries(ref, options.queries);
     firebaseListeners[endpoint][invoker] = ref.on('value', (snapshot) => {
       var data = snapshot.val() || (options.asArray === true ? [] : {});
       if(invoker === 'listenTo'){
@@ -153,6 +166,7 @@ module.exports = (function(){
     optionValidators.context(options);
     invoker === 'listenTo' && optionValidators.then(options);
     invoker === 'bindToState' && optionValidators.state(options);
+    options.queries && optionValidators.query(options);
     var ref = new Firebase(`${baseUrl}/${endpoint}`);
     _firebaseRefsMixin(endpoint, invoker, ref);
     _addListener(endpoint, invoker, options, ref);
@@ -173,6 +187,7 @@ module.exports = (function(){
     _validateEndpoint(endpoint);
     optionValidators.context(options);
     optionValidators.state(options);
+    options.queries && optionValidators.query(options);
     if(_sync.called !== true){
       _sync.reactSetState = options.context.setState;
       _sync.called = true;
@@ -206,7 +221,16 @@ module.exports = (function(){
     } else {
       ref.set(options.data);
     }
-  }
+  };
+
+  function _addQueries(ref, queries){
+    for(var key in queries){
+      if(queries.hasOwnProperty(key)){
+        ref = ref[key](queries[key]);
+      }
+    }
+    return ref;
+  };
 
   function _removeBinding(refObj){
     _validateEndpoint(refObj.endpoint);
@@ -235,7 +259,7 @@ module.exports = (function(){
     }
     firebaseRefs = {};
     firebaseListeners = {};
-  }
+  };
 
   function init(){
     return {
@@ -261,7 +285,7 @@ module.exports = (function(){
         _reset();
       }
     }
-  }
+  };
 
   return {
     createClass(url){

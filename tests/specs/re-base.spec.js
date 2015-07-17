@@ -678,7 +678,7 @@ describe('re-base Tests:', function(){
             });
           };
           componentWillUnmount(){
-              base.removeBinding(this.ref);
+            base.removeBinding(this.ref);
           }
           render(){
             return (
@@ -778,6 +778,81 @@ describe('re-base Tests:', function(){
                 No Data
               </div>
             )
+          }
+        }
+        React.render(<TestComponent />, document.body);
+      });
+
+      it('syncState() correctly retrieves Firebase data when given query options', function(done){
+        class TestComponent extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              users: [],
+              hasUpdated: false
+            }
+          }
+          componentWillMount(){
+            this.ref = base.syncState('users', {
+              context: this,
+              state: 'users',
+              asArray: true,
+              queries: {
+                orderByChild: 'iq',
+                limitToLast: 3
+              }
+            })
+          }
+          componentDidMount(){
+            this.setState({
+              users: [{
+                name: 'Al',
+                iq: 165
+              }, {
+                name: 'Steve',
+                iq: 105
+              }, {
+                name: 'Mary',
+                iq: 169
+              }, {
+                name: 'Jill',
+                iq: 105
+              }, {
+                name: 'Pat',
+                iq: 179
+              }, {
+                name: 'Ross',
+                iq: 145
+              }]
+            })
+          }
+          componentWillUnmount(){
+            base.removeBinding(this.ref);
+          }
+          componentDidUpdate(){
+            if(!this.state.hasUpdated) this.setState({ hasUpdated: true })
+          }
+          render(){
+            if(this.state.hasUpdated){
+              var expectedOutput = [{
+                name: 'Al',
+                iq: 165
+              }, {
+                name: 'Mary',
+                iq: 169
+              }, {
+                name: 'Pat',
+                iq: 179
+              }];
+              var names = this.state.users.reduce((prev, next) => {
+                prev[next.name] = true;
+                return prev;
+              }, {});
+              expect(this.state.users.length).toEqual(3);
+              expect(!!(names.Mary && names.Al && names.Pat)).toEqual(true);
+              done();
+            }
+            return <div>IQ</div>
           }
         }
         React.render(<TestComponent />, document.body);
