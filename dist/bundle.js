@@ -96,6 +96,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.makeError('data', 'ANY', options.data);
 	      }
 	    },
+	    query: function query(options) {
+	      this.notObject(options);
+	      var validQueries = ['limitToFirst', 'limitToLast', 'orderByChild', 'orderByValue', 'orderByKey', 'orderByPriority', 'startAt', 'endAt', 'equalTo'];
+	      var queries = options.queries;
+	      for (var key in queries) {
+	        if (queries.hasOwnProperty(key) && validQueries.indexOf(key) === -1) {
+	          _throwError('The query field must contain valid Firebase queries.  Expected one of [' + validQueries.join(', ') + ']. Instead, got ' + key, 'INVALID_OPTIONS');
+	        }
+	      }
+	    },
 	    makeError: function makeError(prop, type, actual) {
 	      _throwError('The options argument must contain a ' + prop + ' property of type ' + type + '. Instead, got ' + actual, 'INVALID_OPTIONS');
 	    }
@@ -172,7 +182,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _validateEndpoint(endpoint);
 	    optionValidators.context(options);
 	    optionValidators.then(options);
+	    options.queries && optionValidators.query(options);
 	    var ref = new Firebase(baseUrl + '/' + endpoint);
+	    ref = _addQueries(ref, options.queries);
 	    ref.once('value', function (snapshot) {
 	      var data = options.asArray === true ? _toArray(snapshot.val()) : snapshot.val();
 	      options.then.call(options.context, data);
@@ -211,7 +223,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    optionValidators.context(options);
 	    invoker === 'listenTo' && optionValidators.then(options);
 	    invoker === 'bindToState' && optionValidators.state(options);
+	    options.queries && optionValidators.query(options);
 	    var ref = new Firebase(baseUrl + '/' + endpoint);
+	    ref = _addQueries(ref, options.queries);
 	    _firebaseRefsMixin(endpoint, invoker, ref);
 	    _addListener(endpoint, invoker, options, ref);
 	    return _returnRef(endpoint, invoker);
@@ -231,6 +245,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _validateEndpoint(endpoint);
 	    optionValidators.context(options);
 	    optionValidators.state(options);
+	    options.queries && optionValidators.query(options);
 	    if (_sync.called !== true) {
 	      _sync.reactSetState = options.context.setState;
 	      _sync.called = true;
@@ -239,6 +254,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    options.reactSetState = options.context.setState;
 	    var ref = new Firebase(baseUrl + '/' + endpoint);
+	    ref = _addQueries(ref, options.queries);
 	    _firebaseRefsMixin(endpoint, 'syncState', ref);
 	    _addListener(endpoint, 'syncState', options, ref);
 	    options.context.setState = function (data) {
@@ -264,7 +280,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    } else {
 	      ref.set(options.data);
 	    }
-	  }
+	  };
+
+	  function _addQueries(ref, queries) {
+	    for (var key in queries) {
+	      if (queries.hasOwnProperty(key)) {
+	        ref = ref[key](queries[key]);
+	      }
+	    }
+	    return ref;
+	  };
 
 	  function _removeBinding(refObj) {
 	    _validateEndpoint(refObj.endpoint);
@@ -293,7 +318,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    firebaseRefs = {};
 	    firebaseListeners = {};
-	  }
+	  };
 
 	  function init() {
 	    return {
@@ -319,7 +344,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _reset();
 	      }
 	    };
-	  }
+	  };
 
 	  return {
 	    createClass: function createClass(url) {
