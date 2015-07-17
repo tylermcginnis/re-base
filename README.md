@@ -64,6 +64,7 @@ $ npm install re-base
       - context: (object - required) The context of your component
       - state: (string - required) The state property you want to sync with Firebase
       - asArray: (boolean - optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
+      - queries: (object - optional) Queries to be used with your read operations.  See [Query Options](#queries) for more details.
 
 #### Return Value
   An object which you can pass to `clearBinding` when your component unmounts to remove the Firebase listeners.
@@ -130,6 +131,7 @@ $ npm install re-base
       - context: (object - required) The context of your component
       - asArray: (boolean - optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
       - then: (function - required) The callback function that will be invoked with the data from the specified endpoint when the endpoint changes
+      - queries: (object - optional) Queries to be used with your read operations.  See [Query Options](#queries) for more details.
 
 #### Return Value
   An object which you can pass to `clearBinding` when your component unmounts to remove the Firebase listeners.
@@ -166,6 +168,7 @@ $ npm install re-base
       - context: (object - required) The context of your component
       - asArray: (boolean - optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
       - then: (function - required) The callback function that will be invoked with the data from the specified endpoint when the endpoint changes
+      - queries: (object - optional) Queries to be used with your read operations.  See [Query Options](#queries) for more details.
 
 #### Return Value
   No return value
@@ -254,7 +257,25 @@ $ npm install re-base
 
 ## <a name='queries'>Queries</a>
 
-Details here.
+Use the query option to utilize the [Firebase Query](https://www.firebase.com/docs/web/guide/retrieving-data.html#section-queries) API.  For a list of available queries and how they work, see the Firebase docs.
+
+Queries are accepted in the `options` object of each read method (`syncState`, `bindToState`, `listenTo`, and `fetch`).  The object should one or more keys of the type of query you wish to run, with the value being the value for the query.  For example:
+
+``` javascript
+base.syncState('users', {
+  context: this,
+  state: 'users',
+  asArray: true,
+  queries: {
+    orderByChild: 'iq',
+    limitToLast: 3
+  }
+})
+```
+
+The binding above will sort the `users` endpoint by iq, retrieve the last three (or, three with highest iq), and bind it to the component's `users` state.  NOTE: This query is happening within Firebase.  The *only* data that will be retrieved are the three users with the highest iq.
+
+More examples to come.
 
 ## Credits
 
