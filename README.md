@@ -259,7 +259,7 @@ $ npm install re-base
 
 Use the query option to utilize the [Firebase Query](https://www.firebase.com/docs/web/guide/retrieving-data.html#section-queries) API.  For a list of available queries and how they work, see the Firebase docs.
 
-Queries are accepted in the `options` object of each read method (`syncState`, `bindToState`, `listenTo`, and `fetch`).  The object should one or more keys of the type of query you wish to run, with the value being the value for the query.  For example:
+Queries are accepted in the `options` object of each read method (`syncState`, `bindToState`, `listenTo`, and `fetch`).  The object should have one or more keys of the type of query you wish to run, with the value being the value for the query.  For example:
 
 ``` javascript
 base.syncState('users', {
@@ -275,7 +275,6 @@ base.syncState('users', {
 
 The binding above will sort the `users` endpoint by iq, retrieve the last three (or, three with highest iq), and bind it to the component's `users` state.  NOTE: This query is happening within Firebase.  The *only* data that will be retrieved are the three users with the highest iq.
 
-More examples to come.
 
 ## Credits
 
