@@ -1,6 +1,6 @@
 {
   "name": "re-base",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A Relay inspired library for building React.js + Firebase applications.",
   "main": "index.js",
   "repository": {
