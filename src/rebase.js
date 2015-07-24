@@ -227,7 +227,7 @@ module.exports = (function(){
     var needArgs = ['limitToFirst', 'limitToLast', 'orderByChild', 'startAt', 'endAt', 'equalTo'];
     for(var key in queries){
       if(queries.hasOwnProperty(key)){
-        if(needArgs.indexOf(key) !== 0) {
+        if(needArgs.indexOf(key) !== -1) {
           ref = ref[key](queries[key]);
         } else {
           ref = ref[key]();
