@@ -224,10 +224,17 @@ module.exports = (function(){
   };
 
   function _addQueries(ref, queries){
-    var needArgs = ['limitToFirst', 'limitToLast', 'orderByChild', 'startAt', 'endAt', 'equalTo'];
+    var needArgs = {
+      limitToFirst: true,
+      limitToLast: true,
+      orderByChild: true,
+      startAt: true,
+      endAt: true,
+      equalTo: true
+    };
     for(var key in queries){
       if(queries.hasOwnProperty(key)){
-        if(needArgs.indexOf(key) !== -1) {
+        if(needArgs[key]) {
           ref = ref[key](queries[key]);
         } else {
           ref = ref[key]();
