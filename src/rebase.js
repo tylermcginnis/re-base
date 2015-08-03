@@ -147,7 +147,8 @@ module.exports = (function(){
   function _addListener(endpoint, invoker, options, ref){
     ref = _addQueries(ref, options.queries);
     firebaseListeners[endpoint][invoker] = ref.on('value', (snapshot) => {
-      var data = snapshot.val() || (options.asArray === true ? [] : {});
+      var data = snapshot.val();
+      data = data === null ? (options.asArray === true ? [] : {}) : data;
       if(invoker === 'listenTo'){
         options.asArray === true ? options.then.call(options.context, _toArray(data)) : options.then.call(options.context, data);
       } else if(invoker === 'syncState'){
