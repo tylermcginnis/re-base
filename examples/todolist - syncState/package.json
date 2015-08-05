@@ -9,6 +9,12 @@
   },
   "author": "Tyler McGinnis <tylermcginnis33@gmail.com> (http://tylermcginnis.com)",
   "license": "ISC",
+  "devDependencies": {
+    "webpack": "^1.10.5",
+    "http-server": "^0.8.0",
+    "babel-core": "^5.8.20",
+    "babel-loader": "^5.3.2",
+  },
   "dependencies": {
     "re-base": "0.0.5",
     "react": "^0.13.3"
