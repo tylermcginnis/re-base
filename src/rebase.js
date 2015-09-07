@@ -274,6 +274,28 @@ module.exports = (function(){
     firebaseListeners = {};
   };
 
+  function _authWithPassword(credentials ,fn){
+    var ref = new Firebase(`${baseUrl}`);
+    return ref.authWithPassword(credentials, function(error, authData){
+      return fn(error, authData);
+    });
+  }
+
+  function _onAuth(fn){
+    var ref = new Firebase(`${baseUrl}`);
+    return ref.onAuth(fn);
+  }
+
+  function _offAuth(fn){
+    var ref = new Firebase(`${baseUrl}`);
+    return ref.offAuth(fn);
+  }
+
+  function _unauth(){
+    var ref = new Firebase(`${baseUrl}`);
+    return ref.unauth();
+  }
+
   function init(){
     return {
       listenTo(endpoint, options){
@@ -296,6 +318,18 @@ module.exports = (function(){
       },
       reset(){
         _reset();
+      },
+      authWithPassword(credentials, fn){
+        return _authWithPassword(credentials, fn);
+      },
+      onAuth(fn){
+        return _onAuth(fn);
+      },
+      offAuth(fn){
+        return _offAuth(fn);
+      },
+      unauth(fn){
+        return _unauth();
       }
     }
   };
