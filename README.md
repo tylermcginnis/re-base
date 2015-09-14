@@ -275,6 +275,43 @@ base.syncState('users', {
 
 The binding above will sort the `users` endpoint by iq, retrieve the last three (or, three with highest iq), and bind it to the component's `users` state.  NOTE: This query is happening within Firebase.  The *only* data that will be retrieved are the three users with the highest iq.
 
+## <a name='auth'>Authentication</a>
+
+re-base exposes [Firebase's web client](https://www.firebase.com/docs/web/guide/user-auth.html#section-login) `authWithPassword`, `authWithOAuthPopup`, `authWithOAuthRedirect` methods to allow user authentication.
+
+``` javascript
+// Via email / password
+base.authWithPassword({
+  email    : 'bobtony@firebase.com',
+  password : 'correcthorsebatterystaple'
+}, authHandler);
+
+// Or via popular OAuth providers ("facebook", "github", "google", or "twitter")
+base.authWithOAuthPopup("<provider>", authHandler);
+base.authWithOAuthRedirect("<provider>", authHandler);
+```
+
+Calling unauth() logs the user out
+
+``` javascript
+base.unauth()
+```
+
+You may use the onAuth() method to listen for authentication events
+
+```
+// Create a callback which logs the current auth state
+function authDataCallback(authData) {
+  if (authData) {
+    console.log("User " + authData.uid + " is logged in with " + authData.provider);
+  } else {
+    console.log("User is logged out");
+  }
+}
+// Register the callback to be fired every time auth state changes
+var ref = new Firebase("https://<YOUR-FIREBASE-APP>.firebaseio.com");
+ref.onAuth(authDataCallback);
+```
 
 ## Credits
 
