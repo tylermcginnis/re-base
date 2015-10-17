@@ -148,7 +148,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    if (typeof errorMsg !== 'undefined') {
-	      _throwError(errorMsg, 'INVALID_URL');
+	      _throwError(errorMsg, "INVALID_URL");
 	    }
 	  };
 
@@ -166,7 +166,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    if (typeof errorMsg !== 'undefined') {
-	      _throwError(errorMsg, 'INVALID_ENDPOINT');
+	      _throwError(errorMsg, "INVALID_ENDPOINT");
 	    }
 	  };
 
@@ -198,7 +198,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    } else if (!firebaseRefs[endpoint][invoker]) {
 	      firebaseRefs[endpoint][invoker] = ref.ref();
 	    } else {
-	      _throwError('Endpoint (' + endpoint + ') already has listener ' + invoker, 'INVALID_ENDPOINT');
+	      _throwError('Endpoint (' + endpoint + ') already has listener ' + invoker, "INVALID_ENDPOINT");
 	    }
 	  };
 
@@ -206,7 +206,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    ref = _addQueries(ref, options.queries);
 	    firebaseListeners[endpoint][invoker] = ref.on('value', function (snapshot) {
 	      var data = snapshot.val();
-	      data = data === null ? (options.asArray === true ? [] : {}) : data;
+	      data = data === null ? options.asArray === true ? [] : {} : data;
 	      if (invoker === 'listenTo') {
 	        options.asArray === true ? options.then.call(options.context, _toArray(data)) : options.then.call(options.context, data);
 	      } else if (invoker === 'syncState') {
@@ -305,9 +305,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function _removeBinding(refObj) {
 	    _validateEndpoint(refObj.endpoint);
-	    if (typeof firebaseRefs[refObj.endpoint][refObj.method] === 'undefined') {
+	    if (typeof firebaseRefs[refObj.endpoint][refObj.method] === "undefined") {
 	      var errorMsg = 'Unexpected value for endpoint. ' + refObj.endpoint + ' was either never bound or has already been unbound.';
-	      _throwError(errorMsg, 'UNBOUND_ENDPOINT_VARIABLE');
+	      _throwError(errorMsg, "UNBOUND_ENDPOINT_VARIABLE");
 	    }
 	    firebaseRefs[refObj.endpoint][refObj.method].off('value', firebaseListeners[refObj.endpoint][refObj.method]);
 	    delete firebaseRefs[refObj.endpoint][refObj.method];
@@ -332,6 +332,44 @@ return /******/ (function(modules) { // webpackBootstrap
 	    firebaseListeners = {};
 	  };
 
+	  function _authWithPassword(credentials, fn) {
+	    var ref = new Firebase('' + baseUrl);
+	    return ref.authWithPassword(credentials, function (error, authData) {
+	      return fn(error, authData);
+	    });
+	  }
+
+	  function _authWithOAuthPopup(provider, fn, settings) {
+	    settings = settings || {};
+	    var ref = new Firebase('' + baseUrl);
+	    return ref.authWithOAuthPopup(provider, function (error, authData) {
+	      return fn(error, authData);
+	    }, settings);
+	  }
+
+	  function _authWithOAuthRedirect(provider, fn, settings) {
+	    settings = settings || {};
+	    var ref = new Firebase('' + baseUrl);
+	    return ref.authWithOAuthRedirect(provider, function (error, authData) {
+	      return fn(error, authData);
+	    }, settings);
+	  }
+
+	  function _onAuth(fn) {
+	    var ref = new Firebase('' + baseUrl);
+	    return ref.onAuth(fn);
+	  }
+
+	  function _offAuth(fn) {
+	    var ref = new Firebase('' + baseUrl);
+	    return ref.offAuth(fn);
+	  }
+
+	  function _unauth() {
+	    var ref = new Firebase('' + baseUrl);
+	    return ref.unauth();
+	  }
+
 	  function init() {
 	    return {
 	      listenTo: function listenTo(endpoint, options) {
@@ -354,6 +392,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	      },
 	      reset: function reset() {
 	        _reset();
+	      },
+	      authWithPassword: function authWithPassword(credentials, fn) {
+	        return _authWithPassword(credentials, fn);
+	      },
+	      authWithOAuthPopup: function authWithOAuthPopup(provider, fn, settings) {
+	        return _authWithOAuthPopup(provider, fn, settings);
+	      },
+	      authWithOAuthRedirect: function authWithOAuthRedirect(provider, fn, settings) {
+	        return _authWithOAuthRedirect(provider, fn, settings);
+	      },
+	      onAuth: function onAuth(fn) {
+	        return _onAuth(fn);
+	      },
+	      offAuth: function offAuth(fn) {
+	        return _offAuth(fn);
+	      },
+	      unauth: function unauth(fn) {
+	        return _unauth();
 	      }
 	    };
 	  };

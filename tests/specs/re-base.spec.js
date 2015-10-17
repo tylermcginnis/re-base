@@ -12,6 +12,7 @@ var dummyNestedObjData = {about: {name: 'Tyler', age: 25}, friends: {jacob: {nam
 var nestedObjArrResult = [{age: 25, key: 'about', name: 'Tyler'}, {key: 'friends', jacob: {age: 23, name: 'Jacob Turner'}}];
 var dummyArrData = ['Tyler McGinnis', 'Jacob Turner', 'Ean Platter'];
 var testEndpoint = 'test/child';
+var dummyUsers = {'unknown': {email: 'unknown@thisdomainisfake.com', password: 'nonono'}, 'known': {email: 'known@thisdomainisfake.com', password: 'yeahyeahyeah'}};
 var base;
 
 describe('re-base Tests:', function(){
@@ -858,5 +859,34 @@ describe('re-base Tests:', function(){
         React.render(<TestComponent />, document.body);
       });
     });
+		describe('Auth tests', function(){
+			it('Fails trying to log with an unknow user', function(done){
+				base.authWithPassword({
+					email: dummyUsers.unknown.email,
+					password: dummyUsers.unknown.password
+				}, function(error, authData) {
+					expect(error).not.toBeNull();
+					expect(authData).toBeUndefined();
+					done();
+				});
+			});
+
+			it('Succeeds to log with a known user', function(done){
+				base.authWithPassword({
+					email: dummyUsers.known.email,
+					password: dummyUsers.known.password
+				}, function(error, authData) {
+					expect(error).toBeNull();
+					expect(authData).not.toBeNull();
+					done();
+				});
+			});
+			it('Listens to the auth event', function(done){
+				base.onAuth(function(authData){
+					expect(authData).not.toBeNull();
+					done();
+				})
+			});
+		});
   });
 });
