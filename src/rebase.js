@@ -154,6 +154,10 @@ module.exports = (function(){
       } else if(invoker === 'syncState'){
           data = options.asArray === true ? _toArray(data) : data;
           options.reactSetState.call(options.context, {[options.state]: data});
+          if(options.then && options.then.called === false){
+            options.then.call(options.context);
+            options.then.called = true;
+          }
       } else if(invoker === 'bindToState') {
           var newState = {};
           options.asArray === true ? newState[options.state] = _toArray(data) : newState[options.state] = data;
@@ -196,6 +200,7 @@ module.exports = (function(){
       options.context.setState = _sync.reactSetState;
     }
     options.reactSetState = options.context.setState;
+    options.then && (options.then.called = false);
     var ref = new Firebase(`${baseUrl}/${endpoint}`);
     _firebaseRefsMixin(endpoint, 'syncState', ref);
     _addListener(endpoint, 'syncState', options, ref);

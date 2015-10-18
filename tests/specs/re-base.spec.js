@@ -692,6 +692,39 @@ describe('re-base Tests:', function(){
         React.render(<TestComponent />, document.body);
       });
 
+      it('syncState() invokes .then when the initial listener is set', function(done){
+        class TestComponent extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              loading: true,
+            }
+          }
+          componentDidMount(){
+            this.ref = base.syncState('userData', {
+              context: this,
+              state: 'user',
+              then(){
+                expect(this.state.loading).toEqual(true);
+                done();
+              }
+            });
+          }
+          componentWillUnmount(){
+            base.removeBinding(this.ref);
+          }
+          render(){
+            return (
+              <div>
+                No Data
+              </div>
+            )
+          }
+        }
+        React.render(<TestComponent />, document.body);
+      });
+
+
       it('syncState() syncs its local state with Firebase as an Array', function(done){
         class TestComponent extends React.Component{
           constructor(props){
