@@ -705,8 +705,13 @@ describe('re-base Tests:', function(){
               context: this,
               state: 'user',
               then(){
-                expect(this.state.loading).toEqual(true);
-                done();
+                debugger
+                this.setState({
+                  loading: false
+                }, () => {
+                  expect(this.state.loading).toEqual(false);
+                  done();
+                })
               }
             });
           }

@@ -262,13 +262,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var ref = new Firebase(baseUrl + '/' + endpoint);
 	    _firebaseRefsMixin(endpoint, 'syncState', ref);
 	    _addListener(endpoint, 'syncState', options, ref);
-	    options.context.setState = function (data) {
+	    options.context.setState = function (data, cb) {
 	      for (var key in data) {
 	        if (data.hasOwnProperty(key)) {
 	          if (key === options.state) {
 	            _updateSyncState.call(this, ref, data[key], key);
 	          } else {
-	            options.reactSetState.call(options.context, data);
+	            options.reactSetState.call(options.context, data, cb);
 	          }
 	        }
 	      }
