@@ -9,14 +9,18 @@ class App extends React.Component{
   constructor(props){
     super(props);
     this.state = {
-      list: []
+      list: [],
+      loading: true
     }
   }
   componentDidMount(){
     this.ref = base.syncState('todoList', {
       context: this,
       state: 'list',
-      asArray: true
+      asArray: true,
+      then(){
+        this.setState({loading: false})
+      }
     });
   }
   componentWillUnmount(){
@@ -42,7 +46,7 @@ class App extends React.Component{
             <div className="col-sm-12">
               <h3 className="text-center"> re-base Todo List </h3>
               <AddItem add={this.handleAddItem.bind(this)}/>
-              <List items={this.state.list} remove={this.handleRemoveItem.bind(this)}/>
+              {this.state.loading === true ? <h3> LOADING... </h3> : <List items={this.state.list} remove={this.handleRemoveItem.bind(this)}/>}
             </div>
           </div>
         </div>
