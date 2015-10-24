@@ -851,14 +851,14 @@ describe('re-base Tests:', function(){
                 name: 'Steve',
                 iq: 105
               }, {
+                name: 'Pat',
+                iq: 179
+              }, {
                 name: 'Mary',
                 iq: 169
               }, {
                 name: 'Jill',
                 iq: 105
-              }, {
-                name: 'Pat',
-                iq: 179
               }, {
                 name: 'Ross',
                 iq: 145
@@ -883,12 +883,11 @@ describe('re-base Tests:', function(){
                 name: 'Pat',
                 iq: 179
               }];
-              var names = this.state.users.reduce((prev, next) => {
-                prev[next.name] = true;
-                return prev;
-              }, {});
+
               expect(this.state.users.length).toEqual(3);
-              expect(!!(names.Mary && names.Al && names.Pat)).toEqual(true);
+              expectedOutput.forEach((user, index) => {
+                expect(this.state.users[index].name).toEqual(user.name);
+              });
               done();
             }
             return <div>IQ</div>

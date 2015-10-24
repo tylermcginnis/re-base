@@ -111,16 +111,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  };
 
-	  function _toArray(obj) {
+	  function _toArray(snapshot) {
 	    var arr = [];
-	    for (var key in obj) {
-	      if (obj.hasOwnProperty(key)) {
-	        if (_isObject(obj[key])) {
-	          obj[key].key = key;
-	        }
-	        arr.push(obj[key]);
+	    snapshot.forEach(function (childSnapshot) {
+	      var val = childSnapshot.val();
+	      if (_isObject(val)) {
+	        val.key = childSnapshot.key();
 	      }
-	    }
+	      arr.push(val);
+	    });
 	    return arr;
 	  };
 
@@ -186,7 +185,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var ref = new Firebase(baseUrl + '/' + endpoint);
 	    ref = _addQueries(ref, options.queries);
 	    ref.once('value', function (snapshot) {
-	      var data = options.asArray === true ? _toArray(snapshot.val()) : snapshot.val();
+	      var data = options.asArray === true ? _toArray(snapshot) : snapshot.val();
 	      options.then.call(options.context, data);
 	    });
 	  };
@@ -208,9 +207,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var data = snapshot.val();
 	      data = data === null ? options.asArray === true ? [] : {} : data;
 	      if (invoker === 'listenTo') {
-	        options.asArray === true ? options.then.call(options.context, _toArray(data)) : options.then.call(options.context, data);
+	        options.asArray === true ? options.then.call(options.context, _toArray(snapshot)) : options.then.call(options.context, data);
 	      } else if (invoker === 'syncState') {
-	        data = options.asArray === true ? _toArray(data) : data;
+	        data = options.asArray === true ? _toArray(snapshot) : data;
 	        options.reactSetState.call(options.context, _defineProperty({}, options.state, data));
 	        if (options.then && options.then.called === false) {
 	          options.then.call(options.context);
@@ -218,7 +217,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	      } else if (invoker === 'bindToState') {
 	        var newState = {};
-	        options.asArray === true ? newState[options.state] = _toArray(data) : newState[options.state] = data;
+	        options.asArray === true ? newState[options.state] = _toArray(snapshot) : newState[options.state] = data;
 	        _setState.call(options.context, newState);
 	      }
 	    });
