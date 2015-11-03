@@ -68,7 +68,7 @@ $ npm install re-base
       - then: (function - optional) The callback function that will be invoked when the initial listener is established with Firbase. Typically used (with syncState) to change `this.state.loading` to false.
 
 #### Return Value
-  An object which you can pass to `clearBinding` when your component unmounts to remove the Firebase listeners.
+  An object which you can pass to `removeBinding` when your component unmounts to remove the Firebase listeners.
 
 #### Example
     componentDidMount(){
@@ -104,7 +104,7 @@ $ npm install re-base
       - queries: (object - optional) Queries to be used with your read operations.  See [Query Options](#queries) for more details.
 
 #### Return Value
-  An object which you can pass to `clearBinding` when your component unmounts to remove the Firebase listeners.
+  An object which you can pass to `removeBinding` when your component unmounts to remove the Firebase listeners.
 
 #### Example
     componentDidMount(){
@@ -135,7 +135,7 @@ $ npm install re-base
       - queries: (object - optional) Queries to be used with your read operations.  See [Query Options](#queries) for more details.
 
 #### Return Value
-  An object which you can pass to `clearBinding` when your component unmounts to remove the Firebase listeners.
+  An object which you can pass to `removeBinding` when your component unmounts to remove the Firebase listeners.
 
 #### Example
     componentDidMount(){
