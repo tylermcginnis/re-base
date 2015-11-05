@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/tylermcginnis/re-base.svg?branch=master)](https://travis-ci.org/tylermcginnis/re-base)
 [![Coverage Status](https://coveralls.io/repos/tylermcginnis/re-base/badge.svg)](https://coveralls.io/r/tylermcginnis/re-base)
 
-![welcome](http://vignette3.wikia.nocookie.net/tegamibachi/images/2/28/Welcome.gif)
+![welcome](https://media.giphy.com/media/6459ZFRF1Wxna/giphy.gif)
 
 # What is re-base?
 
