@@ -264,7 +264,7 @@ Use the query option to utilize the [Firebase Query](https://www.firebase.com/do
 
 Queries are accepted in the `options` object of each read method (`syncState`, `bindToState`, `listenTo`, and `fetch`).  The object should have one or more keys of the type of query you wish to run, with the value being the value for the query.  For example:
 
-``` javascript
+```javascript
 base.syncState('users', {
   context: this,
   state: 'users',
@@ -282,7 +282,7 @@ The binding above will sort the `users` endpoint by iq, retrieve the last three 
 
 re-base exposes [Firebase's web client](https://www.firebase.com/docs/web/guide/user-auth.html#section-login) `authWithPassword`, `authWithOAuthPopup`, `authWithOAuthRedirect` methods to allow user authentication.
 
-``` javascript
+```javascript
 // Via email / password
 base.authWithPassword({
   email    : 'bobtony@firebase.com',
@@ -296,13 +296,13 @@ base.authWithOAuthRedirect("<provider>", authHandler);
 
 Calling unauth() logs the user out
 
-``` javascript
+```javascript
 base.unauth()
 ```
 
 You may use the onAuth() method to listen for authentication events
 
-```
+```javascript
 // Create a callback which logs the current auth state
 function authDataCallback(authData) {
   if (authData) {
