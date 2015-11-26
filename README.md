@@ -46,8 +46,11 @@ $ npm install re-base
   An object with syncState, bindToState, listenTo, fetch, post, removeBinding, and reset methods.
 
 ##### Example
-    var Rebase = require('re-base');
-    var base = Rebase.createClass('https://myapp.firebaseio.com');
+
+```javascript
+var Rebase = require('re-base');
+var base = Rebase.createClass('https://myapp.firebaseio.com');
+```
 
 <br />
 
@@ -73,18 +76,21 @@ $ npm install re-base
   An object which you can pass to `removeBinding` when your component unmounts to remove the Firebase listeners.
 
 #### Example
-    componentDidMount(){
-      base.syncState(`shoppingList`, {
-        context: this,
-        state: 'items',
-        asArray: true
-      });
-    }
-    addItem(newItem){
-      this.setState({
-        items: this.state.items.concat([newItem]) //updates Firebase and the local state
-      });
-    }
+
+```javascript
+componentDidMount(){
+  base.syncState(`shoppingList`, {
+    context: this,
+    state: 'items',
+    asArray: true
+  });
+}
+addItem(newItem){
+  this.setState({
+    items: this.state.items.concat([newItem]) //updates Firebase and the local state
+  });
+}
+```
 
 <br />
 
@@ -109,13 +115,16 @@ $ npm install re-base
   An object which you can pass to `removeBinding` when your component unmounts to remove the Firebase listeners.
 
 #### Example
-    componentDidMount(){
-      base.bindToState('tasks', {
-        context: this,
-        state: 'tasks'
-        asArray: true
-      });
-    }
+
+```javascript
+componentDidMount(){
+  base.bindToState('tasks', {
+    context: this,
+    state: 'tasks'
+    asArray: true
+  });
+}
+```
 
 <br />
 
@@ -140,19 +149,22 @@ $ npm install re-base
   An object which you can pass to `removeBinding` when your component unmounts to remove the Firebase listeners.
 
 #### Example
-    componentDidMount(){
-      base.listenTo('votes', {
-        context: this,
-        asArray: true,
-        then(votesData){
-          var total = 0;
-          votesData.forEach((vote, index) => {
-            total += vote
-          });
-          this.setState({total});
-        }
-      })
+
+```javascript
+componentDidMount(){
+  base.listenTo('votes', {
+    context: this,
+    asArray: true,
+    then(votesData){
+      var total = 0;
+      votesData.forEach((vote, index) => {
+        total += vote
+      });
+      this.setState({total});
     }
+  })
+}
+```
 
 <br />
 
@@ -177,15 +189,18 @@ $ npm install re-base
   No return value
 
 #### Example
-    getSales(){
-      base.fetch('sales', {
-        context: this,
-        asArray: true,
-        then(data){
-          console.log(data);
-        }
-      });
+
+```javascript
+getSales(){
+  base.fetch('sales', {
+    context: this,
+    asArray: true,
+    then(data){
+      console.log(data);
     }
+  });
+}
+```
 
 <br />
 
@@ -208,14 +223,17 @@ $ npm install re-base
   No return value
 
 #### Example
-    addUser(){
-      base.post('users/${userId}', {
-        data: {name: 'Tyler McGinnis', age: 25},
-        then(){
-          Router.transitionTo('dashboard');
-        }
-      });
+
+```javascript
+addUser(){
+  base.post('users/${userId}', {
+    data: {name: 'Tyler McGinnis', age: 25},
+    then(){
+      Router.transitionTo('dashboard');
     }
+  });
+}
+```
 
 <br />
 
@@ -233,15 +251,18 @@ $ npm install re-base
   No return value
 
 #### Example
-    componentDidMount(){
-      this.ref = base.syncState('users', {
-        context: this,
-        state: 'users'
-      });
-    }
-    componentWillUnmount(){
-      base.removeBinding(this.ref);
-    }
+
+```javascript
+componentDidMount(){
+  this.ref = base.syncState('users', {
+    context: this,
+    state: 'users'
+  });
+}
+componentWillUnmount(){
+  base.removeBinding(this.ref);
+}
+```
 
 <br />
 
