@@ -337,6 +337,24 @@ var ref = new Firebase("https://<YOUR-FIREBASE-APP>.firebaseio.com");
 ref.onAuth(authDataCallback);
 ```
 
+## <a name='users'>User Management</a>
+
+re-base exposes [`createUser`](https://www.firebase.com/docs/web/api/firebase/createuser.html) and [`removeUser`](https://www.firebase.com/docs/web/api/firebase/removeuser.html) methods for user management.
+
+```javascript
+// Create
+base.createUser({
+  email: 'bobtony@firebase.com',
+  password: 'correcthorsebatterystaple'
+}, userHandler);
+
+// Remove
+base.createUser({
+  email: 'bobtony@firebase.com',
+  password: 'correcthorsebatterystaple'
+}, errorHandler);
+```
+
 ## Credits
 
 re-base is inspired by ReactFire from Firebase. Jacob Turner is also a core contributor and this wouldn't have been possible without his assistance.

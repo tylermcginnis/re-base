@@ -316,6 +316,20 @@ module.exports = (function(){
     return ref.unauth();
   }
 
+  function _createUser(credentials, fn){
+    var ref = new Firebase(`${baseUrl}`);
+    return ref.createUser(credentials, function(error, authData) {
+      return fn(error, authData);
+    });
+  };
+
+  function _removeUser(credentials, fn){
+    var ref = new Firebase(`${baseUrl}`);
+    return ref.removeUser(credentials, function(error) {
+      return fn(error);
+    });
+  };
+
   function init(){
     return {
       listenTo(endpoint, options){
@@ -356,7 +370,13 @@ module.exports = (function(){
       },
       unauth(fn){
         return _unauth();
-      }
+      },
+      createUser(credentials,fn) {
+        return _createUser(credentials, fn);
+      },
+      removeUser(credentials,fn) {
+        return _removeUser(credentials, fn);
+      },
     }
   };
 
