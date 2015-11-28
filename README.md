@@ -355,6 +355,14 @@ base.removeUser({
 }, errorHandler);
 ```
 
+## Contributing
+
+1. `npm install`
+2. Edit `src/rebase.js`
+3. Add/edit tests in `tests/specs/re-base.spec.js`
+4. `npm run build`
+5. `npm run test`
+
 ## Credits
 
 re-base is inspired by ReactFire from Firebase. Jacob Turner is also a core contributor and this wouldn't have been possible without his assistance.
