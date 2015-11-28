@@ -12,7 +12,12 @@ var dummyNestedObjData = {about: {name: 'Tyler', age: 25}, friends: {jacob: {nam
 var nestedObjArrResult = [{age: 25, key: 'about', name: 'Tyler'}, {key: 'friends', jacob: {age: 23, name: 'Jacob Turner'}}];
 var dummyArrData = ['Tyler McGinnis', 'Jacob Turner', 'Ean Platter'];
 var testEndpoint = 'test/child';
-var dummyUsers = {'unknown': {email: 'unknown@thisdomainisfake.com', password: 'nonono'}, 'known': {email: 'known@thisdomainisfake.com', password: 'yeahyeahyeah'}};
+var dummyUsers = {
+  'unknown': {email: 'unknown@thisdomainisfake.com', password: 'nonono'},
+  'known': {email: 'known@thisdomainisfake.com', password: 'yeahyeahyeah'},
+  'invalid': {email: 'invalid@com', password: 'correcthorsebatterystaple'},
+  'toDelete': {email: 'test@example.com', password: 'correcthorsebatterystaple'},
+};
 var base;
 
 describe('re-base Tests:', function(){
@@ -925,5 +930,45 @@ describe('re-base Tests:', function(){
 				})
 			});
 		});
+    describe('User tests', function() {
+      it('Fails to create with invalid email', function(done) {
+        base.createUser({
+          email: dummyUsers.invalid.email,
+          password: dummyUsers.invalid.password,
+        }, function(error, userData) {
+          expect(error).not.toBeNull();
+          expect(userData).toBeUndefined();
+          done();
+        });
+      });
+      it('Succeeds to create a valid user', function(done) {
+        base.createUser({
+          email: dummyUsers.toDelete.email,
+          password: dummyUsers.toDelete.password,
+        }, function(error, userData) {
+          expect(error).toBeNull();
+          expect(userData).not.toBeNull();
+          done();
+        });
+      });
+      it('Fails to delete a non-existant user', function(done) {
+        base.removeUser({
+          email: dummyUsers.unknown.email,
+          password: dummyUsers.unknown.password,
+        }, function(error) {
+          expect(error).not.toBeNull();
+          done();
+        });
+      });
+      it('Succeeds to delete a user', function(done) {
+        base.removeUser({
+          email: dummyUsers.toDelete.email,
+          password: dummyUsers.toDelete.password,
+        }, function(error) {
+          expect(error).toBeNull();
+          done();
+        });
+      });
+    });
   });
 });

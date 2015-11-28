@@ -374,6 +374,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return ref.unauth();
 	  }
 
+	  function _createUser(credentials, fn) {
+	    var ref = new Firebase('' + baseUrl);
+	    return ref.createUser(credentials, function (error, authData) {
+	      return fn(error, authData);
+	    });
+	  };
+
+	  function _removeUser(credentials, fn) {
+	    var ref = new Firebase('' + baseUrl);
+	    return ref.removeUser(credentials, function (error) {
+	      return fn(error);
+	    });
+	  };
+
 	  function init() {
 	    return {
 	      listenTo: function listenTo(endpoint, options) {
@@ -414,6 +428,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      },
 	      unauth: function unauth(fn) {
 	        return _unauth();
+	      },
+	      createUser: function createUser(credentials, fn) {
+	        return _createUser(credentials, fn);
+	      },
+	      removeUser: function removeUser(credentials, fn) {
+	        return _removeUser(credentials, fn);
 	      }
 	    };
 	  };
