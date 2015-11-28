@@ -349,7 +349,7 @@ base.createUser({
 }, userHandler);
 
 // Remove
-base.createUser({
+base.removeUser({
   email: 'bobtony@firebase.com',
   password: 'correcthorsebatterystaple'
 }, errorHandler);
