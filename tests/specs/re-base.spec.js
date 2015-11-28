@@ -969,6 +969,22 @@ describe('re-base Tests:', function(){
           done();
         });
       });
+      it('Fails to reset password for non-existant user', function(done) {
+        base.resetPassword({
+          email: dummyUsers.unknown.email,
+        }, function(error) {
+          expect(error).not.toBeNull();
+          done();
+        });
+      });
+      it('Succeeds to reset password for a user', function(done) {
+        base.resetPassword({
+          email: dummyUsers.known.email,
+        }, function(error) {
+          expect(error).toBeNull();
+          done();
+        });
+      });
     });
   });
 });

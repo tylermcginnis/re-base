@@ -330,6 +330,13 @@ module.exports = (function(){
     });
   };
 
+  function _resetPassword(credentials, fn){
+    var ref = new Firebase(`${baseUrl}`);
+    return ref.resetPassword(credentials, function(error) {
+      return fn(error);
+    });
+  };
+
   function init(){
     return {
       listenTo(endpoint, options){
@@ -376,6 +383,9 @@ module.exports = (function(){
       },
       removeUser(credentials,fn) {
         return _removeUser(credentials, fn);
+      },
+      resetPassword(credentials,fn) {
+        return _resetPassword(credentials, fn);
       },
     }
   };

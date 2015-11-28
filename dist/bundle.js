@@ -388,6 +388,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	  };
 
+	  function _resetPassword(credentials, fn) {
+	    var ref = new Firebase('' + baseUrl);
+	    return ref.resetPassword(credentials, function (error) {
+	      return fn(error);
+	    });
+	  };
+
 	  function init() {
 	    return {
 	      listenTo: function listenTo(endpoint, options) {
@@ -434,6 +441,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      },
 	      removeUser: function removeUser(credentials, fn) {
 	        return _removeUser(credentials, fn);
+	      },
+	      resetPassword: function resetPassword(credentials, fn) {
+	        return _resetPassword(credentials, fn);
 	      }
 	    };
 	  };
