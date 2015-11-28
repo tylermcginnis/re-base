@@ -339,7 +339,7 @@ ref.onAuth(authDataCallback);
 
 ## <a name='users'>User Management</a>
 
-re-base exposes [`createUser`](https://www.firebase.com/docs/web/api/firebase/createuser.html), [`removeUser`](https://www.firebase.com/docs/web/api/firebase/removeuser.html) and [`resetPassword`](https://www.firebase.com/docs/web/api/firebase/resetpassword.html) methods for user management.
+re-base exposes [`createUser`](https://www.firebase.com/docs/web/api/firebase/createuser.html), [`removeUser`](https://www.firebase.com/docs/web/api/firebase/removeuser.html), [`resetPassword`](https://www.firebase.com/docs/web/api/firebase/resetpassword.html) and [`changePassword`](https://www.firebase.com/docs/web/api/firebase/changepassword.html) methods for user management.
 
 ```javascript
 // Create
@@ -356,7 +356,14 @@ base.removeUser({
 
 // Reset Password
 base.resetPassword({
+  email: 'bobtony@firebase.com'
+}, errorHandler);
+
+// Change Password
+base.changePassword({
   email: 'bobtony@firebase.com',
+  oldPassword: 'correcthorsebatterystaple',
+  newPassword: 'chipsahoy'
 }, errorHandler);
 ```
 

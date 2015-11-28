@@ -16,7 +16,7 @@ var dummyUsers = {
   'unknown': {email: 'unknown@thisdomainisfake.com', password: 'nonono'},
   'known': {email: 'known@thisdomainisfake.com', password: 'yeahyeahyeah'},
   'invalid': {email: 'invalid@com', password: 'correcthorsebatterystaple'},
-  'toDelete': {email: 'test@example.com', password: 'correcthorsebatterystaple'},
+  'toDelete': {email: 'test@example.com', password: 'correcthorsebatterystaple', newPassword: 'chipsahoy'},
 };
 var base;
 
@@ -951,6 +951,42 @@ describe('re-base Tests:', function(){
           done();
         });
       });
+      it('Fails to reset password for non-existant user', function(done) {
+        base.resetPassword({
+          email: dummyUsers.unknown.email,
+        }, function(error) {
+          expect(error).not.toBeNull();
+          done();
+        });
+      });
+      it('Succeeds to reset password for a user', function(done) {
+        base.resetPassword({
+          email: dummyUsers.known.email,
+        }, function(error) {
+          expect(error).toBeNull();
+          done();
+        });
+      });
+      it('Fails to change password without password', function(done) {
+        base.changePassword({
+          email: dummyUsers.known.email,
+          oldPassword: dummyUsers.known.email,
+          newPassword: '',
+        }, function(error) {
+          expect(error).not.toBeNull();
+          done();
+        });
+      });
+      it('Succeeds to change password', function(done) {
+        base.changePassword({
+          email: dummyUsers.toDelete.email,
+          oldPassword: dummyUsers.toDelete.password,
+          newPassword: dummyUsers.toDelete.newPassword,
+        }, function(error) {
+          expect(error).toBeNull();
+          done();
+        });
+      });
       it('Fails to delete a non-existant user', function(done) {
         base.removeUser({
           email: dummyUsers.unknown.email,
@@ -963,23 +999,7 @@ describe('re-base Tests:', function(){
       it('Succeeds to delete a user', function(done) {
         base.removeUser({
           email: dummyUsers.toDelete.email,
-          password: dummyUsers.toDelete.password,
-        }, function(error) {
-          expect(error).toBeNull();
-          done();
-        });
-      });
-      it('Fails to reset password for non-existant user', function(done) {
-        base.resetPassword({
-          email: dummyUsers.unknown.email,
-        }, function(error) {
-          expect(error).not.toBeNull();
-          done();
-        });
-      });
-      it('Succeeds to reset password for a user', function(done) {
-        base.resetPassword({
-          email: dummyUsers.known.email,
+          password: dummyUsers.toDelete.newPassword,
         }, function(error) {
           expect(error).toBeNull();
           done();
