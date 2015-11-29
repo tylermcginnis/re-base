@@ -929,6 +929,12 @@ describe('re-base Tests:', function(){
 					done();
 				})
 			});
+      it('Succeeds to get users authentication data', function(done) {
+        var authData = base.getAuth();
+
+        expect(authData).not.toBeNull();
+        done();
+      });
 		});
     describe('User tests', function() {
       it('Fails to create with invalid email', function(done) {

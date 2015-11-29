@@ -301,30 +301,28 @@ The binding above will sort the `users` endpoint by iq, retrieve the last three 
 
 ## <a name='auth'>Authentication</a>
 
-re-base exposes [Firebase's web client](https://www.firebase.com/docs/web/guide/user-auth.html#section-login) `authWithPassword`, `authWithOAuthPopup`, `authWithOAuthRedirect` methods to allow user authentication.
+re-base exposes [Firebase's web client](https://www.firebase.com/docs/web/guide/user-auth.html#section-login) `authWithPassword`, `authWithOAuthPopup`, `authWithOAuthRedirect` methods to allow user authentication. `getAuth` is also exposed to access the current authentication state.
 
 ```javascript
-// Via email / password
+// Simple email authentication
 base.authWithPassword({
   email    : 'bobtony@firebase.com',
   password : 'correcthorsebatterystaple'
 }, authHandler);
 
-// Or via popular OAuth providers ("facebook", "github", "google", or "twitter")
+// Authentication via OAuth providers ("facebook", "github", "google", or "twitter")
 base.authWithOAuthPopup("<provider>", authHandler);
 base.authWithOAuthRedirect("<provider>", authHandler);
-```
 
-Calling unauth() logs the user out
-
-```javascript
+// Log a user out
 base.unauth()
+
+// Get authentication information
+var authData = base.getAuth();
 ```
 
-You may use the onAuth() method to listen for authentication events
-
 ```javascript
-// Create a callback which logs the current auth state
+// Listen to authentication
 function authDataCallback(authData) {
   if (authData) {
     console.log("User " + authData.uid + " is logged in with " + authData.provider);
@@ -332,7 +330,7 @@ function authDataCallback(authData) {
     console.log("User is logged out");
   }
 }
-// Register the callback to be fired every time auth state changes
+
 var ref = new Firebase("https://<YOUR-FIREBASE-APP>.firebaseio.com");
 ref.onAuth(authDataCallback);
 ```

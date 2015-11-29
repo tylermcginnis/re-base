@@ -316,6 +316,11 @@ module.exports = (function(){
     return ref.unauth();
   }
 
+  function _getAuth() {
+    var ref = new Firebase(`${baseUrl}`);
+    return ref.getAuth();
+  }
+
   function _createUser(credentials, fn){
     var ref = new Firebase(`${baseUrl}`);
     return ref.createUser(credentials, function(error, authData) {
@@ -370,6 +375,9 @@ module.exports = (function(){
       },
       unauth(fn){
         return _unauth();
+      },
+      getAuth() {
+        return _getAuth();
       },
       createUser(credentials,fn) {
         return _createUser(credentials, fn);

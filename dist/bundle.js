@@ -374,6 +374,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return ref.unauth();
 	  }
 
+	  function _getAuth() {
+	    var ref = new Firebase('' + baseUrl);
+	    return ref.getAuth();
+	  }
+
 	  function _createUser(credentials, fn) {
 	    var ref = new Firebase('' + baseUrl);
 	    return ref.createUser(credentials, function (error, authData) {
@@ -428,6 +433,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      },
 	      unauth: function unauth(fn) {
 	        return _unauth();
+	      },
+	      getAuth: function getAuth() {
+	        return _getAuth();
 	      },
 	      createUser: function createUser(credentials, fn) {
 	        return _createUser(credentials, fn);
