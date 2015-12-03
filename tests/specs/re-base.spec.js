@@ -11,6 +11,7 @@ var dummyObjData = {name: 'Tyler McGinnis', age: 25};
 var dummyNestedObjData = {about: {name: 'Tyler', age: 25}, friends: {jacob: {name: 'Jacob Turner', age: 23}}};
 var nestedObjArrResult = [{age: 25, key: 'about', name: 'Tyler'}, {key: 'friends', jacob: {age: 23, name: 'Jacob Turner'}}];
 var dummyArrData = ['Tyler McGinnis', 'Jacob Turner', 'Ean Platter'];
+var dummyArrItem = 'Bob Pratt';
 var testEndpoint = 'test/child';
 var dummyUsers = {
   'unknown': {email: 'unknown@thisdomainisfake.com', password: 'nonono'},
@@ -19,6 +20,13 @@ var dummyUsers = {
   'toDelete': {email: 'test@example.com', password: 'correcthorsebatterystaple', newPassword: 'chipsahoy'},
 };
 var base;
+
+function toFirebaseArray (arr) {
+  return arr.reduce(function (fbArr, item, i) {
+    fbArr[i] = item;
+    return fbArr;
+  }, {});
+}
 
 describe('re-base Tests:', function(){
   beforeEach(function(done){
@@ -97,6 +105,27 @@ describe('re-base Tests:', function(){
             expect(data).toEqual(dummyObjData);
             done();
           });
+        }
+      })
+    });
+
+    it('post()\'s asArray property should append data to the endpoint rather than replacing it', function(done){
+      base.post(testEndpoint, {
+        data: dummyArrData,
+        then(){
+          var pushRef = base.post(testEndpoint, {
+            data: dummyArrItem,
+            asArray: true,
+            then(){
+              ref.child(testEndpoint).once('value', (snapshot) => {
+                var data = snapshot.val();
+                var expected = toFirebaseArray(dummyArrData);
+                expected[pushRef.key()] = dummyArrItem;
+                expect(data).toEqual(expected);
+                done();
+              });
+            }
+          })
         }
       })
     });
