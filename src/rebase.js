@@ -285,6 +285,13 @@ module.exports = (function(){
     });
   }
 
+  function _authWithCustomToken(token, fn){
+    var ref = new Firebase(`${baseUrl}`);
+    return ref.authWithCustomToken(token, function(error, authData){
+      return fn(error, authData);
+    });
+  }
+
   function _authWithOAuthPopup(provider , fn, settings){
     settings = settings || {};
     var ref = new Firebase(`${baseUrl}`);
@@ -374,6 +381,9 @@ module.exports = (function(){
       },
       authWithPassword(credentials, fn){
         return _authWithPassword(credentials, fn);
+      },
+      authWithCustomToken(token, fn){
+        return _authWithCustomToken(token, fn);
       },
       authWithOAuthPopup(provider, fn, settings){
         return _authWithOAuthPopup(provider, fn, settings);
