@@ -1,7 +1,9 @@
 import React from 'react';
 import Rebase from 're-base';
 
-var base = Rebase.createClass('https://github-note-taker.firebaseio.com');
+var base = Rebase.createClass('https://jt-ts.firebaseio.com/rebase-chat');
+console.log('Please change to your own firebase address in components/NewChat.js');
+
 
 class NewChat extends React.Component {
   _newChat(e){
