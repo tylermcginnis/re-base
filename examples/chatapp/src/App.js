@@ -3,7 +3,7 @@ import Container from './components/Container';
 import NewChat from './components/NewChat';
 
 import Rebase from 're-base';
-var base = Rebase.createClass('https://github-note-taker.firebaseio.com');
+var base = Rebase.createClass('https://jt-ts.firebaseio.com/rebase-chat');
 
 class Main extends React.Component {
   constructor(props){
