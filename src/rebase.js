@@ -228,6 +228,17 @@ module.exports = (function(){
     }
   };
 
+  function _push(endpoint, options){
+    _validateEndpoint(endpoint);
+    optionValidators.data(options);
+    var ref = new Firebase(`${baseUrl}/${endpoint}`);
+    if(options.then){
+      ref.push(options.data, options.then);
+    } else {
+      ref.push(options.data);
+    }
+  };
+
   function _addQueries(ref, queries){
     var needArgs = {
       limitToFirst: true,
@@ -365,6 +376,9 @@ module.exports = (function(){
       },
       post(endpoint, options){
         _post(endpoint, options);
+      },
+      push(endpoint, options){
+        _push(endpoint, options);
       },
       removeBinding(endpoint){
         _removeBinding(endpoint, true);
