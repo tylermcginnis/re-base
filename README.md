@@ -120,7 +120,7 @@ addItem(newItem){
 componentDidMount(){
   base.bindToState('tasks', {
     context: this,
-    state: 'tasks'
+    state: 'tasks',
     asArray: true
   });
 }
