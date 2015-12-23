@@ -4,6 +4,7 @@ import Rebase from 're-base';
 import Message from './Message.js';
 
 var base = Rebase.createClass('https://jt-ts.firebaseio.com/rebase-chat');
+console.log('Please change to your own firebase address in components/Container.js');
 
 class Container extends React.Component {
   constructor(props){
