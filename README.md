@@ -19,6 +19,7 @@ I spent a few weeks trying to figure out the cleanest way to implement Firebase 
 - *listenTo*: Whenever your Firebase endpoint changes, it will invoke a callback passing it the new data from Firebase.
 - *fetch*: Retrieve data from Firebase without setting up any binding or listeners.
 - *post*: Add new data to Firebase.
+- *push*: Push new child data to Firebase.
 - *removeBinding*: Remove all of the Firebase listeners when your component unmounts.
 - *reset*: Removes all of the Firebase listeners and resets the singleton (for testing purposes).
 
@@ -43,7 +44,7 @@ $ npm install re-base
       - The absolute, HTTPS URL of your Firebase project
 
 ##### Return Value
-  An object with syncState, bindToState, listenTo, fetch, post, removeBinding, and reset methods.
+  An object with syncState, bindToState, listenTo, fetch, post, push, removeBinding, and reset methods.
 
 ##### Example
 
@@ -228,6 +229,39 @@ getSales(){
 addUser(){
   base.post('users/${userId}', {
     data: {name: 'Tyler McGinnis', age: 25},
+    then(){
+      Router.transitionTo('dashboard');
+    }
+  });
+}
+```
+
+<br />
+
+## push(endpoint, options)
+
+#### Purpose
+  Allows you to add data to a Firebase endpoint. *Adds data to a child of the endpoint with a new Firebase push key*
+
+#### Arguments
+  1. endpoint
+    - type: string
+    - The relative Firebase endpoint that you'd like to push the new data to
+  2. options
+    - type: object
+    - properties:
+      - data: (any - required) The data you're wanting to persist to Firebase
+      - then: (function - optional) A callback that will get invoked once the new data has been saved to Firebase
+
+#### Return Value
+  No return value
+
+#### Example
+
+```javascript
+addBear(){
+  base.push('bears', {
+    data: {name: 'George', type: 'Grizzly'},
     then(){
       Router.transitionTo('dashboard');
     }

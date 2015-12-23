@@ -102,6 +102,47 @@ describe('re-base Tests:', function(){
     });
   });
 
+
+  describe('push()', function(){
+    it('push() throws an error given a invalid endpoint', function(){
+      invalidEndpoints.forEach((endpoint) => {
+        try {
+          base.push(endpoint, {
+            data: dummyObjData
+          })
+        } catch(err) {
+          expect(err.code).toEqual('INVALID_ENDPOINT');
+        }
+      });
+    });
+
+    it('push() throws an error given an invalid options object', function(){
+      var invalidOptions = [[], {}, {then: function(){}}, {data: undefined}];
+      invalidOptions.forEach((option) => {
+        try {
+          base.push(testEndpoint, option);
+        } catch(err) {
+          expect(err.code).toEqual('INVALID_OPTIONS');
+        }
+      });
+    });
+
+    it('push() updates Firebase correctly', function(done){
+      base.push(testEndpoint, {
+        data: dummyObjData,
+        then(){
+          ref.child(testEndpoint).once('value', (snapshot) => {
+            var keyedData = snapshot.val();
+            var data = keyedData[Object.keys(keyedData)[0]];
+
+            expect(data).toEqual(dummyObjData);
+            done();
+          });
+        }
+      })
+    });
+  });
+
   describe('fetch()', function(){
     it('fetch() throws an error given a invalid endpoint', function(done){
       invalidEndpoints.forEach((endpoint) => {

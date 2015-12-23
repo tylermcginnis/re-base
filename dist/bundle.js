@@ -286,6 +286,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  };
 
+	  function _push(endpoint, options) {
+	    _validateEndpoint(endpoint);
+	    optionValidators.data(options);
+	    var ref = new Firebase(baseUrl + '/' + endpoint);
+	    if (options.then) {
+	      ref.push(options.data, options.then);
+	    } else {
+	      ref.push(options.data);
+	    }
+	  };
+
 	  function _addQueries(ref, queries) {
 	    var needArgs = {
 	      limitToFirst: true,
@@ -423,6 +434,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      },
 	      post: function post(endpoint, options) {
 	        _post(endpoint, options);
+	      },
+	      push: function push(endpoint, options) {
+	        _push(endpoint, options);
 	      },
 	      removeBinding: function removeBinding(endpoint) {
 	        _removeBinding(endpoint, true);
