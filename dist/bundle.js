@@ -354,10 +354,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	  }
 
+	  function _authWithCustomToken(token, fn) {
+	    var ref = new Firebase('' + baseUrl);
+	    return ref.authWithCustomToken(token, function (error, authData) {
+	      return fn(error, authData);
+	    });
+	  }
+
 	  function _authWithOAuthPopup(provider, fn, settings) {
 	    settings = settings || {};
 	    var ref = new Firebase('' + baseUrl);
 	    return ref.authWithOAuthPopup(provider, function (error, authData) {
+	      return fn(error, authData);
+	    }, settings);
+	  }
+
+	  function _authWithOAuthToken(provider, token, fn, settings) {
+	    settings = settings || {};
+	    var ref = new Firebase('' + baseUrl);
+	    return ref.authWithOAuthToken(provider, token, function (error, authData) {
 	      return fn(error, authData);
 	    }, settings);
 	  }
@@ -447,8 +462,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      authWithPassword: function authWithPassword(credentials, fn) {
 	        return _authWithPassword(credentials, fn);
 	      },
+	      authWithCustomToken: function authWithCustomToken(token, fn) {
+	        return _authWithCustomToken(token, fn);
+	      },
 	      authWithOAuthPopup: function authWithOAuthPopup(provider, fn, settings) {
 	        return _authWithOAuthPopup(provider, fn, settings);
+	      },
+	      authWithOAuthToken: function authWithOAuthToken(provider, fn, token, settings) {
+	        return _authWithOAuthToken(provider, fn, token, settings);
 	      },
 	      authWithOAuthRedirect: function authWithOAuthRedirect(provider, fn, settings) {
 	        return _authWithOAuthRedirect(provider, fn, settings);
