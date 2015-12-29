@@ -192,12 +192,7 @@ module.exports = (function(){
     optionValidators.context(options);
     optionValidators.state(options);
     options.queries && optionValidators.query(options);
-    if(_sync.called !== true){
-      _sync.reactSetState = options.context.setState;
-      _sync.called = true;
-    } else {
-      options.context.setState = _sync.reactSetState;
-    }
+
     options.reactSetState = options.context.setState;
     options.then && (options.then.called = false);
     var ref = new Firebase(`${baseUrl}/${endpoint}`);
@@ -208,10 +203,11 @@ module.exports = (function(){
         if(data.hasOwnProperty(key)){
           if (key === options.state) {
             _updateSyncState.call(this, ref, data[key], key)
-         } else {
-            options.reactSetState.call(options.context, data, cb);
-         }
+          }
         }
+        
+        // Call all previous "setState"s recursively to make sure they all update
+        options.reactSetState.call(options.context, data, cb);
      }
     };
     return _returnRef(endpoint, 'syncState');
