@@ -311,7 +311,7 @@ module.exports = (function(){
      }, settings);
   }
 
-  function _authWithOAuthToken(provider, token, fn, settings){
+  function _authWithOAuthToken(provider, fn, token, settings){
     settings = settings || {};
     var ref = new Firebase(`${baseUrl}`);
     return ref.authWithOAuthToken(provider, token, function(error, authData) {
