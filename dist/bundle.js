@@ -468,8 +468,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      authWithOAuthPopup: function authWithOAuthPopup(provider, fn, settings) {
 	        return _authWithOAuthPopup(provider, fn, settings);
 	      },
-	      authWithOAuthToken: function authWithOAuthToken(provider, fn, token, settings) {
-	        return _authWithOAuthToken(provider, fn, token, settings);
+	      authWithOAuthToken: function authWithOAuthToken(provider, token, fn, settings) {
+	        return _authWithOAuthToken(provider, token, fn, settings);
 	      },
 	      authWithOAuthRedirect: function authWithOAuthRedirect(provider, fn, settings) {
 	        return _authWithOAuthRedirect(provider, fn, settings);
