@@ -335,7 +335,7 @@ The binding above will sort the `users` endpoint by iq, retrieve the last three 
 
 ## <a name='auth'>Authentication</a>
 
-re-base exposes [Firebase's web client](https://www.firebase.com/docs/web/guide/user-auth.html#section-login) `authWithPassword`, `authWithOAuthPopup`, `authWithOAuthRedirect` methods to allow user authentication. `getAuth` is also exposed to access the current authentication state.
+re-base exposes [Firebase's web client](https://www.firebase.com/docs/web/guide/user-auth.html#section-login) `authWithPassword`, `authWithOAuthPopup`, `authWithOAuthRedirect`, authWithOAuthToken` methods to allow user authentication. `getAuth` is also exposed to access the current authentication state.
 
 ```javascript
 // Simple email authentication
@@ -347,6 +347,7 @@ base.authWithPassword({
 // Authentication via OAuth providers ("facebook", "github", "google", or "twitter")
 base.authWithOAuthPopup("<provider>", authHandler);
 base.authWithOAuthRedirect("<provider>", authHandler);
+base.authWithOAuthToken("<provider>", token, authHandler);
 
 // Log a user out
 base.unauth()
