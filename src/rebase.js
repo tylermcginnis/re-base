@@ -93,6 +93,7 @@ module.exports = (function(){
 
   function _validateEndpoint(endpoint){
     var defaultError = 'The Firebase endpoint you are trying to listen to';
+    var endpointSpecialCases = ['.info', '.info/authenticated', '.info/connected', '.info/serverTimeOffset'];
     var errorMsg;
     if(typeof endpoint !== 'string'){
       errorMsg = `${defaultError} must be a string. Instead, got ${endpoint}`;
@@ -100,8 +101,8 @@ module.exports = (function(){
       errorMsg = `${defaultError} must be a non-empty string. Instead, got ${endpoint}`;
     } else if(endpoint.length > 768){
       errorMsg = `${defaultError} is too long to be stored in Firebase. It be less than 768 characters.`;
-    } else if(/^$|[\[\]\.\#\$]/.test(endpoint)){
-      errorMsg = `${defaultError} in invalid. Paths must be non-empty strings and can't contain ".", "#", "$", "[", or "]".`;
+    } else if(/[\[\]\.\#\$]/.test(endpoint) && endpointSpecialCases.indexOf(endpoint) === -1){
+      errorMsg = `${defaultError} is invalid. Paths cannot contain ".", "#", "$", "[", or "]" (exception: ".info/*").`;
     }
 
     if(typeof errorMsg !== 'undefined'){
