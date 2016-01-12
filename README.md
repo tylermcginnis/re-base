@@ -31,7 +31,7 @@ $ npm install re-base
 
 # API
 
-#### For more in depth examples of the API, see the `examples` folder.
+#### For more in depth examples of the API, see the [`examples`](examples) folder.
 
 ## createClass(firebaseUrl)
 
