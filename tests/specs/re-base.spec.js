@@ -976,7 +976,14 @@ describe('re-base Tests:', function(){
         expect(authData).not.toBeNull();
         done();
       });
-		});
+      it('can log in anonymously', function(done){
+        base.authAnonymously(function(error, authData) {
+          expect(error).not.toBeNull();
+          expect(authData).toBeUndefined();
+          done();
+        });
+      });
+    });
     describe('User tests', function() {
       it('Fails to create with invalid email', function(done) {
         base.createUser({
