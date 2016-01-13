@@ -127,6 +127,15 @@ describe('re-base Tests:', function(){
       });
     });
 
+    it('push() returns a Firebase reference for the generated location', function(){
+      var returnedEndpoint = base.push(testEndpoint, {
+        data: dummyObjData
+      });
+      var endpointString = returnedEndpoint.toString();
+      var endpointBaseUrl = endpointString.substr(0, firebaseUrl.length);
+      expect(endpointBaseUrl).toEqual(firebaseUrl);
+    });
+
     it('push() updates Firebase correctly', function(done){
       base.push(testEndpoint, {
         data: dummyObjData,

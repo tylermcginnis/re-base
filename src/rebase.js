@@ -238,6 +238,7 @@ module.exports = (function(){
     } else {
       returnEndpoint = ref.push(options.data);
     }
+    return returnEndpoint;
   };
 
   function _addQueries(ref, queries){
@@ -394,7 +395,7 @@ module.exports = (function(){
         _post(endpoint, options);
       },
       push(endpoint, options){
-        _push(endpoint, options);
+        return _push(endpoint, options);
       },
       removeBinding(endpoint){
         _removeBinding(endpoint, true);
