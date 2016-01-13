@@ -254,7 +254,7 @@ addUser(){
       - then: (function - optional) A callback that will get invoked once the new data has been saved to Firebase
 
 #### Return Value
-  No return value
+  A Firebase reference for the generated location
 
 #### Example
 

@@ -290,11 +290,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _validateEndpoint(endpoint);
 	    optionValidators.data(options);
 	    var ref = new Firebase(baseUrl + '/' + endpoint);
+	    var returnEndpoint;
 	    if (options.then) {
-	      ref.push(options.data, options.then);
+	      returnEndpoint = ref.push(options.data, options.then);
 	    } else {
-	      ref.push(options.data);
+	      returnEndpoint = ref.push(options.data);
 	    }
+	    return returnEndpoint;
 	  };
 
 	  function _addQueries(ref, queries) {
@@ -451,7 +453,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _post(endpoint, options);
 	      },
 	      push: function push(endpoint, options) {
-	        _push(endpoint, options);
+	        return _push(endpoint, options);
 	      },
 	      removeBinding: function removeBinding(endpoint) {
 	        _removeBinding(endpoint, true);

@@ -31,7 +31,7 @@
   },
   "scripts": {
     "build": "webpack",
-    "test": "./node_modules/karma/bin/karma start tests/karma.conf.js",
+    "test": "karma start tests/karma.conf.js",
     "travis": "./node_modules/karma/bin/karma start tests/karma.conf.js"
   }
 }
