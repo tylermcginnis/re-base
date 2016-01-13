@@ -232,10 +232,11 @@ module.exports = (function(){
     _validateEndpoint(endpoint);
     optionValidators.data(options);
     var ref = new Firebase(`${baseUrl}/${endpoint}`);
+    var returnEndpoint;
     if(options.then){
-      ref.push(options.data, options.then);
+      returnEndpoint = ref.push(options.data, options.then);
     } else {
-      ref.push(options.data);
+      returnEndpoint = ref.push(options.data);
     }
   };
 
