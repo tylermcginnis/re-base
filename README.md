@@ -3,6 +3,7 @@
 [![Coverage Status](https://coveralls.io/repos/tylermcginnis/re-base/badge.svg)](https://coveralls.io/r/tylermcginnis/re-base)
 
 ![welcome](https://media.giphy.com/media/6459ZFRF1Wxna/giphy.gif)
+Questions? Find me on twitter at [@tylermcginnis33](http://tylermcginnis33)
 
 # What is re-base?
 
