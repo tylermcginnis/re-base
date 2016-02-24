@@ -114,7 +114,8 @@ module.exports = (function(){
   };
 
   function _returnRef(endpoint, method){
-    return { endpoint, method };
+    var id = Date.now();
+    return { endpoint, method, id };
   };
 
   function _fetch(endpoint, options){
@@ -135,17 +136,20 @@ module.exports = (function(){
       firebaseRefs[endpoint] = {
         [invoker]: ref.ref()
       };
-      firebaseListeners[endpoint] = {};
+      if (!firebaseListeners[endpoint]) {
+        firebaseListeners[endpoint] = {}
+      }
+      if (!firebaseListeners[endpoint][invoker]) {
+        firebaseListeners[endpoint][invoker] = {}
+      }
     } else if(!firebaseRefs[endpoint][invoker]){
       firebaseRefs[endpoint][invoker] = ref.ref();
-    } else {
-      _throwError(`Endpoint (${endpoint}) already has listener ${invoker}`, "INVALID_ENDPOINT");
     }
   };
 
-  function _addListener(endpoint, invoker, options, ref){
+  function _addListener(endpoint, invoker, options, ref, id){
     ref = _addQueries(ref, options.queries);
-    firebaseListeners[endpoint][invoker] = ref.on('value', (snapshot) => {
+    firebaseListeners[endpoint][invoker][id] = ref.on('value', (snapshot) => {
       var data = snapshot.val();
       data = data === null ? (options.asArray === true ? [] : {}) : data;
       if(invoker === 'listenTo'){
@@ -173,8 +177,9 @@ module.exports = (function(){
     options.queries && optionValidators.query(options);
     var ref = new Firebase(`${baseUrl}/${endpoint}`);
     _firebaseRefsMixin(endpoint, invoker, ref);
-    _addListener(endpoint, invoker, options, ref);
-    return  _returnRef(endpoint, invoker);
+    var returnRef = _returnRef(endpoint, invoker)
+    _addListener(endpoint, invoker, options, ref, returnRef.id);
+    return  returnRef;
   };
 
   function _updateSyncState(ref, data, key){
@@ -202,7 +207,8 @@ module.exports = (function(){
     options.then && (options.then.called = false);
     var ref = new Firebase(`${baseUrl}/${endpoint}`);
     _firebaseRefsMixin(endpoint, 'syncState', ref);
-    _addListener(endpoint, 'syncState', options, ref);
+    var returnRef = _returnRef(endpoint, 'syncState')
+    _addListener(endpoint, 'syncState', options, ref, returnRef.id);
     options.context.setState = function (data, cb) {
       for (var key in data) {
         if(data.hasOwnProperty(key)){
@@ -214,7 +220,7 @@ module.exports = (function(){
         }
      }
     };
-    return _returnRef(endpoint, 'syncState');
+    return returnRef;
   };
 
   function _post(endpoint, options){
@@ -268,9 +274,11 @@ module.exports = (function(){
       var errorMsg = `Unexpected value for endpoint. ${refObj.endpoint} was either never bound or has already been unbound.`;
       _throwError(errorMsg, "UNBOUND_ENDPOINT_VARIABLE");
     }
-    firebaseRefs[refObj.endpoint][refObj.method].off('value', firebaseListeners[refObj.endpoint][refObj.method]);
-    delete firebaseRefs[refObj.endpoint][refObj.method];
-    delete firebaseListeners[refObj.endpoint][refObj.method];
+    firebaseRefs[refObj.endpoint][refObj.method].off('value', firebaseListeners[refObj.endpoint][refObj.method][refObj.id]);
+    delete firebaseListeners[refObj.endpoint][refObj.method][refObj.id];
+    if (!Object.keys(firebaseListeners[refObj.endpoint][refObj.method]).length) {
+      delete firebaseRefs[refObj.endpoint][refObj.method];
+    }
   };
 
   function _reset(){
@@ -280,7 +288,11 @@ module.exports = (function(){
       if(firebaseRefs.hasOwnProperty(key)){
         for(var prop in firebaseRefs[key]){
           if(firebaseRefs[key].hasOwnProperty(prop)){
-            firebaseRefs[key][prop].off('value', firebaseListeners[key][prop]);
+            for (var callback_id in firebaseListeners[key][prop]) {
+              if (firebaseListeners[key][prop].hasOwnProperty(callback_id)) {
+                firebaseRefs[key][prop].off('value', firebaseListeners[key][prop][callback_id]);
+              }
+            }
             delete firebaseRefs[key][prop];
             delete firebaseListeners[key][prop];
           }
