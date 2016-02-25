@@ -284,21 +284,15 @@ module.exports = (function(){
   function _reset(){
     baseUrl = '';
     rebase = undefined;
-    for(var key in firebaseRefs){
-      if(firebaseRefs.hasOwnProperty(key)){
-        for(var prop in firebaseRefs[key]){
-          if(firebaseRefs[key].hasOwnProperty(prop)){
-            for (var callback_id in firebaseListeners[key][prop]) {
-              if (firebaseListeners[key][prop].hasOwnProperty(callback_id)) {
-                firebaseRefs[key][prop].off('value', firebaseListeners[key][prop][callback_id]);
-              }
-            }
-            delete firebaseRefs[key][prop];
-            delete firebaseListeners[key][prop];
-          }
-        }
-      }
-    }
+    Object.getOwnPropertyNames(firebaseRefs).forEach(function (key) {
+      Object.getOwnPropertyNames(firebaseRefs[key]).forEach(function (prop) {
+        Object.getOwnPropertyNames(firebaseListeners[key][prop]).forEach(function (callback_id) {
+            firebaseRefs[key][prop].off('value', firebaseListeners[key][prop][callback_id]);
+        })
+        delete firebaseRefs[key][prop];
+        delete firebaseListeners[key][prop];
+      })
+    })
     firebaseRefs = {};
     firebaseListeners = {};
   };
@@ -315,7 +309,7 @@ module.exports = (function(){
     return ref.authWithCustomToken(token, function(error, authData){
       return fn(error, authData);
     });
-  }
+ }
 
   function _authWithOAuthPopup(provider, fn, settings){
     settings = settings || {};
