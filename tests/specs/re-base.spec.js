@@ -626,6 +626,88 @@ describe('re-base Tests:', function(){
     });
 
     describe('Async tests', function(){
+
+      it('syncState() supports syncing of multiple keys', function(done) {
+        class TestComponent extends React.Component {
+          constructor(props) {
+            super(props);
+            this.state = {
+              one: 0,
+              two: 0,
+              three: 0
+            }
+          }
+
+          componentWillMount() {
+            this.refOne = base.syncState('one', {
+              context: this,
+              state: 'one'
+            });
+
+            this.refTwo = base.syncState('two', {
+              context: this,
+              state: 'two'
+            });
+
+            this.refThree = base.syncState('three', {
+              context: this,
+              state: 'three'
+            });
+
+            this.counter = 0;
+
+            base.listenTo('one', {
+              context: this,
+              then(data) {
+                expect(data).toEqual(1);
+                this.counter++;
+              }
+            });
+
+            base.listenTo('two', {
+              context: this,
+              then(data) {
+                expect(data).toEqual(2);
+                this.counter++;
+              }
+            });
+
+            base.listenTo('three', {
+              context: this,
+              then(data) {
+                expect(data).toEqual(3);
+                this.counter++;
+              }
+            });
+          }
+
+          checkDone() {
+            if (this.counter == 3) {
+              done();
+            }
+          }
+
+          componentDidUpdate() {
+            this.checkDone();
+          }
+
+          componentDidMount() {
+            this.setState({ one: 1 });
+            this.setState({ two: 2 });
+            this.setState({ three: 3 });
+          }
+
+          render(){
+            return (
+              <div>
+                No Data
+              </div>
+            )
+          }
+        }
+        React.render(<TestComponent />, document.body);
+      });
+
       it('syncState() returns an empty object when there is no Firebase data and asArray is false', function(done){
         class TestComponent extends React.Component{
           constructor(props){

@@ -250,12 +250,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    optionValidators.context(options);
 	    optionValidators.state(options);
 	    options.queries && optionValidators.query(options);
-	    if (_sync.called !== true) {
-	      _sync.reactSetState = options.context.setState;
-	      _sync.called = true;
-	    } else {
-	      options.context.setState = _sync.reactSetState;
-	    }
+
 	    options.reactSetState = options.context.setState;
 	    options.then && (options.then.called = false);
 	    var ref = new Firebase(baseUrl + '/' + endpoint);
@@ -266,10 +261,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (data.hasOwnProperty(key)) {
 	          if (key === options.state) {
 	            _updateSyncState.call(this, ref, data[key], key);
-	          } else {
-	            options.reactSetState.call(options.context, data, cb);
 	          }
 	        }
+
+	        // Call all previous "setState"s recursively to make sure they all update
+	        options.reactSetState.call(options.context, data, cb);
 	      }
 	    };
 	    return _returnRef(endpoint, 'syncState');
@@ -350,6 +346,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function _authWithPassword(credentials, fn) {
 	    var ref = new Firebase('' + baseUrl);
 	    return ref.authWithPassword(credentials, function (error, authData) {
+	      return fn(error, authData);
+	    });
+	  }
+
+	  function _authWithCustomToken(token, fn) {
+	    var ref = new Firebase('' + baseUrl);
+	    return ref.authWithCustomToken(token, function (error, authData) {
 	      return fn(error, authData);
 	    });
 	  }
@@ -446,6 +449,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      },
 	      authWithPassword: function authWithPassword(credentials, fn) {
 	        return _authWithPassword(credentials, fn);
+	      },
+	      authWithCustomToken: function authWithCustomToken(token, fn) {
+	        return _authWithCustomToken(token, fn);
 	      },
 	      authWithOAuthPopup: function authWithOAuthPopup(provider, fn, settings) {
 	        return _authWithOAuthPopup(provider, fn, settings);

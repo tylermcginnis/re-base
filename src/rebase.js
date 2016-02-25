@@ -205,7 +205,7 @@ module.exports = (function(){
             _updateSyncState.call(this, ref, data[key], key)
           }
         }
-        
+
         // Call all previous "setState"s recursively to make sure they all update
         options.reactSetState.call(options.context, data, cb);
      }
