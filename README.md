@@ -229,7 +229,7 @@ getSales(){
 
 ```javascript
 addUser(){
-  base.post('users/${userId}', {
+  base.post(`users/${userId}`, {
     data: {name: 'Tyler McGinnis', age: 25},
     then(){
       Router.transitionTo('dashboard');
