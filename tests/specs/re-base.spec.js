@@ -102,6 +102,49 @@ describe('re-base Tests:', function(){
     });
   });
 
+  describe('update()', function(){
+    it('update() throws an error given a invalid endpoint', function(){
+      invalidEndpoints.forEach((endpoint) => {
+        try {
+          base.update(endpoint, {
+            data: dummyObjData
+          })
+        } catch(err) {
+          expect(err.code).toEqual('INVALID_ENDPOINT');
+        }
+      });
+    });
+
+    it('update() throws an error given an invalid options object', function(){
+      var invalidOptions = [[], {}, {then: function(){}}, {data: undefined}];
+      invalidOptions.forEach((option) => {
+        try {
+          base.update(testEndpoint, option);
+        } catch(err) {
+          expect(err.code).toEqual('INVALID_OPTIONS');
+        }
+      });
+    });
+
+    it('update() updates Firebase correctly without deleting pre existing properties', function(done){
+      var prePopData = {name: 'Chris Buusmann', age: 29, human: true};
+      base.post(testEndpoint, {
+        data: prePopData,
+        then(){
+          base.update(testEndpoint, {
+            data: dummyObjData,
+            then(){
+              ref.child(testEndpoint).once('value', (snapshot) => {
+                var data = snapshot.val();
+                expect(data.human).toEqual(true);
+                done();
+              });
+            }
+          })
+        }
+      })
+    });
+  });
 
   describe('push()', function(){
     it('push() throws an error given a invalid endpoint', function(){

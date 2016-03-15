@@ -228,6 +228,17 @@ module.exports = (function(){
     }
   };
 
+  function _update(endpoint, options){
+    _validateEndpoint(endpoint);
+    optionValidators.data(options);
+    var ref = new Firebase(`${baseUrl}/${endpoint}`);
+    if(options.then){
+      ref.update(options.data, options.then);
+    } else {
+      ref.update(options.data);
+    }
+  };
+
   function _push(endpoint, options){
     _validateEndpoint(endpoint);
     optionValidators.data(options);
@@ -393,6 +404,9 @@ module.exports = (function(){
       },
       post(endpoint, options){
         _post(endpoint, options);
+      },
+      update(endpoint, options){
+        _update(endpoint, options);
       },
       push(endpoint, options){
         return _push(endpoint, options);
