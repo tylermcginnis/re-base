@@ -297,7 +297,7 @@ describe('re-base Tests:', function(){
 
         }
       });
-      expect(ref).toEqual({ endpoint: testEndpoint, method: 'listenTo' });
+      expect(ref).toEqual({ endpoint: testEndpoint, method: 'listenTo', id: ref.id });
     })
 
     it('listenTo() throws an error given a invalid endpoint', function(done){
