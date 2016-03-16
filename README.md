@@ -210,7 +210,7 @@ getSales(){
 ## post(endpoint, options)
 
 #### Purpose
-  Allows you to update a Firebase endpoint with new data. *Replace all the data at this endpoint with the new data*
+  Allows you to add new data to a Firebase endpoint.
 
 #### Arguments
   1. endpoint
@@ -220,6 +220,7 @@ getSales(){
     - type: object
     - properties:
       - data: (any - required) The data you're wanting to persist to Firebase
+      - asArray: (boolean - optional) Append data to endpoint rather than replacing the endpoint value entirely
       - then: (function - optional) A callback that will get invoked once the new data has been saved to Firebase
 
 #### Return Value
