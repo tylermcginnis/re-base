@@ -291,7 +291,7 @@ module.exports = (function(){
     firebaseListeners = {};
   };
 
-  function _authWithPassword(credentials ,fn){
+  function _authWithPassword(credentials, fn){
     var ref = new Firebase(`${baseUrl}`);
     return ref.authWithPassword(credentials, function(error, authData){
       return fn(error, authData);
@@ -327,6 +327,13 @@ module.exports = (function(){
     return ref.authWithOAuthRedirect(provider, function(error, authData) {
       return fn(error, authData);
      }, settings);
+  }
+
+  function _authAnonymously(fn){
+    var ref = new Firebase(`${baseUrl}`);
+    return ref.authAnonymously(function(error, authData) {
+      return fn(error, authData);
+    });
   }
 
   function _onAuth(fn){
@@ -417,6 +424,9 @@ module.exports = (function(){
       },
       authWithOAuthRedirect(provider, fn, settings){
         return _authWithOAuthRedirect(provider, fn, settings);
+      },
+      authAnonymously(fn){
+        return _authAnonymously(fn);
       },
       onAuth(fn){
         return _onAuth(fn);

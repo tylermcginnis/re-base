@@ -387,6 +387,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, settings);
 	  }
 
+	  function _authAnonymously(fn) {
+	    var ref = new Firebase('' + baseUrl);
+	    return ref.authAnonymously(function (error, authData) {
+	      return fn(error, authData);
+	    });
+	  }
+
 	  function _onAuth(fn) {
 	    var ref = new Firebase('' + baseUrl);
 	    return ref.onAuth(fn);
@@ -475,6 +482,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      },
 	      authWithOAuthRedirect: function authWithOAuthRedirect(provider, fn, settings) {
 	        return _authWithOAuthRedirect(provider, fn, settings);
+	      },
+	      authAnonymously: function authAnonymously(fn) {
+	        return _authAnonymously(fn);
 	      },
 	      onAuth: function onAuth(fn) {
 	        return _onAuth(fn);
