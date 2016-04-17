@@ -656,7 +656,7 @@ describe('re-base Tests:', function(){
 
             this.counter = 0;
 
-            base.listenTo('one', {
+            this.listenerOne = base.listenTo('one', {
               context: this,
               then(data) {
                 expect(data).toEqual(1);
@@ -664,7 +664,7 @@ describe('re-base Tests:', function(){
               }
             });
 
-            base.listenTo('two', {
+            this.listenerTwo = base.listenTo('two', {
               context: this,
               then(data) {
                 expect(data).toEqual(2);
@@ -672,7 +672,7 @@ describe('re-base Tests:', function(){
               }
             });
 
-            base.listenTo('three', {
+            this.listenerThree = base.listenTo('three', {
               context: this,
               then(data) {
                 expect(data).toEqual(3);
@@ -695,6 +695,10 @@ describe('re-base Tests:', function(){
             this.setState({ one: 1 });
             this.setState({ two: 2 });
             this.setState({ three: 3 });
+          }
+
+          componentWillUnmount() {
+            base.reset();
           }
 
           render(){
