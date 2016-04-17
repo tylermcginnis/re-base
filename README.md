@@ -16,14 +16,14 @@ I spent a few weeks trying to figure out the cleanest way to implement Firebase 
 
 # Features
 
-- *syncState*: Two way data binding between any property on your component's state and any endpoint in Firebase. Use the same API you're used to to update your component's state (setState), and Firebase will also update.
-- *bindToState*: One way data binding. Whenever your Firebase endpoint changes, the property on your state will update as well.
-- *listenTo*: Whenever your Firebase endpoint changes, it will invoke a callback passing it the new data from Firebase.
-- *fetch*: Retrieve data from Firebase without setting up any binding or listeners.
-- *post*: Add new data to Firebase.
-- *push*: Push new child data to Firebase.
-- *removeBinding*: Remove all of the Firebase listeners when your component unmounts.
-- *reset*: Removes all of the Firebase listeners and resets the singleton (for testing purposes).
+- [*syncState*](#syncstateendpoint-options): Two way data binding between any property on your component's state and any endpoint in Firebase. Use the same API you're used to to update your component's state (setState), and Firebase will also update.
+- [*bindToState*](#bindtostateendpoint-options): One way data binding. Whenever your Firebase endpoint changes, the property on your state will update as well.
+- [*listenTo*](#listentoendpoint-options): Whenever your Firebase endpoint changes, it will invoke a callback passing it the new data from Firebase.
+- [*fetch*](#fetchendpoint-options): Retrieve data from Firebase without setting up any binding or listeners.
+- [*post*](#postendpoint-options): Add new data to Firebase.
+- [*push*](#pushendpoint-options): Push new child data to Firebase.
+- [*removeBinding*](#removebindingref): Remove all of the Firebase listeners when your component unmounts.
+- [*reset*](#reset): Removes all of the Firebase listeners and resets the singleton (for testing purposes).
 
 # Installing
 
