@@ -250,11 +250,13 @@ module.exports = (function(){
     _validateEndpoint(endpoint);
     optionValidators.data(options);
     var ref = new Firebase(`${baseUrl}/${endpoint}`);
+    var returnEndpoint;
     if(options.then){
-      ref.push(options.data, options.then);
+      returnEndpoint = ref.push(options.data, options.then);
     } else {
-      ref.push(options.data);
+      returnEndpoint = ref.push(options.data);
     }
+    return returnEndpoint;
   };
 
   function _addQueries(ref, queries){
@@ -321,7 +323,7 @@ module.exports = (function(){
     });
   }
 
-  function _authWithOAuthPopup(provider , fn, settings){
+  function _authWithOAuthPopup(provider, fn, settings){
     settings = settings || {};
     var ref = new Firebase(`${baseUrl}`);
     return ref.authWithOAuthPopup(provider, function(error, authData) {
@@ -329,7 +331,15 @@ module.exports = (function(){
      }, settings);
   }
 
-  function _authWithOAuthRedirect(provider , fn, settings){
+  function _authWithOAuthToken(provider, token, fn, settings){
+    settings = settings || {};
+    var ref = new Firebase(`${baseUrl}`);
+    return ref.authWithOAuthToken(provider, token, function(error, authData) {
+      return fn(error, authData);
+     }, settings);
+  }
+
+  function _authWithOAuthRedirect(provider, fn, settings){
     settings = settings || {};
     var ref = new Firebase(`${baseUrl}`);
     return ref.authWithOAuthRedirect(provider, function(error, authData) {
@@ -403,7 +413,7 @@ module.exports = (function(){
         _post(endpoint, options);
       },
       push(endpoint, options){
-        _push(endpoint, options);
+        return _push(endpoint, options);
       },
       removeBinding(endpoint){
         _removeBinding(endpoint, true);
@@ -419,6 +429,9 @@ module.exports = (function(){
       },
       authWithOAuthPopup(provider, fn, settings){
         return _authWithOAuthPopup(provider, fn, settings);
+      },
+      authWithOAuthToken(provider, token, fn, settings){
+        return _authWithOAuthToken(provider, token, fn, settings);
       },
       authWithOAuthRedirect(provider, fn, settings){
         return _authWithOAuthRedirect(provider, fn, settings);

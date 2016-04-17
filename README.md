@@ -4,6 +4,8 @@
 
 ![welcome](https://media.giphy.com/media/6459ZFRF1Wxna/giphy.gif)
 
+Questions? Find me on twitter at [@tylermcginnis33](http://twitter.com/tylermcginnis33)
+
 # What is re-base?
 
 React.js makes managing state easy to reason about. Firebase makes persisting your data easy to implement. re-base, inspired by Relay, combines the benefits of React and Firebase by allowing each component to specify its own data dependency. Forget about your data persistence and focus on what really matters, your application's state.
@@ -31,7 +33,7 @@ $ npm install re-base
 
 # API
 
-#### For more in depth examples of the API, see the `examples` folder.
+#### For more in depth examples of the API, see the [`examples`](examples) folder.
 
 ## createClass(firebaseUrl)
 
@@ -71,7 +73,7 @@ var base = Rebase.createClass('https://myapp.firebaseio.com');
       - state: (string - required) The state property you want to sync with Firebase
       - asArray: (boolean - optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
       - queries: (object - optional) Queries to be used with your read operations.  See [Query Options](#queries) for more details.
-      - then: (function - optional) The callback function that will be invoked when the initial listener is established with Firbase. Typically used (with syncState) to change `this.state.loading` to false.
+      - then: (function - optional) The callback function that will be invoked when the initial listener is established with Firebase. Typically used (with syncState) to change `this.state.loading` to false.
 
 #### Return Value
   An object which you can pass to `removeBinding` when your component unmounts to remove the Firebase listeners.
@@ -227,7 +229,7 @@ getSales(){
 
 ```javascript
 addUser(){
-  base.post('users/${userId}', {
+  base.post(`users/${userId}`, {
     data: {name: 'Tyler McGinnis', age: 25},
     then(){
       Router.transitionTo('dashboard');
@@ -254,7 +256,7 @@ addUser(){
       - then: (function - optional) A callback that will get invoked once the new data has been saved to Firebase
 
 #### Return Value
-  No return value
+  A Firebase reference for the generated location
 
 #### Example
 
@@ -335,7 +337,7 @@ The binding above will sort the `users` endpoint by iq, retrieve the last three 
 
 ## <a name='auth'>Authentication</a>
 
-re-base exposes [Firebase's web client](https://www.firebase.com/docs/web/guide/user-auth.html#section-login) `authWithPassword`, `authWithOAuthPopup`, `authWithOAuthRedirect` methods to allow user authentication. `getAuth` is also exposed to access the current authentication state.
+re-base exposes [Firebase's web client](https://www.firebase.com/docs/web/guide/user-auth.html#section-login) `authWithPassword`, `authWithCustomToken`, `authWithOAuthPopup`, `authWithOAuthRedirect`, `authWithOAuthToken` methods to allow user authentication. `getAuth` is also exposed to access the current authentication state.
 
 ```javascript
 // Simple email authentication
@@ -344,9 +346,13 @@ base.authWithPassword({
   password : 'correcthorsebatterystaple'
 }, authHandler);
 
+// Authentication via a custom authentication token
+base.authWithCustomToken(token, authHandler);
+
 // Authentication via OAuth providers ("facebook", "github", "google", or "twitter")
 base.authWithOAuthPopup("<provider>", authHandler);
 base.authWithOAuthRedirect("<provider>", authHandler);
+base.authWithOAuthToken("<provider>", token, authHandler);
 
 // Log a user out
 base.unauth()
