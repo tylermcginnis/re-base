@@ -1,7 +1,7 @@
 module.exports = (function(){
-  var Firebase = require('firebase');
+  var firebase = require('firebase');
 
-  var baseUrl = '';
+  var firebaseApp = null;
   var rebase;
   var firebaseRefs = {};
   var firebaseListeners = {};
@@ -56,7 +56,7 @@ module.exports = (function(){
     snapshot.forEach(function (childSnapshot){
       var val = childSnapshot.val();
       if(_isObject(val)){
-        val.key = childSnapshot.key();
+        val.key = childSnapshot.key;
       }
       arr.push(val);
     });
@@ -73,21 +73,17 @@ module.exports = (function(){
     throw err;
   };
 
-  function _validateBaseURL(url){
+  function _validateConfig(config){
     var defaultError = 'Rebase.createClass failed.';
     var errorMsg;
-    if(typeof url !== 'string'){
-      errorMsg = `${defaultError} URL must be a string.`;
-    } else if(!url || arguments.length > 1){
+    if(typeof config !== 'object'){
+      errorMsg = `${defaultError} config must be an object.`;
+    } else if(!config || arguments.length > 1){
       errorMsg = `${defaultError} Was called with more or less than 1 argument. Expects 1.`;
-    } else if(url.length === ''){
-      errorMsg = `${defaultError} URL cannot be an empty string.`;
-    } else if(url.indexOf('.firebaseio.com') === -1){
-      errorMsg = `${defaultError} URL must be in the format of https://<YOUR FIREBASE>.firebaseio.com. Instead, got ${url}.`;
     }
 
     if(typeof errorMsg !== 'undefined'){
-      _throwError(errorMsg, "INVALID_URL");
+      _throwError(errorMsg, "INVALID_CONFIG");
     }
   };
 
@@ -99,7 +95,7 @@ module.exports = (function(){
     } else if(endpoint.length === 0){
       errorMsg = `${defaultError} must be a non-empty string. Instead, got ${endpoint}`;
     } else if(endpoint.length > 768){
-      errorMsg = `${defaultError} is too long to be stored in Firebase. It be less than 768 characters.`;
+      errorMsg = `${defaultError} is too long to be stored in Firebase. It must be less than 768 characters.`;
     } else if(/^$|[\[\]\.\#\$]/.test(endpoint)){
       errorMsg = `${defaultError} in invalid. Paths must be non-empty strings and can't contain ".", "#", "$", "[", or "]".`;
     }
@@ -122,7 +118,7 @@ module.exports = (function(){
     optionValidators.context(options);
     optionValidators.then(options);
     options.queries && optionValidators.query(options);
-    var ref = new Firebase(`${baseUrl}/${endpoint}`);
+    var ref = firebase.database().ref(`${endpoint}`);
     ref = _addQueries(ref, options.queries);
     ref.once('value', (snapshot) => {
       var data = options.asArray === true ? _toArray(snapshot) : snapshot.val();
@@ -133,11 +129,11 @@ module.exports = (function(){
   function _firebaseRefsMixin(endpoint, invoker, ref){
     if(!_isObject(firebaseRefs[endpoint])){
       firebaseRefs[endpoint] = {
-        [invoker]: ref.ref()
+        [invoker]: ref
       };
       firebaseListeners[endpoint] = {};
     } else if(!firebaseRefs[endpoint][invoker]){
-      firebaseRefs[endpoint][invoker] = ref.ref();
+      firebaseRefs[endpoint][invoker] = ref
     } else {
       _throwError(`Endpoint (${endpoint}) already has listener ${invoker}`, "INVALID_ENDPOINT");
     }
@@ -171,7 +167,7 @@ module.exports = (function(){
     invoker === 'listenTo' && optionValidators.then(options);
     invoker === 'bindToState' && optionValidators.state(options);
     options.queries && optionValidators.query(options);
-    var ref = new Firebase(`${baseUrl}/${endpoint}`);
+    var ref = firebase.database().ref(endpoint);
     _firebaseRefsMixin(endpoint, invoker, ref);
     _addListener(endpoint, invoker, options, ref);
     return  _returnRef(endpoint, invoker);
@@ -200,7 +196,7 @@ module.exports = (function(){
     }
     options.reactSetState = options.context.setState;
     options.then && (options.then.called = false);
-    var ref = new Firebase(`${baseUrl}/${endpoint}`);
+    var ref = firebase.database().ref(endpoint);
     _firebaseRefsMixin(endpoint, 'syncState', ref);
     _addListener(endpoint, 'syncState', options, ref);
     options.context.setState = function (data, cb) {
@@ -220,7 +216,7 @@ module.exports = (function(){
   function _post(endpoint, options){
     _validateEndpoint(endpoint);
     optionValidators.data(options);
-    var ref = new Firebase(`${baseUrl}/${endpoint}`);
+    var ref = firebase.database().ref(`${endpoint}`);
     if(options.then){
       ref.set(options.data, options.then);
     } else {
@@ -231,7 +227,7 @@ module.exports = (function(){
   function _push(endpoint, options){
     _validateEndpoint(endpoint);
     optionValidators.data(options);
-    var ref = new Firebase(`${baseUrl}/${endpoint}`);
+    var ref = firebase.database().ref(`${endpoint}`);
     var returnEndpoint;
     if(options.then){
       returnEndpoint = ref.push(options.data, options.then);
@@ -274,7 +270,6 @@ module.exports = (function(){
   };
 
   function _reset(){
-    baseUrl = '';
     rebase = undefined;
     for(var key in firebaseRefs){
       if(firebaseRefs.hasOwnProperty(key)){
@@ -446,15 +441,15 @@ module.exports = (function(){
   };
 
   return {
-    createClass(url){
+    createClass(config){
       if(rebase) {
         return rebase;
       }
-
-      _validateBaseURL(url);
-      baseUrl = url;
+      if(!firebaseApp){
+        _validateConfig(config);
+        firebaseApp = firebase.initializeApp(config);
+      }
       rebase = init();
-
       return rebase
     }
   };

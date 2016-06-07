@@ -1,10 +1,18 @@
 var Rebase = require('../../dist/bundle');
 var React = require('react/addons');
 var TestUtils = React.addons.TestUtils;
-var Firebase = require('firebase');
 
-var firebaseUrl = 'https://rebase-demo.firebaseio.com/';
-var ref = new Firebase(firebaseUrl);
+
+var firebase = require('firebase');
+var firebaseConfig = {
+    apiKey: "AIzaSyBm3py9af9BqQMfUMnMKpAXJUfxlsegnDI",
+    authDomain: "qwales1-test.firebaseapp.com",
+    databaseURL: "https://qwales1-test.firebaseio.com",
+    storageBucket: "qwales1-test.appspot.com",
+};
+var testApp = firebase.initializeApp(firebaseConfig, 'TEST_APP');
+var ref = testApp.database().ref();
+
 var invalidFirebaseURLs = [null, undefined, true, false, [], 0, 5, "", "a", ["hi", 1]];
 var invalidEndpoints = ['', 'ab.cd', 'ab#cd', 'ab$cd', 'ab[cd', 'ab]cd'];
 var dummyObjData = {name: 'Tyler McGinnis', age: 25};
@@ -22,7 +30,7 @@ var base;
 
 describe('re-base Tests:', function(){
   beforeEach(function(done){
-    base = Rebase.createClass(firebaseUrl);
+    base = Rebase.createClass(firebaseConfig);
     ref.set(null, done);
   });
 
@@ -34,15 +42,6 @@ describe('re-base Tests:', function(){
   });
 
   describe('createClass()', function(){
-    it('createClass() throws an error given an invalid Firebase URL', function(){
-      invalidFirebaseURLs.forEach(function(URL){
-        try {
-          Rebase.createClass(URL)
-        } catch(err){
-          expect(err.code).toEqual('INVALID_URL');
-        }
-      });
-    });
 
     it('createClass() returns an object with the correct API', function(){
       expect(base.listenTo).toBeDefined();
@@ -59,7 +58,7 @@ describe('re-base Tests:', function(){
       expect(base.removeBinding).toEqual(jasmine.any(Function));
     });
     it('createClass() returns a singleton if it\'s already been invoked', function(){
-      var newBase = Rebase.createClass(firebaseUrl);
+      var newBase = Rebase.createClass(firebaseConfig);
       expect(base).toEqual(newBase);
     });
   });
@@ -132,8 +131,8 @@ describe('re-base Tests:', function(){
         data: dummyObjData
       });
       var endpointString = returnedEndpoint.toString();
-      var endpointBaseUrl = endpointString.substr(0, firebaseUrl.length);
-      expect(endpointBaseUrl).toEqual(firebaseUrl);
+      var endpointBaseUrl = endpointString.substr(0, firebaseConfig.databaseURL.length);
+      expect(endpointBaseUrl).toEqual(firebaseConfig.databaseURL);
     });
 
     it('push() updates Firebase correctly', function(done){
@@ -306,25 +305,25 @@ describe('re-base Tests:', function(){
           base.listenTo(endpoint, {
             context: this,
             then(data){
-              done();
             }
           })
         } catch(err) {
           expect(err.code).toEqual('INVALID_ENDPOINT');
-          done();
         }
       });
+      done();
     });
 
-    it('listenTo() throws an error given an invalid options object', function(){
+    it('listenTo() throws an error given an invalid options object', function(done){
       var invalidOptions = [[], {}, {then: function(){}}, {context: undefined}, {context: 'strNotObj'}, {context: window, then: undefined}, {context: window, then: 'strNotFn'}];
       invalidOptions.forEach((option) => {
         try {
-          base.post(testEndpoint, option);
+          base.listenTo(testEndpoint, option);
         } catch(err) {
           expect(err.code).toEqual('INVALID_OPTIONS');
         }
       });
+      done();
     });
 
     describe('Async tests', function(){
@@ -396,13 +395,12 @@ describe('re-base Tests:', function(){
             this.ref = base.listenTo(testEndpoint, {
               context: this,
               then(data){
-                this.setState({data})
+                this.setState({data});
               },
               asArray: true
             });
           }
           componentDidMount(){
-            var flag = true;
             ref.child(testEndpoint).set(dummyObjData);
           }
           componentDidUpdate(){

@@ -59,9 +59,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 	module.exports = (function () {
-	  var Firebase = __webpack_require__(1);
+	  var firebase = __webpack_require__(1);
 
-	  var baseUrl = '';
+	  var firebaseApp = null;
 	  var rebase;
 	  var firebaseRefs = {};
 	  var firebaseListeners = {};
@@ -116,7 +116,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    snapshot.forEach(function (childSnapshot) {
 	      var val = childSnapshot.val();
 	      if (_isObject(val)) {
-	        val.key = childSnapshot.key();
+	        val.key = childSnapshot.key;
 	      }
 	      arr.push(val);
 	    });
@@ -133,21 +133,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    throw err;
 	  };
 
-	  function _validateBaseURL(url) {
+	  function _validateConfig(config) {
 	    var defaultError = 'Rebase.createClass failed.';
 	    var errorMsg;
-	    if (typeof url !== 'string') {
-	      errorMsg = defaultError + ' URL must be a string.';
-	    } else if (!url || arguments.length > 1) {
+	    if (typeof config !== 'object') {
+	      errorMsg = defaultError + ' config must be an object.';
+	    } else if (!config || arguments.length > 1) {
 	      errorMsg = defaultError + ' Was called with more or less than 1 argument. Expects 1.';
-	    } else if (url.length === '') {
-	      errorMsg = defaultError + ' URL cannot be an empty string.';
-	    } else if (url.indexOf('.firebaseio.com') === -1) {
-	      errorMsg = defaultError + ' URL must be in the format of https://<YOUR FIREBASE>.firebaseio.com. Instead, got ' + url + '.';
 	    }
 
 	    if (typeof errorMsg !== 'undefined') {
-	      _throwError(errorMsg, "INVALID_URL");
+	      _throwError(errorMsg, "INVALID_CONFIG");
 	    }
 	  };
 
@@ -159,7 +155,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    } else if (endpoint.length === 0) {
 	      errorMsg = defaultError + ' must be a non-empty string. Instead, got ' + endpoint;
 	    } else if (endpoint.length > 768) {
-	      errorMsg = defaultError + ' is too long to be stored in Firebase. It be less than 768 characters.';
+	      errorMsg = defaultError + ' is too long to be stored in Firebase. It must be less than 768 characters.';
 	    } else if (/^$|[\[\]\.\#\$]/.test(endpoint)) {
 	      errorMsg = defaultError + ' in invalid. Paths must be non-empty strings and can\'t contain ".", "#", "$", "[", or "]".';
 	    }
@@ -182,7 +178,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    optionValidators.context(options);
 	    optionValidators.then(options);
 	    options.queries && optionValidators.query(options);
-	    var ref = new Firebase(baseUrl + '/' + endpoint);
+	    var ref = firebase.database().ref('' + endpoint);
 	    ref = _addQueries(ref, options.queries);
 	    ref.once('value', function (snapshot) {
 	      var data = options.asArray === true ? _toArray(snapshot) : snapshot.val();
@@ -192,18 +188,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function _firebaseRefsMixin(endpoint, invoker, ref) {
 	    if (!_isObject(firebaseRefs[endpoint])) {
-	      firebaseRefs[endpoint] = _defineProperty({}, invoker, ref.ref());
+	      firebaseRefs[endpoint] = _defineProperty({}, invoker, ref);
 	      firebaseListeners[endpoint] = {};
 	    } else if (!firebaseRefs[endpoint][invoker]) {
-	      firebaseRefs[endpoint][invoker] = ref.ref();
+	      firebaseRefs[endpoint][invoker] = ref;
 	    } else {
 	      _throwError('Endpoint (' + endpoint + ') already has listener ' + invoker, "INVALID_ENDPOINT");
 	    }
 	  };
 
 	  function _addListener(endpoint, invoker, options, ref) {
+	    console.log('LISTENERS BEFORE', firebaseListeners);
 	    ref = _addQueries(ref, options.queries);
 	    firebaseListeners[endpoint][invoker] = ref.on('value', function (snapshot) {
+
 	      var data = snapshot.val();
 	      data = data === null ? options.asArray === true ? [] : {} : data;
 	      if (invoker === 'listenTo') {
@@ -221,6 +219,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _setState.call(options.context, newState);
 	      }
 	    });
+	    console.log('LISTENERS', firebaseListeners);
 	  };
 
 	  function _bind(endpoint, options, invoker) {
@@ -229,7 +228,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    invoker === 'listenTo' && optionValidators.then(options);
 	    invoker === 'bindToState' && optionValidators.state(options);
 	    options.queries && optionValidators.query(options);
-	    var ref = new Firebase(baseUrl + '/' + endpoint);
+	    var ref = firebase.database().ref(endpoint);
 	    _firebaseRefsMixin(endpoint, invoker, ref);
 	    _addListener(endpoint, invoker, options, ref);
 	    return _returnRef(endpoint, invoker);
@@ -258,7 +257,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    options.reactSetState = options.context.setState;
 	    options.then && (options.then.called = false);
-	    var ref = new Firebase(baseUrl + '/' + endpoint);
+	    var ref = firebase.database().ref(endpoint);
 	    _firebaseRefsMixin(endpoint, 'syncState', ref);
 	    _addListener(endpoint, 'syncState', options, ref);
 	    options.context.setState = function (data, cb) {
@@ -278,7 +277,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function _post(endpoint, options) {
 	    _validateEndpoint(endpoint);
 	    optionValidators.data(options);
-	    var ref = new Firebase(baseUrl + '/' + endpoint);
+	    var ref = firebase.database().ref('' + endpoint);
 	    if (options.then) {
 	      ref.set(options.data, options.then);
 	    } else {
@@ -289,7 +288,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function _push(endpoint, options) {
 	    _validateEndpoint(endpoint);
 	    optionValidators.data(options);
-	    var ref = new Firebase(baseUrl + '/' + endpoint);
+	    var ref = firebase.database().ref('' + endpoint);
 	    var returnEndpoint;
 	    if (options.then) {
 	      returnEndpoint = ref.push(options.data, options.then);
@@ -332,7 +331,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  function _reset() {
-	    baseUrl = '';
 	    rebase = undefined;
 	    for (var key in firebaseRefs) {
 	      if (firebaseRefs.hasOwnProperty(key)) {
@@ -504,15 +502,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  return {
-	    createClass: function createClass(url) {
+	    createClass: function createClass(config) {
 	      if (rebase) {
 	        return rebase;
 	      }
-
-	      _validateBaseURL(url);
-	      baseUrl = url;
+	      if (!firebaseApp) {
+	        _validateConfig(config);
+	        firebaseApp = firebase.initializeApp(config);
+	      }
 	      rebase = init();
-
 	      return rebase;
 	    }
 	  };
