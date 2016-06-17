@@ -198,10 +198,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  function _addListener(endpoint, invoker, options, ref) {
-	    console.log('LISTENERS BEFORE', firebaseListeners);
 	    ref = _addQueries(ref, options.queries);
 	    firebaseListeners[endpoint][invoker] = ref.on('value', function (snapshot) {
-
 	      var data = snapshot.val();
 	      data = data === null ? options.asArray === true ? [] : {} : data;
 	      if (invoker === 'listenTo') {
@@ -219,7 +217,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _setState.call(options.context, newState);
 	      }
 	    });
-	    console.log('LISTENERS', firebaseListeners);
 	  };
 
 	  function _bind(endpoint, options, invoker) {
