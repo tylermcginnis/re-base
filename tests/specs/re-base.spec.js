@@ -2,7 +2,6 @@ var Rebase = require('../../dist/bundle');
 var React = require('react/addons');
 var TestUtils = React.addons.TestUtils;
 
-
 var firebase = require('firebase');
 var firebaseConfig = {
     apiKey: "AIzaSyBm3py9af9BqQMfUMnMKpAXJUfxlsegnDI",
@@ -31,7 +30,11 @@ var base;
 describe('re-base Tests:', function(){
   beforeEach(function(done){
     base = Rebase.createClass(firebaseConfig);
-    ref.set(null, done);
+    ref.remove(err => {
+        if(err) done(err);
+        ref = firebase.database().ref();
+        done();
+    });
   });
 
   afterEach(function(done){
@@ -142,7 +145,6 @@ describe('re-base Tests:', function(){
           ref.child(testEndpoint).once('value', (snapshot) => {
             var keyedData = snapshot.val();
             var data = keyedData[Object.keys(keyedData)[0]];
-
             expect(data).toEqual(dummyObjData);
             done();
           });
@@ -152,7 +154,7 @@ describe('re-base Tests:', function(){
   });
 
   describe('fetch()', function(){
-    it('fetch() throws an error given a invalid endpoint', function(done){
+    it('fetch() throws an error given a invalid endpoint', function(){
       invalidEndpoints.forEach((endpoint) => {
         try {
           base.fetch(endpoint, {
@@ -162,7 +164,6 @@ describe('re-base Tests:', function(){
           })
         } catch(err) {
           expect(err.code).toEqual('INVALID_ENDPOINT');
-          done();
         }
       });
     });
@@ -572,7 +573,6 @@ describe('re-base Tests:', function(){
     });
 
     it('bindToState() properly updates the local state property even when Firebase has initial date before bindToState is called', function(done){
-      ref.child(testEndpoint).set(dummyObjData);
       class TestComponent extends React.Component{
         constructor(props){
           super(props);
@@ -580,11 +580,14 @@ describe('re-base Tests:', function(){
             data: {}
           }
         }
-        componentDidMount(){
+        componentWillMount(){
           this.ref = base.bindToState(testEndpoint, {
             context: this,
             state: 'data',
           });
+        }
+        componentDidMount(){
+          ref.child(testEndpoint).set(dummyObjData);
         }
         componentDidUpdate(){
           expect(this.state.data).toEqual(dummyObjData);
@@ -758,7 +761,6 @@ describe('re-base Tests:', function(){
               context: this,
               state: 'user',
               then(){
-                debugger
                 this.setState({
                   loading: false
                 }, () => {
