@@ -287,9 +287,12 @@ module.exports = (function(){
   };
 
   function _authWithPassword(credentials ,fn){
-    var ref = new Firebase(`${baseUrl}`);
-    return ref.authWithPassword(credentials, function(error, authData){
-      return fn(error, authData);
+    var ref = firebase.auth();
+    const { email, password} = credentials;
+    return ref.signInWithEmailAndPassword(email, password).then(authData => {
+      return fn(null, authData);
+    }).catch(err => {
+      return fn(err);
     });
   }
 
@@ -325,8 +328,8 @@ module.exports = (function(){
   }
 
   function _onAuth(fn){
-    var ref = new Firebase(`${baseUrl}`);
-    return ref.onAuth(fn);
+    var ref = firebase.auth();
+    return ref.onAuthStateChanged(fn);
   }
 
   function _offAuth(fn){
@@ -340,8 +343,8 @@ module.exports = (function(){
   }
 
   function _getAuth() {
-    var ref = new Firebase(`${baseUrl}`);
-    return ref.getAuth();
+    var ref = firebase.auth();
+    return ref.currentUser;
   }
 
   function _createUser(credentials, fn){

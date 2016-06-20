@@ -21,7 +21,7 @@ var dummyArrData = ['Tyler McGinnis', 'Jacob Turner', 'Ean Platter'];
 var testEndpoint = 'test/child';
 var dummyUsers = {
   'unknown': {email: 'unknown@thisdomainisfake.com', password: 'nonono'},
-  'known': {email: 'known@thisdomainisfake.com', password: 'yeahyeahyeah'},
+  'known': {email: 'fakeymcfakefake@chriswal.es', password: '123456password'},
   'invalid': {email: 'invalid@com', password: 'correcthorsebatterystaple'},
   'toDelete': {email: 'test@example.com', password: 'correcthorsebatterystaple', newPassword: 'chipsahoy'},
 };
@@ -951,41 +951,53 @@ describe('re-base Tests:', function(){
         React.render(<TestComponent />, document.body);
       });
     });
-		describe('Auth tests', function(){
-			it('Fails trying to log with an unknow user', function(done){
-				base.authWithPassword({
-					email: dummyUsers.unknown.email,
-					password: dummyUsers.unknown.password
-				}, function(error, authData) {
-					expect(error).not.toBeNull();
-					expect(authData).toBeUndefined();
-					done();
-				});
-			});
+  });
+  
+  describe('Auth tests', function(){
 
-			it('Succeeds to log with a known user', function(done){
-				base.authWithPassword({
-					email: dummyUsers.known.email,
-					password: dummyUsers.known.password
-				}, function(error, authData) {
-					expect(error).toBeNull();
-					expect(authData).not.toBeNull();
-					done();
-				});
-			});
-			it('Listens to the auth event', function(done){
-				base.onAuth(function(authData){
-					expect(authData).not.toBeNull();
-					done();
-				})
-			});
-      it('Succeeds to get users authentication data', function(done) {
-        var authData = base.getAuth();
-
-        expect(authData).not.toBeNull();
-        done();
+      it('Fails trying to log with an unknown user', function(done){
+        base.authWithPassword({
+          email: dummyUsers.unknown.email,
+          password: dummyUsers.unknown.password
+        }, function(error, authData) {
+            expect(error).not.toBeNull();
+            expect(authData).toBeUndefined();
+            done();
+        });
       });
-		});
+
+      it('Succeeds to log with a known user', function(done){
+        base.authWithPassword({
+          email: dummyUsers.known.email,
+          password: dummyUsers.known.password
+        }, function(error, authData) {
+            expect(error).toBeNull();
+            expect(authData).not.toBeNull();
+            done();
+        });
+      });
+
+      it('Listens to the auth event', function(done){
+        base.onAuth(function(authData){
+          expect(authData).not.toBeNull();
+          done();
+        });
+      });
+
+      it('Succeeds to get users authentication data', function(done) {
+        //sign in
+        base.authWithPassword({
+            email: dummyUsers.known.email,
+            password: dummyUsers.known.password
+        }, function(error, authData){
+            expect(error).toBeNull();
+            var currentUser = base.getAuth();
+            expect(currentUser).toEqual(authData);
+            done();
+        });
+      });
+});
+
     describe('User tests', function() {
       it('Fails to create with invalid email', function(done) {
         base.createUser({
@@ -1063,4 +1075,3 @@ describe('re-base Tests:', function(){
       });
     });
   });
-});
