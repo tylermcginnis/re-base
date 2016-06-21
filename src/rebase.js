@@ -288,7 +288,7 @@ module.exports = (function(){
 
   function _authWithPassword(credentials ,fn){
     var ref = firebase.auth();
-    const { email, password} = credentials;
+    const { email, password } = credentials;
     return ref.signInWithEmailAndPassword(email, password).then(authData => {
       return fn(null, authData);
     }).catch(err => {
@@ -348,9 +348,12 @@ module.exports = (function(){
   }
 
   function _createUser(credentials, fn){
-    var ref = new Firebase(`${baseUrl}`);
-    return ref.createUser(credentials, function(error, authData) {
-      return fn(error, authData);
+    var ref = firebase.auth();
+    const { email, password } = credentials;
+    return ref.createUserWithEmailAndPassword(email,password).then(authData => {
+      return fn(null, authData);
+    }).catch(err => {
+      return fn(err);
     });
   };
 
@@ -362,16 +365,12 @@ module.exports = (function(){
   };
 
   function _resetPassword(credentials, fn){
-    var ref = new Firebase(`${baseUrl}`);
-    return ref.resetPassword(credentials, function(error) {
-      return fn(error);
-    });
-  };
-
-  function _changePassword(credentials, fn){
-    var ref = new Firebase(`${baseUrl}`);
-    return ref.changePassword(credentials, function(error) {
-      return fn(error);
+    var ref = firebase.auth();
+    const { email } = credentials;
+    return ref.sendPasswordResetEmail(email).then(() => {
+       return fn(null);
+   }).catch(error => {
+       return fn(error);
     });
   };
 
@@ -436,10 +435,7 @@ module.exports = (function(){
       },
       resetPassword(credentials,fn) {
         return _resetPassword(credentials, fn);
-      },
-      changePassword(credentials,fn) {
-        return _changePassword(credentials, fn);
-      },
+      }
     }
   };
 

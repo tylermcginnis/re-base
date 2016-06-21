@@ -408,9 +408,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  function _createUser(credentials, fn) {
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.createUser(credentials, function (error, authData) {
-	      return fn(error, authData);
+	    var ref = firebase.auth();
+	    var email = credentials.email;
+	    var password = credentials.password;
+
+	    return ref.createUserWithEmailAndPassword(email, password).then(function (authData) {
+	      return fn(null, authData);
+	    })['catch'](function (err) {
+	      return fn(err);
 	    });
 	  };
 
@@ -422,15 +427,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  function _resetPassword(credentials, fn) {
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.resetPassword(credentials, function (error) {
-	      return fn(error);
-	    });
-	  };
+	    var ref = firebase.auth();
+	    var email = credentials.email;
 
-	  function _changePassword(credentials, fn) {
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.changePassword(credentials, function (error) {
+	    return ref.sendPasswordResetEmail(email).then(function () {
+	      return fn(null);
+	    })['catch'](function (error) {
 	      return fn(error);
 	    });
 	  };

@@ -65,7 +65,7 @@ describe('re-base Tests:', function(){
       expect(base).toEqual(newBase);
     });
   });
-
+  
   describe('post()', function(){
     it('post() throws an error given a invalid endpoint', function(){
       invalidEndpoints.forEach((endpoint) => {
@@ -975,17 +975,20 @@ describe('re-base Tests:', function(){
             expect(authData).not.toBeNull();
             done();
         });
+
       });
 
       it('Listens to the auth event', function(done){
-        base.onAuth(function(authData){
+        var unsubscribe = base.onAuth(authData => {
           expect(authData).not.toBeNull();
+          //unsubscribe auth listener
+          unsubscribe();
           done();
         });
       });
 
       it('Succeeds to get users authentication data', function(done) {
-        //sign in
+        //sign in first
         base.authWithPassword({
             email: dummyUsers.known.email,
             password: dummyUsers.known.password
@@ -996,82 +999,52 @@ describe('re-base Tests:', function(){
             done();
         });
       });
-});
+  });
 
-    describe('User tests', function() {
-      it('Fails to create with invalid email', function(done) {
-        base.createUser({
-          email: dummyUsers.invalid.email,
-          password: dummyUsers.invalid.password,
-        }, function(error, userData) {
+  describe('User tests', function() {
+    it('Fails to create with invalid email', function(done) {
+      base.createUser({
+        email: dummyUsers.invalid.email,
+        password: dummyUsers.invalid.password,
+      }, function(error, userData) {
           expect(error).not.toBeNull();
           expect(userData).toBeUndefined();
           done();
         });
-      });
-      it('Succeeds to create a valid user', function(done) {
-        base.createUser({
+    });
+
+    it('Succeeds to create a valid user', function(done) {
+      base.createUser({
           email: dummyUsers.toDelete.email,
           password: dummyUsers.toDelete.password,
         }, function(error, userData) {
           expect(error).toBeNull();
           expect(userData).not.toBeNull();
-          done();
+          //delete user 
+          userData.delete().then(() => {
+            done();
+          });
         });
-      });
-      it('Fails to reset password for non-existant user', function(done) {
-        base.resetPassword({
-          email: dummyUsers.unknown.email,
-        }, function(error) {
-          expect(error).not.toBeNull();
-          done();
-        });
-      });
-      it('Succeeds to reset password for a user', function(done) {
-        base.resetPassword({
-          email: dummyUsers.known.email,
-        }, function(error) {
-          expect(error).toBeNull();
-          done();
-        });
-      });
-      it('Fails to change password without password', function(done) {
-        base.changePassword({
-          email: dummyUsers.known.email,
-          oldPassword: dummyUsers.known.email,
-          newPassword: '',
-        }, function(error) {
-          expect(error).not.toBeNull();
-          done();
-        });
-      });
-      it('Succeeds to change password', function(done) {
-        base.changePassword({
-          email: dummyUsers.toDelete.email,
-          oldPassword: dummyUsers.toDelete.password,
-          newPassword: dummyUsers.toDelete.newPassword,
-        }, function(error) {
-          expect(error).toBeNull();
-          done();
-        });
-      });
-      it('Fails to delete a non-existant user', function(done) {
-        base.removeUser({
-          email: dummyUsers.unknown.email,
-          password: dummyUsers.unknown.password,
-        }, function(error) {
-          expect(error).not.toBeNull();
-          done();
-        });
-      });
-      it('Succeeds to delete a user', function(done) {
-        base.removeUser({
-          email: dummyUsers.toDelete.email,
-          password: dummyUsers.toDelete.newPassword,
-        }, function(error) {
-          expect(error).toBeNull();
-          done();
-        });
+    });
+
+    it('Fails to reset password for non-existant user', function(done) {
+      base.resetPassword({
+        email: dummyUsers.unknown.email,
+      }, function(error) {
+        expect(error).not.toBeNull();
+        done();
       });
     });
+
+    it('Succeeds to reset password for a user', function(done) {
+      base.resetPassword({
+        email: dummyUsers.known.email,
+      }, function(error) {
+        expect(error).toBeNull();
+        done();
+      });
+    });
+
   });
+
+});
