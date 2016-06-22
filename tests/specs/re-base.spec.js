@@ -953,6 +953,26 @@ describe('re-base Tests:', function(){
     });
   });
   
+  describe('Storage tests', function(){
+
+    it('storage() returns reference to firebase.storage root bucket', function(){
+      var storageRef = base.storage();
+      expect(storageRef.bucket).not.toBeUndefined();
+      expect(storageRef.fullPath).not.toBeUndefined();
+      expect(storageRef.name).not.toBeUndefined();
+      expect(storageRef.parent).not.toBeUndefined();
+      expect(storageRef.root).not.toBeUndefined();
+      expect(storageRef.child).toEqual(jasmine.any(Function));
+      expect(storageRef.delete).toEqual(jasmine.any(Function));
+      expect(storageRef.getDownloadURL).toEqual(jasmine.any(Function));
+      expect(storageRef.getMetadata).toEqual(jasmine.any(Function));
+      expect(storageRef.put).toEqual(jasmine.any(Function));
+      expect(storageRef.toString).toEqual(jasmine.any(Function));
+      expect(storageRef.updateMetadata).toEqual(jasmine.any(Function));
+    });
+
+  });
+  
   describe('Auth tests', function(){
 
       it('Fails trying to log with an unknown user', function(done){

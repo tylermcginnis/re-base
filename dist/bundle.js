@@ -439,6 +439,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function init() {
 	    return {
+	      storage: function storage() {
+	        return firebase.storage().ref();
+	      },
 	      listenTo: function listenTo(endpoint, options) {
 	        return _bind(endpoint, options, 'listenTo');
 	      },
@@ -498,9 +501,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      },
 	      resetPassword: function resetPassword(credentials, fn) {
 	        return _resetPassword(credentials, fn);
-	      },
-	      changePassword: function changePassword(credentials, fn) {
-	        return _changePassword(credentials, fn);
 	      }
 	    };
 	  };
