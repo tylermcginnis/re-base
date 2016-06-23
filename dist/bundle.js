@@ -365,10 +365,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function _authWithOAuthPopup(provider, fn, settings) {
 	    settings = settings || {};
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.authWithOAuthPopup(provider, function (error, authData) {
-	      return fn(error, authData);
-	    }, settings);
+	    var authProvider = _getAuthProvider(provider, settings);
+	    var ref = firebase.auth();
+	    return ref.signInWithPopup(authProvider).then(function (authData) {
+	      return fn(null, authData);
+	    })['catch'](function (error) {
+	      return fn(error);
+	    });
 	  }
 
 	  function _authWithOAuthToken(provider, token, fn, settings) {
@@ -392,14 +395,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return ref.onAuthStateChanged(fn);
 	  }
 
-	  function _offAuth(fn) {
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.offAuth(fn);
-	  }
-
 	  function _unauth() {
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.unauth();
+	    var ref = firebase.auth();
+	    return ref.signOut();
 	  }
 
 	  function _getAuth() {
@@ -436,6 +434,54 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return fn(error);
 	    });
 	  };
+
+	  function _getFacebookProvider(settings) {
+	    var provider = new firebase.auth.FacebookAuthProvider();
+	    if (settings.scope) {
+	      provider.addScope(settings);
+	    }
+	    return provider;
+	  }
+
+	  function _getTwitterProvider() {
+	    return new firebase.auth.TwitterAuthProvider();
+	  }
+
+	  function _getGithubProvider(settings) {
+	    var provider = new firebase.auth.GithubAuthProvider();
+	    if (settings.scope) {
+	      provider.addScope(settings);
+	    }
+	    return provider;
+	  };
+
+	  function _getGoogleProvider(settings) {
+	    var provider = new firebase.auth.GoogleAuthProvider();
+	    if (settings.scope) {
+	      provider.addScope(settings);
+	    }
+	    return provider;
+	  };
+
+	  function _getAuthProvider(service, settings) {
+	    switch (service) {
+	      case 'twitter':
+	        return _getTwitterProvider();
+	        break;
+	      case 'google':
+	        return _getGoogleProvider(settings);
+	        break;
+	      case 'facebook':
+	        return _getFacebookProvider(settings);
+	        break;
+	      case 'github':
+	        return _getGithubProvider(settings);
+	        break;
+	      default:
+	        _throwError('Expected auth provider requested. Available auth providers: facebook,twitter,github, google', 'UNKNOWN AUTH PROVIDER');
+	        break;
+	    }
+	  }
 
 	  function init() {
 	    return {
@@ -483,9 +529,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      },
 	      onAuth: function onAuth(fn) {
 	        return _onAuth(fn);
-	      },
-	      offAuth: function offAuth(fn) {
-	        return _offAuth(fn);
 	      },
 	      unauth: function unauth(fn) {
 	        return _unauth();

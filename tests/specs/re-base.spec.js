@@ -1019,6 +1019,21 @@ describe('re-base Tests:', function(){
             done();
         });
       });
+      
+      describe('authWithOAuthPopup()', function(){
+        
+        it('authWithOAuthPopup() should throw an error if unknown provider requested', function(done){
+            try {
+              base.authWithOAuthPopup('someauthprovider', function(error, authData){
+                done('authWithOAuthPopup() should throw but did not');
+              });
+            } catch(err) {
+                expect(err.code).toEqual('UNKNOWN AUTH PROVIDER');
+                done();
+            }
+        });
+
+      });
   });
 
   describe('User tests', function() {
