@@ -77,9 +77,9 @@ module.exports = (function(){
     var defaultError = 'Rebase.createClass failed.';
     var errorMsg;
     if(typeof config !== 'object'){
-      errorMsg = `${defaultError} config must be an object.`;
+      errorMsg = `${defaultError} to migrate from 2.x.x to 3.x.x, the config must be an object. See: https://firebase.google.com/docs/web/setup#add_firebase_to_your_app`;
     } else if(!config || arguments.length > 1){
-      errorMsg = `${defaultError} Was called with more or less than 1 argument. Expects 1.`;
+      errorMsg = `${defaultError} expects 1 argument.`;
     }
 
     if(typeof errorMsg !== 'undefined'){
@@ -379,11 +379,11 @@ module.exports = (function(){
     }
     return provider;
   }
-  
+
   function _getTwitterProvider(){
     return new firebase.auth.TwitterAuthProvider();
   }
-  
+
   function _getGithubProvider(settings){
     var provider = new firebase.auth.GithubAuthProvider();
     if(settings.scope){
@@ -402,7 +402,7 @@ module.exports = (function(){
 
   function _getAuthProvider(service, settings){
     switch(service){
-      case 'twitter': 
+      case 'twitter':
         return _getTwitterProvider();
       break;
       case 'google':
