@@ -357,9 +357,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  function _authWithCustomToken(token, fn) {
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.authWithCustomToken(token, function (error, authData) {
-	      return fn(error, authData);
+	    var ref = firebase.auth();
+	    return ref.signInWithCustomToken(token).then(function (user) {
+	      return fn(null, user);
+	    })['catch'](function (error) {
+	      return fn(error);
 	    });
 	  }
 

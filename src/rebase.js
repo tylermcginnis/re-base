@@ -297,10 +297,12 @@ module.exports = (function(){
   }
 
   function _authWithCustomToken(token, fn){
-    var ref = new Firebase(`${baseUrl}`);
-    return ref.authWithCustomToken(token, function(error, authData){
-      return fn(error, authData);
-    });
+    var ref = firebase.auth();
+    return ref.signInWithCustomToken(token).then((user) => {
+      return fn(null, user);
+    }).catch(error => {
+      return fn(error);
+    }); 
   }
 
   function _authWithOAuthPopup(provider, fn, settings){
