@@ -374,14 +374,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	  }
 
-	  function _authWithOAuthToken(provider, token, fn, settings) {
-	    settings = settings || {};
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.authWithOAuthToken(provider, token, function (error, authData) {
-	      return fn(error, authData);
-	    }, settings);
-	  }
-
 	  function _authWithOAuthRedirect(provider, fn, settings) {
 	    settings = settings || {};
 	    var ref = new Firebase('' + baseUrl);
@@ -531,9 +523,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      },
 	      authWithOAuthPopup: function authWithOAuthPopup(provider, fn, settings) {
 	        return _authWithOAuthPopup(provider, fn, settings);
-	      },
-	      authWithOAuthToken: function authWithOAuthToken(provider, token, fn, settings) {
-	        return _authWithOAuthToken(provider, token, fn, settings);
 	      },
 	      authWithOAuthRedirect: function authWithOAuthRedirect(provider, fn, settings) {
 	        return _authWithOAuthRedirect(provider, fn, settings);

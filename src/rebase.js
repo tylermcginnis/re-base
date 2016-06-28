@@ -314,14 +314,6 @@ module.exports = (function(){
     });
   }
 
-  function _authWithOAuthToken(provider, token, fn, settings){
-    settings = settings || {};
-    var ref = new Firebase(`${baseUrl}`);
-    return ref.authWithOAuthToken(provider, token, function(error, authData) {
-      return fn(error, authData);
-     }, settings);
-  }
-
   function _authWithOAuthRedirect(provider, fn, settings){
     settings = settings || {};
     var ref = new Firebase(`${baseUrl}`);
@@ -468,9 +460,6 @@ module.exports = (function(){
       },
       authWithOAuthPopup(provider, fn, settings){
         return _authWithOAuthPopup(provider, fn, settings);
-      },
-      authWithOAuthToken(provider, token, fn, settings){
-        return _authWithOAuthToken(provider, token, fn, settings);
       },
       authWithOAuthRedirect(provider, fn, settings){
         return _authWithOAuthRedirect(provider, fn, settings);
