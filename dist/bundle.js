@@ -374,12 +374,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	  }
 
+	  function _getOAuthRedirectResult(fn) {
+	    var ref = firebase.auth();
+	    return ref.getRedirectResult().then(function (user) {
+	      return fn(null, user);
+	    })['catch'](function (error) {
+	      return fn(error);
+	    });
+	  }
+
 	  function _authWithOAuthRedirect(provider, fn, settings) {
 	    settings = settings || {};
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.authWithOAuthRedirect(provider, function (error, authData) {
-	      return fn(error, authData);
-	    }, settings);
+	    var authProvider = _getAuthProvider(provider, settings);
+	    var ref = firebase.auth();
+	    return ref.signInWithRedirect(authProvider).then(function () {
+	      return fn(null);
+	    })['catch'](function (error) {
+	      return fn(error);
+	    });
 	  }
 
 	  function _onAuth(fn) {
@@ -526,6 +538,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      },
 	      authWithOAuthRedirect: function authWithOAuthRedirect(provider, fn, settings) {
 	        return _authWithOAuthRedirect(provider, fn, settings);
+	      },
+	      authGetOAuthRedirectResult: function authGetOAuthRedirectResult(fn) {
+	        return _getOAuthRedirectResult(fn);
 	      },
 	      onAuth: function onAuth(fn) {
 	        return _onAuth(fn);

@@ -313,13 +313,25 @@ module.exports = (function(){
         return fn(error);
     });
   }
+  
+  function _getOAuthRedirectResult(fn){
+    var ref = firebase.auth();
+    return ref.getRedirectResult().then((user) => {
+        return fn(null, user);
+    }).catch(error => {
+        return fn(error);
+    });
+  }
 
   function _authWithOAuthRedirect(provider, fn, settings){
     settings = settings || {};
-    var ref = new Firebase(`${baseUrl}`);
-    return ref.authWithOAuthRedirect(provider, function(error, authData) {
-      return fn(error, authData);
-     }, settings);
+    var authProvider = _getAuthProvider(provider, settings);
+    var ref = firebase.auth();
+    return ref.signInWithRedirect(authProvider).then(() => {
+        return fn(null);
+    }).catch(error => {
+        return fn(error);
+    });
   }
 
   function _onAuth(fn){
@@ -463,6 +475,9 @@ module.exports = (function(){
       },
       authWithOAuthRedirect(provider, fn, settings){
         return _authWithOAuthRedirect(provider, fn, settings);
+      },
+      authGetOAuthRedirectResult(fn){
+         return _getOAuthRedirectResult(fn);
       },
       onAuth(fn){
         return _onAuth(fn);
