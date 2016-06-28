@@ -361,19 +361,12 @@ module.exports = (function(){
     });
   };
 
-  function _removeUser(credentials, fn){
-    var ref = new Firebase(`${baseUrl}`);
-    return ref.removeUser(credentials, function(error) {
-      return fn(error);
-    });
-  };
-
   function _resetPassword(credentials, fn){
     var ref = firebase.auth();
     const { email } = credentials;
     return ref.sendPasswordResetEmail(email).then(() => {
        return fn(null);
-   }).catch(error => {
+    }).catch(error => {
        return fn(error);
     });
   };
@@ -492,9 +485,6 @@ module.exports = (function(){
       },
       createUser(credentials,fn) {
         return _createUser(credentials, fn);
-      },
-      removeUser(credentials,fn) {
-        return _removeUser(credentials, fn);
       },
       resetPassword(credentials,fn) {
         return _resetPassword(credentials, fn);

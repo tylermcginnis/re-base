@@ -423,13 +423,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	  };
 
-	  function _removeUser(credentials, fn) {
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.removeUser(credentials, function (error) {
-	      return fn(error);
-	    });
-	  };
-
 	  function _resetPassword(credentials, fn) {
 	    var ref = firebase.auth();
 	    var email = credentials.email;
@@ -555,9 +548,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      },
 	      createUser: function createUser(credentials, fn) {
 	        return _createUser(credentials, fn);
-	      },
-	      removeUser: function removeUser(credentials, fn) {
-	        return _removeUser(credentials, fn);
 	      },
 	      resetPassword: function resetPassword(credentials, fn) {
 	        return _resetPassword(credentials, fn);
