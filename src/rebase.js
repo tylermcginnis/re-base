@@ -375,7 +375,7 @@ module.exports = (function(){
   function _getFacebookProvider(settings){
     var provider = new firebase.auth.FacebookAuthProvider();
     if(settings.scope){
-        provider.addScope(settings);
+      provider = _addScope(settings.scope, provider);
     }
     return provider;
   }
@@ -387,7 +387,7 @@ module.exports = (function(){
   function _getGithubProvider(settings){
     var provider = new firebase.auth.GithubAuthProvider();
     if(settings.scope){
-      provider.addScope(settings);
+      provider = _addScope(settings.scope, provider);
     }
     return provider;
   };
@@ -395,10 +395,21 @@ module.exports = (function(){
   function _getGoogleProvider(settings){
     var provider = new firebase.auth.GoogleAuthProvider();
     if(settings.scope){
-      provider.addScope(settings);
+      provider = _addScope(settings.scope, provider);
     }
     return provider;
   };
+
+  function _addScope(scope, provider){
+    if(Array.isArray(scope)){
+      scope.forEach(item => {
+          provider.addScope(item);
+      });
+    } else {
+        provider.addScope(scope);
+    }
+    return provider;
+  }
 
   function _getAuthProvider(service, settings){
     switch(service){

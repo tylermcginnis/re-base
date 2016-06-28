@@ -137,9 +137,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var defaultError = 'Rebase.createClass failed.';
 	    var errorMsg;
 	    if (typeof config !== 'object') {
-	      errorMsg = defaultError + ' config must be an object.';
+	      errorMsg = defaultError + ' to migrate from 2.x.x to 3.x.x, the config must be an object. See: https://firebase.google.com/docs/web/setup#add_firebase_to_your_app';
 	    } else if (!config || arguments.length > 1) {
-	      errorMsg = defaultError + ' Was called with more or less than 1 argument. Expects 1.';
+	      errorMsg = defaultError + ' expects 1 argument.';
 	    }
 
 	    if (typeof errorMsg !== 'undefined') {
@@ -438,7 +438,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function _getFacebookProvider(settings) {
 	    var provider = new firebase.auth.FacebookAuthProvider();
 	    if (settings.scope) {
-	      provider.addScope(settings);
+	      provider = _addScope(settings.scope, provider);
 	    }
 	    return provider;
 	  }
@@ -450,7 +450,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function _getGithubProvider(settings) {
 	    var provider = new firebase.auth.GithubAuthProvider();
 	    if (settings.scope) {
-	      provider.addScope(settings);
+	      provider = _addScope(settings.scope, provider);
 	    }
 	    return provider;
 	  };
@@ -458,10 +458,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function _getGoogleProvider(settings) {
 	    var provider = new firebase.auth.GoogleAuthProvider();
 	    if (settings.scope) {
-	      provider.addScope(settings);
+	      provider = _addScope(settings.scope, provider);
 	    }
 	    return provider;
 	  };
+
+	  function _addScope(scope, provider) {
+	    if (Array.isArray(scope)) {
+	      scope.forEach(function (item) {
+	        provider.addScope(item);
+	      });
+	    } else {
+	      provider.addScope(scope);
+	    }
+	    return provider;
+	  }
 
 	  function _getAuthProvider(service, settings) {
 	    switch (service) {
