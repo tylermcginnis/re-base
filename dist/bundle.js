@@ -495,9 +495,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function init() {
 	    return {
-	      storage: function storage() {
-	        return firebase.storage().ref();
-	      },
+	      storage: firebase.storage,
+	      database: firebase.database,
+	      auth: firebase.auth,
+	      app: firebase.app,
 	      listenTo: function listenTo(endpoint, options) {
 	        return _bind(endpoint, options, 'listenTo');
 	      },

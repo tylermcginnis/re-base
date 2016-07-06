@@ -59,6 +59,10 @@ describe('re-base Tests:', function(){
       expect(base.fetch).toEqual(jasmine.any(Function));
       expect(base.post).toEqual(jasmine.any(Function));
       expect(base.removeBinding).toEqual(jasmine.any(Function));
+      expect(base.storage).toEqual(jasmine.any(Function));
+      expect(base.app).toEqual(jasmine.any(Function));
+      expect(base.database).toEqual(jasmine.any(Function));
+      expect(base.auth).toEqual(jasmine.any(Function));
     });
     it('createClass() returns a singleton if it\'s already been invoked', function(){
       var newBase = Rebase.createClass(firebaseConfig);
@@ -952,23 +956,24 @@ describe('re-base Tests:', function(){
       });
     });
   });
-  
-  describe('Storage tests', function(){
 
-    it('storage() returns reference to firebase.storage root bucket', function(){
-      var storageRef = base.storage();
-      expect(storageRef.bucket).not.toBeUndefined();
-      expect(storageRef.fullPath).not.toBeUndefined();
-      expect(storageRef.name).not.toBeUndefined();
-      expect(storageRef.parent).not.toBeUndefined();
-      expect(storageRef.root).not.toBeUndefined();
-      expect(storageRef.child).toEqual(jasmine.any(Function));
-      expect(storageRef.delete).toEqual(jasmine.any(Function));
-      expect(storageRef.getDownloadURL).toEqual(jasmine.any(Function));
-      expect(storageRef.getMetadata).toEqual(jasmine.any(Function));
-      expect(storageRef.put).toEqual(jasmine.any(Function));
-      expect(storageRef.toString).toEqual(jasmine.any(Function));
-      expect(storageRef.updateMetadata).toEqual(jasmine.any(Function));
+  describe('Exposed firebase namespaces', function(){
+
+    it('storage object should be exposed', function(){
+      expect(base.storage).not.toBeUndefined();
+    });
+
+    it('auth object should be exposed', function(){
+      expect(base.auth).not.toBeUndefined();
+    });
+    
+    it('database object should be exposed', function(){
+      expect(base.database).not.toBeUndefined();
+      expect(base.database.ServerValue).not.toBeUndefined();
+    });
+    
+    it('app object should be exposed', function(){
+      expect(base.app).not.toBeUndefined();
     });
 
   });

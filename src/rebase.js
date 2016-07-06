@@ -432,9 +432,10 @@ module.exports = (function(){
 
   function init(){
     return {
-      storage(){
-        return firebase.storage().ref();
-      },
+      storage : firebase.storage,
+      database: firebase.database,
+      auth: firebase.auth,
+      app: firebase.app,
       listenTo(endpoint, options){
         return _bind(endpoint, options, 'listenTo');
       },
