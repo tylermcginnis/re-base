@@ -1019,7 +1019,31 @@ describe('re-base Tests:', function(){
             done();
         });
       });
-      
+
+      describe('unauth()', function() {
+
+        it('unauth() should log the user out', function(done){
+            //sign in first
+            base.authWithPassword({
+                email: dummyUsers.known.email,
+                password: dummyUsers.known.password
+            }, function(error, authData){
+                //expect user is logged in
+                expect(error).toBeNull();
+                var currentUser = base.getAuth();
+                expect(currentUser).toEqual(authData);
+                //log user out
+                base.unauth();
+                setTimeout(() => {
+                  //expect user is now logged out
+                  var user = base.getAuth();
+                  expect(user).toBeNull();
+                  done();
+                }, 500);
+            });
+        });
+
+      });
       describe('authWithOAuthPopup()', function(){
         
         it('authWithOAuthPopup() should throw an error if unknown provider requested', function(done){
