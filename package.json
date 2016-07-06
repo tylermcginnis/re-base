@@ -9,7 +9,7 @@
   },
   "author": "Tyler McGinnis and Jacob Turner",
   "dependencies": {
-    "firebase": "^3.0.3"
+    "firebase": "^3.1.0"
   },
   "devDependencies": {
     "babel": "^5.4.7",
