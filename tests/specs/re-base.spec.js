@@ -7,7 +7,7 @@ var firebaseConfig = {
     apiKey: "AIzaSyBm3py9af9BqQMfUMnMKpAXJUfxlsegnDI",
     authDomain: "qwales1-test.firebaseapp.com",
     databaseURL: "https://qwales1-test.firebaseio.com",
-    storageBucket: "qwales1-test.appspot.com",
+    storageBucket: "qwales1-test.appspot.com"
 };
 var testApp = firebase.initializeApp(firebaseConfig, 'TEST_APP');
 var ref = testApp.database().ref();
@@ -961,6 +961,13 @@ describe('re-base Tests:', function(){
 
     it('storage object should be exposed', function(){
       expect(base.storage).not.toBeUndefined();
+    });
+
+    it('storage ref should be accessible', function(){
+      var storage = base.storage();
+      var ref = storage.ref();
+      expect(ref.bucket).toEqual(firebaseConfig.storageBucket);
+      expect(ref.child).toEqual(jasmine.any(Function));
     });
 
     it('auth object should be exposed', function(){
