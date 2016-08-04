@@ -993,7 +993,7 @@ describe('re-base Tests:', function(){
       base.fetch('.info/serverTimeOffset', {
         context: this,
         then: data => {
-          expect(data).not.toBeUndefined();
+          expect(data).toEqual(jasmine.any(Number));
           done();
         }
       });
