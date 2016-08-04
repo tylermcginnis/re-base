@@ -955,6 +955,7 @@ describe('re-base Tests:', function(){
         React.render(<TestComponent />, document.body);
       });
     });
+
   });
 
   describe('Exposed firebase namespaces', function(){
@@ -977,6 +978,7 @@ describe('re-base Tests:', function(){
     it('database object should be exposed', function(){
       expect(base.database).not.toBeUndefined();
       expect(base.database.ServerValue).not.toBeUndefined();
+      expect(base.database.ServerValue.TIMESTAMP).not.toBeUndefined();
     });
     
     it('app object should be exposed', function(){
@@ -984,7 +986,21 @@ describe('re-base Tests:', function(){
     });
 
   });
-  
+
+  describe('Firebase Server Info', function(){
+
+    it('correctly retrieves Server Time Offset', function(done){
+      base.fetch('.info/serverTimeOffset', {
+        context: this,
+        then: data => {
+          expect(data).not.toBeUndefined();
+          done();
+        }
+      });
+    });
+
+  });
+ 
   describe('Auth tests', function(){
 
       it('Fails trying to log with an unknown user', function(done){

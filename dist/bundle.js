@@ -156,7 +156,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      errorMsg = defaultError + ' must be a non-empty string. Instead, got ' + endpoint;
 	    } else if (endpoint.length > 768) {
 	      errorMsg = defaultError + ' is too long to be stored in Firebase. It must be less than 768 characters.';
-	    } else if (/^$|[\[\]\.\#\$]/.test(endpoint)) {
+	    } else if (/^$|[\[\]\#\$]|.{1}[\.]/.test(endpoint)) {
 	      errorMsg = defaultError + ' in invalid. Paths must be non-empty strings and can\'t contain ".", "#", "$", "[", or "]".';
 	    }
 
