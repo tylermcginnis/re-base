@@ -956,6 +956,45 @@ describe('re-base Tests:', function(){
       });
     });
 
+    it('syncState() syncs and converts server timestamps', function(done){
+      class TestComponent extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = {
+            users: [],
+            hasUpdated: false
+          }
+        }
+        componentWillMount(){
+          this.ref = base.syncState('users', {
+            context: this,
+            state: 'users'
+          })
+        }
+        componentDidMount(){
+          this.setState({
+            users: [{
+              name: 'Al',
+              timestamp: base.database.ServerValue.TIMESTAMP
+            }]
+          })
+        }
+        componentWillUnmount(){
+          base.removeBinding(this.ref);
+        }
+        componentDidUpdate(){
+          if(!this.state.hasUpdated) this.setState({ hasUpdated: true })
+        }
+        render(){
+          if(this.state.hasUpdated){
+            expect(this.state.users[0].timestamp).toEqual(jasmine.any(Number));
+            done();
+          }
+          return <div>IQ</div>
+        }
+      }
+      React.render(<TestComponent />, document.body);
+    });
   });
 
   describe('Exposed firebase namespaces', function(){
