@@ -928,9 +928,7 @@ describe('re-base Tests:', function(){
             base.removeBinding(this.ref);
           }
           componentDidUpdate(){
-            if(!this.state.hasUpdated) this.setState({ hasUpdated: true })
-          }
-          render(){
+            if(!this.state.hasUpdated) this.setState({ hasUpdated: true });
             if(this.state.hasUpdated){
               var expectedOutput = [{
                 name: 'Al',
@@ -949,6 +947,8 @@ describe('re-base Tests:', function(){
               });
               done();
             }
+          }
+          render(){
             return <div>IQ</div>
           }
         }
@@ -983,13 +983,13 @@ describe('re-base Tests:', function(){
           base.removeBinding(this.ref);
         }
         componentDidUpdate(){
-          if(!this.state.hasUpdated) this.setState({ hasUpdated: true })
-        }
-        render(){
+          if(!this.state.hasUpdated) this.setState({ hasUpdated: true });
           if(this.state.hasUpdated){
             expect(this.state.users[0].timestamp).toEqual(jasmine.any(Number));
             done();
           }
+        }
+        render(){
           return <div>IQ</div>
         }
       }
@@ -1023,13 +1023,13 @@ describe('re-base Tests:', function(){
           base.removeBinding(this.ref);
         }
         componentDidUpdate(){
-          if(!this.state.hasUpdated) this.setState({ hasUpdated: true })
-        }
-        render(){
+          if(!this.state.hasUpdated) this.setState({ hasUpdated: true });
           if(this.state.hasUpdated){
             expect(this.state.user.timestamp).toEqual(jasmine.any(Number));
             done();
           }
+        }
+        render(){
           return <div>IQ</div>
         }
       }
