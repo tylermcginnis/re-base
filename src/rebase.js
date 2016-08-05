@@ -176,7 +176,12 @@ module.exports = (function(){
   function _updateSyncState(ref, data, key){
     if(_isObject(data)) {
       for(var prop in data){
-        _updateSyncState(ref.child(prop), data[prop], prop);
+        //allow timestamps to be set
+        if(prop !== '.sv'){
+          _updateSyncState(ref.child(prop), data[prop], prop);
+        } else {
+          ref.set(data);
+        }
       }
     } else {
       ref.set(data);

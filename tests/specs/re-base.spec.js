@@ -956,7 +956,7 @@ describe('re-base Tests:', function(){
       });
     });
 
-    it('syncState() syncs and converts server timestamps', function(done){
+    it('syncState() syncs and converts server timestamps in an array', function(done){
       class TestComponent extends React.Component{
         constructor(props){
           super(props);
@@ -995,6 +995,47 @@ describe('re-base Tests:', function(){
       }
       React.render(<TestComponent />, document.body);
     });
+
+    it('syncState() syncs and converts server timestamps in a nested data structure', function(done){
+      class TestComponent extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = {
+            user: [],
+            hasUpdated: false
+          }
+        }
+        componentWillMount(){
+          this.ref = base.syncState('user', {
+            context: this,
+            state: 'user'
+          })
+        }
+        componentDidMount(){
+          this.setState({
+            user: {
+              name: 'Al',
+              timestamp: base.database.ServerValue.TIMESTAMP
+            }
+          });
+        }
+        componentWillUnmount(){
+          base.removeBinding(this.ref);
+        }
+        componentDidUpdate(){
+          if(!this.state.hasUpdated) this.setState({ hasUpdated: true })
+        }
+        render(){
+          if(this.state.hasUpdated){
+            expect(this.state.user.timestamp).toEqual(jasmine.any(Number));
+            done();
+          }
+          return <div>IQ</div>
+        }
+      }
+      React.render(<TestComponent />, document.body);
+    });
+
   });
 
   describe('Exposed firebase namespaces', function(){
