@@ -56,6 +56,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 	module.exports = (function () {
@@ -390,6 +392,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	  }
 
+	  function _authWithOAuthToken(provider, token, fn, settings) {
+	    settings = settings || {};
+	    var authProvider = _getAuthProvider(provider, settings);
+	    var credential = authProvider.credential.apply(authProvider, [token].concat(_toConsumableArray(settings.providerOptions)));
+	    return ref.signInWithCredential(credential).then(function (authData) {
+	      return fn(null, authData);
+	    })['catch'](function (error) {
+	      return fn(error);
+	    });
+	  }
+
 	  function _authWithOAuthRedirect(provider, fn, settings) {
 	    settings = settings || {};
 	    var authProvider = _getAuthProvider(provider, settings);
@@ -539,6 +552,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      },
 	      authWithOAuthRedirect: function authWithOAuthRedirect(provider, fn, settings) {
 	        return _authWithOAuthRedirect(provider, fn, settings);
+	      },
+	      authWithOAuthToken: function authWithOAuthToken(provider, token, fn, settings) {
+	        return _authWithOAuthToken(provider, token, fn, settings);
 	      },
 	      authGetOAuthRedirectResult: function authGetOAuthRedirectResult(fn) {
 	        return _getOAuthRedirectResult(fn);

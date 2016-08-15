@@ -508,6 +508,60 @@ base.authGetOAuthRedirectResult(onRedirectBack);
 ```
 <br />
 
+## authWithOAuthToken(provider, token, handler, settings)
+
+#### Purpose
+ Authenticate with OAuth provider using a token
+
+#### Arguments
+
+  1. provider
+    - type: string
+    - name of auth provider "facebook, twitter, github, google"
+  2. token
+    - type: string
+  3. handler
+  	- type: function
+  		- arguments:
+  			- error (object or null)
+  			- user data (object)
+  4. settings (available settings vary per auth provider)
+  	- type: object (optional)
+  		- properties:
+  			- scope (array or string)
+  			- providerOptions (object)
+  				- properties:
+  					- secret (twitter only - optional)
+  					- idToken(google only - optional, must be null if using accessToken)
+  					- accessToken(google only - optional)
+
+#### Return Value
+  No return value
+
+#### Example
+
+```javascript
+var authHandler = function(error, user) {
+  if(error) doSomethingWithError(error);
+  doSomethingWithAuthenticatedUser(user);
+}
+
+//get the access token
+var offAuth = base.onAuth(function(authData) {
+  if (authData) {
+    var token = authData.providerData[authData.provider].accessToken;
+    //add settings for auth provider - optional
+    var settings = {
+        scope: ['repos']
+    };
+    //authenticate with token
+    base.authWithOAuthToken(authData.provider, token, authHandler, settings);
+  }
+});
+
+```
+<br />
+
 ## authWithCustomToken(token,handler)
 
 #### Purpose

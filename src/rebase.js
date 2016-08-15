@@ -320,11 +320,22 @@ module.exports = (function(){
         return fn(error);
     });
   }
-  
+
   function _getOAuthRedirectResult(fn){
     var ref = firebase.auth();
     return ref.getRedirectResult().then((user) => {
         return fn(null, user);
+    }).catch(error => {
+        return fn(error);
+    });
+  }
+
+  function _authWithOAuthToken(provider, token, fn, settings){
+    settings = settings || {};
+    var authProvider = _getAuthProvider(provider, settings);
+    var credential = authProvider.credential(token, ...settings.providerOptions);
+    return ref.signInWithCredential(credential).then(authData => {
+        return fn(null, authData);
     }).catch(error => {
         return fn(error);
     });
@@ -476,6 +487,9 @@ module.exports = (function(){
       },
       authWithOAuthRedirect(provider, fn, settings){
         return _authWithOAuthRedirect(provider, fn, settings);
+      },
+      authWithOAuthToken(provider, token, fn, settings){
+        return _authWithOAuthToken(provider, token, fn, settings);
       },
       authGetOAuthRedirectResult(fn){
          return _getOAuthRedirectResult(fn);
