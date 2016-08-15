@@ -56,12 +56,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 	module.exports = (function () {
-	  var Firebase = __webpack_require__(1);
+	  var firebase = __webpack_require__(1);
 
-	  var baseUrl = '';
+	  var firebaseApp = null;
 	  var rebase;
 	  var firebaseRefs = {};
 	  var firebaseListeners = {};
@@ -116,7 +118,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    snapshot.forEach(function (childSnapshot) {
 	      var val = childSnapshot.val();
 	      if (_isObject(val)) {
-	        val.key = childSnapshot.key();
+	        val.key = childSnapshot.key;
 	      }
 	      arr.push(val);
 	    });
@@ -133,21 +135,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    throw err;
 	  };
 
-	  function _validateBaseURL(url) {
+	  function _validateConfig(config) {
 	    var defaultError = 'Rebase.createClass failed.';
 	    var errorMsg;
-	    if (typeof url !== 'string') {
-	      errorMsg = defaultError + ' URL must be a string.';
-	    } else if (!url || arguments.length > 1) {
-	      errorMsg = defaultError + ' Was called with more or less than 1 argument. Expects 1.';
-	    } else if (url.length === '') {
-	      errorMsg = defaultError + ' URL cannot be an empty string.';
-	    } else if (url.indexOf('.firebaseio.com') === -1) {
-	      errorMsg = defaultError + ' URL must be in the format of https://<YOUR FIREBASE>.firebaseio.com. Instead, got ' + url + '.';
+	    if (typeof config !== 'object') {
+	      errorMsg = defaultError + ' to migrate from 2.x.x to 3.x.x, the config must be an object. See: https://firebase.google.com/docs/web/setup#add_firebase_to_your_app';
+	    } else if (!config || arguments.length > 1) {
+	      errorMsg = defaultError + ' expects 1 argument.';
 	    }
 
 	    if (typeof errorMsg !== 'undefined') {
-	      _throwError(errorMsg, "INVALID_URL");
+	      _throwError(errorMsg, "INVALID_CONFIG");
 	    }
 	  };
 
@@ -159,8 +157,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    } else if (endpoint.length === 0) {
 	      errorMsg = defaultError + ' must be a non-empty string. Instead, got ' + endpoint;
 	    } else if (endpoint.length > 768) {
-	      errorMsg = defaultError + ' is too long to be stored in Firebase. It be less than 768 characters.';
-	    } else if (/^$|[\[\]\.\#\$]/.test(endpoint)) {
+	      errorMsg = defaultError + ' is too long to be stored in Firebase. It must be less than 768 characters.';
+	    } else if (/^$|[\[\]\#\$]|.{1}[\.]/.test(endpoint)) {
 	      errorMsg = defaultError + ' in invalid. Paths must be non-empty strings and can\'t contain ".", "#", "$", "[", or "]".';
 	    }
 
@@ -182,7 +180,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    optionValidators.context(options);
 	    optionValidators.then(options);
 	    options.queries && optionValidators.query(options);
-	    var ref = new Firebase(baseUrl + '/' + endpoint);
+	    var ref = firebase.database().ref('' + endpoint);
 	    ref = _addQueries(ref, options.queries);
 	    ref.once('value', function (snapshot) {
 	      var data = options.asArray === true ? _toArray(snapshot) : snapshot.val();
@@ -192,10 +190,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function _firebaseRefsMixin(endpoint, invoker, ref) {
 	    if (!_isObject(firebaseRefs[endpoint])) {
-	      firebaseRefs[endpoint] = _defineProperty({}, invoker, ref.ref());
+	      firebaseRefs[endpoint] = _defineProperty({}, invoker, ref);
 	      firebaseListeners[endpoint] = {};
 	    } else if (!firebaseRefs[endpoint][invoker]) {
-	      firebaseRefs[endpoint][invoker] = ref.ref();
+	      firebaseRefs[endpoint][invoker] = ref;
 	    } else {
 	      _throwError('Endpoint (' + endpoint + ') already has listener ' + invoker, "INVALID_ENDPOINT");
 	    }
@@ -229,7 +227,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    invoker === 'listenTo' && optionValidators.then(options);
 	    invoker === 'bindToState' && optionValidators.state(options);
 	    options.queries && optionValidators.query(options);
-	    var ref = new Firebase(baseUrl + '/' + endpoint);
+	    var ref = firebase.database().ref(endpoint);
 	    _firebaseRefsMixin(endpoint, invoker, ref);
 	    _addListener(endpoint, invoker, options, ref);
 	    return _returnRef(endpoint, invoker);
@@ -238,7 +236,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function _updateSyncState(ref, data, key) {
 	    if (_isObject(data)) {
 	      for (var prop in data) {
-	        _updateSyncState(ref.child(prop), data[prop], prop);
+	        //allow timestamps to be set
+	        if (prop !== '.sv') {
+	          _updateSyncState(ref.child(prop), data[prop], prop);
+	        } else {
+	          ref.set(data);
+	        }
 	      }
 	    } else {
 	      ref.set(data);
@@ -258,7 +261,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    options.reactSetState = options.context.setState;
 	    options.then && (options.then.called = false);
-	    var ref = new Firebase(baseUrl + '/' + endpoint);
+	    var ref = firebase.database().ref(endpoint);
 	    _firebaseRefsMixin(endpoint, 'syncState', ref);
 	    _addListener(endpoint, 'syncState', options, ref);
 	    options.context.setState = function (data, cb) {
@@ -278,7 +281,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function _post(endpoint, options) {
 	    _validateEndpoint(endpoint);
 	    optionValidators.data(options);
-	    var ref = new Firebase(baseUrl + '/' + endpoint);
+	    var ref = firebase.database().ref('' + endpoint);
 	    if (options.then) {
 	      ref.set(options.data, options.then);
 	    } else {
@@ -289,7 +292,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function _push(endpoint, options) {
 	    _validateEndpoint(endpoint);
 	    optionValidators.data(options);
-	    var ref = new Firebase(baseUrl + '/' + endpoint);
+	    var ref = firebase.database().ref('' + endpoint);
 	    var returnEndpoint;
 	    if (options.then) {
 	      returnEndpoint = ref.push(options.data, options.then);
@@ -332,7 +335,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  function _reset() {
-	    baseUrl = '';
 	    rebase = undefined;
 	    for (var key in firebaseRefs) {
 	      if (firebaseRefs.hasOwnProperty(key)) {
@@ -350,93 +352,171 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  function _authWithPassword(credentials, fn) {
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.authWithPassword(credentials, function (error, authData) {
-	      return fn(error, authData);
+	    var ref = firebase.auth();
+	    var email = credentials.email;
+	    var password = credentials.password;
+
+	    return ref.signInWithEmailAndPassword(email, password).then(function (authData) {
+	      return fn(null, authData);
+	    })['catch'](function (err) {
+	      return fn(err);
 	    });
 	  }
 
 	  function _authWithCustomToken(token, fn) {
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.authWithCustomToken(token, function (error, authData) {
-	      return fn(error, authData);
+	    var ref = firebase.auth();
+	    return ref.signInWithCustomToken(token).then(function (user) {
+	      return fn(null, user);
+	    })['catch'](function (error) {
+	      return fn(error);
 	    });
 	  }
 
 	  function _authWithOAuthPopup(provider, fn, settings) {
 	    settings = settings || {};
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.authWithOAuthPopup(provider, function (error, authData) {
-	      return fn(error, authData);
-	    }, settings);
+	    var authProvider = _getAuthProvider(provider, settings);
+	    var ref = firebase.auth();
+	    return ref.signInWithPopup(authProvider).then(function (authData) {
+	      return fn(null, authData);
+	    })['catch'](function (error) {
+	      return fn(error);
+	    });
+	  }
+
+	  function _getOAuthRedirectResult(fn) {
+	    var ref = firebase.auth();
+	    return ref.getRedirectResult().then(function (user) {
+	      return fn(null, user);
+	    })['catch'](function (error) {
+	      return fn(error);
+	    });
 	  }
 
 	  function _authWithOAuthToken(provider, token, fn, settings) {
 	    settings = settings || {};
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.authWithOAuthToken(provider, token, function (error, authData) {
-	      return fn(error, authData);
-	    }, settings);
+	    var authProvider = _getAuthProvider(provider, settings);
+	    var credential = authProvider.credential.apply(authProvider, [token].concat(_toConsumableArray(settings.providerOptions)));
+	    return ref.signInWithCredential(credential).then(function (authData) {
+	      return fn(null, authData);
+	    })['catch'](function (error) {
+	      return fn(error);
+	    });
 	  }
 
 	  function _authWithOAuthRedirect(provider, fn, settings) {
 	    settings = settings || {};
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.authWithOAuthRedirect(provider, function (error, authData) {
-	      return fn(error, authData);
-	    }, settings);
+	    var authProvider = _getAuthProvider(provider, settings);
+	    var ref = firebase.auth();
+	    return ref.signInWithRedirect(authProvider).then(function () {
+	      return fn(null);
+	    })['catch'](function (error) {
+	      return fn(error);
+	    });
 	  }
 
 	  function _onAuth(fn) {
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.onAuth(fn);
-	  }
-
-	  function _offAuth(fn) {
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.offAuth(fn);
+	    var ref = firebase.auth();
+	    return ref.onAuthStateChanged(fn);
 	  }
 
 	  function _unauth() {
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.unauth();
+	    var ref = firebase.auth();
+	    return ref.signOut();
 	  }
 
 	  function _getAuth() {
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.getAuth();
+	    var ref = firebase.auth();
+	    return ref.currentUser;
 	  }
 
 	  function _createUser(credentials, fn) {
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.createUser(credentials, function (error, authData) {
-	      return fn(error, authData);
-	    });
-	  };
+	    var ref = firebase.auth();
+	    var email = credentials.email;
+	    var password = credentials.password;
 
-	  function _removeUser(credentials, fn) {
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.removeUser(credentials, function (error) {
-	      return fn(error);
+	    return ref.createUserWithEmailAndPassword(email, password).then(function (authData) {
+	      return fn(null, authData);
+	    })['catch'](function (err) {
+	      return fn(err);
 	    });
 	  };
 
 	  function _resetPassword(credentials, fn) {
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.resetPassword(credentials, function (error) {
+	    var ref = firebase.auth();
+	    var email = credentials.email;
+
+	    return ref.sendPasswordResetEmail(email).then(function () {
+	      return fn(null);
+	    })['catch'](function (error) {
 	      return fn(error);
 	    });
 	  };
 
-	  function _changePassword(credentials, fn) {
-	    var ref = new Firebase('' + baseUrl);
-	    return ref.changePassword(credentials, function (error) {
-	      return fn(error);
-	    });
+	  function _getFacebookProvider(settings) {
+	    var provider = new firebase.auth.FacebookAuthProvider();
+	    if (settings.scope) {
+	      provider = _addScope(settings.scope, provider);
+	    }
+	    return provider;
+	  }
+
+	  function _getTwitterProvider() {
+	    return new firebase.auth.TwitterAuthProvider();
+	  }
+
+	  function _getGithubProvider(settings) {
+	    var provider = new firebase.auth.GithubAuthProvider();
+	    if (settings.scope) {
+	      provider = _addScope(settings.scope, provider);
+	    }
+	    return provider;
 	  };
+
+	  function _getGoogleProvider(settings) {
+	    var provider = new firebase.auth.GoogleAuthProvider();
+	    if (settings.scope) {
+	      provider = _addScope(settings.scope, provider);
+	    }
+	    return provider;
+	  };
+
+	  function _addScope(scope, provider) {
+	    if (Array.isArray(scope)) {
+	      scope.forEach(function (item) {
+	        provider.addScope(item);
+	      });
+	    } else {
+	      provider.addScope(scope);
+	    }
+	    return provider;
+	  }
+
+	  function _getAuthProvider(service, settings) {
+	    switch (service) {
+	      case 'twitter':
+	        return _getTwitterProvider();
+	        break;
+	      case 'google':
+	        return _getGoogleProvider(settings);
+	        break;
+	      case 'facebook':
+	        return _getFacebookProvider(settings);
+	        break;
+	      case 'github':
+	        return _getGithubProvider(settings);
+	        break;
+	      default:
+	        _throwError('Expected auth provider requested. Available auth providers: facebook,twitter,github, google', 'UNKNOWN AUTH PROVIDER');
+	        break;
+	    }
+	  }
 
 	  function init() {
 	    return {
+	      storage: firebase.storage,
+	      database: firebase.database,
+	      auth: firebase.auth,
+	      app: firebase.app,
 	      listenTo: function listenTo(endpoint, options) {
 	        return _bind(endpoint, options, 'listenTo');
 	      },
@@ -470,17 +550,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	      authWithOAuthPopup: function authWithOAuthPopup(provider, fn, settings) {
 	        return _authWithOAuthPopup(provider, fn, settings);
 	      },
-	      authWithOAuthToken: function authWithOAuthToken(provider, token, fn, settings) {
-	        return _authWithOAuthToken(provider, token, fn, settings);
-	      },
 	      authWithOAuthRedirect: function authWithOAuthRedirect(provider, fn, settings) {
 	        return _authWithOAuthRedirect(provider, fn, settings);
 	      },
+	      authWithOAuthToken: function authWithOAuthToken(provider, token, fn, settings) {
+	        return _authWithOAuthToken(provider, token, fn, settings);
+	      },
+	      authGetOAuthRedirectResult: function authGetOAuthRedirectResult(fn) {
+	        return _getOAuthRedirectResult(fn);
+	      },
 	      onAuth: function onAuth(fn) {
 	        return _onAuth(fn);
-	      },
-	      offAuth: function offAuth(fn) {
-	        return _offAuth(fn);
 	      },
 	      unauth: function unauth(fn) {
 	        return _unauth();
@@ -491,28 +571,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	      createUser: function createUser(credentials, fn) {
 	        return _createUser(credentials, fn);
 	      },
-	      removeUser: function removeUser(credentials, fn) {
-	        return _removeUser(credentials, fn);
-	      },
 	      resetPassword: function resetPassword(credentials, fn) {
 	        return _resetPassword(credentials, fn);
-	      },
-	      changePassword: function changePassword(credentials, fn) {
-	        return _changePassword(credentials, fn);
 	      }
 	    };
 	  };
 
 	  return {
-	    createClass: function createClass(url) {
+	    createClass: function createClass(config) {
 	      if (rebase) {
 	        return rebase;
 	      }
-
-	      _validateBaseURL(url);
-	      baseUrl = url;
+	      if (!firebaseApp) {
+	        _validateConfig(config);
+	        firebaseApp = firebase.initializeApp(config);
+	      }
 	      rebase = init();
-
 	      return rebase;
 	    }
 	  };

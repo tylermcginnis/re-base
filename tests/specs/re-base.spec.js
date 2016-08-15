@@ -1,10 +1,17 @@
 var Rebase = require('../../dist/bundle');
 var React = require('react/addons');
 var TestUtils = React.addons.TestUtils;
-var Firebase = require('firebase');
 
-var firebaseUrl = 'https://rebase-demo.firebaseio.com/';
-var ref = new Firebase(firebaseUrl);
+var firebase = require('firebase');
+var firebaseConfig = {
+    apiKey: "AIzaSyBm3py9af9BqQMfUMnMKpAXJUfxlsegnDI",
+    authDomain: "qwales1-test.firebaseapp.com",
+    databaseURL: "https://qwales1-test.firebaseio.com",
+    storageBucket: "qwales1-test.appspot.com"
+};
+var testApp = firebase.initializeApp(firebaseConfig, 'TEST_APP');
+var ref = testApp.database().ref();
+
 var invalidFirebaseURLs = [null, undefined, true, false, [], 0, 5, "", "a", ["hi", 1]];
 var invalidEndpoints = ['', 'ab.cd', 'ab#cd', 'ab$cd', 'ab[cd', 'ab]cd'];
 var dummyObjData = {name: 'Tyler McGinnis', age: 25};
@@ -14,7 +21,7 @@ var dummyArrData = ['Tyler McGinnis', 'Jacob Turner', 'Ean Platter'];
 var testEndpoint = 'test/child';
 var dummyUsers = {
   'unknown': {email: 'unknown@thisdomainisfake.com', password: 'nonono'},
-  'known': {email: 'known@thisdomainisfake.com', password: 'yeahyeahyeah'},
+  'known': {email: 'fakeymcfakefake@chriswal.es', password: '123456password'},
   'invalid': {email: 'invalid@com', password: 'correcthorsebatterystaple'},
   'toDelete': {email: 'test@example.com', password: 'correcthorsebatterystaple', newPassword: 'chipsahoy'},
 };
@@ -22,8 +29,12 @@ var base;
 
 describe('re-base Tests:', function(){
   beforeEach(function(done){
-    base = Rebase.createClass(firebaseUrl);
-    ref.set(null, done);
+    base = Rebase.createClass(firebaseConfig);
+    ref.remove(err => {
+        if(err) done(err);
+        ref = firebase.database().ref();
+        done();
+    });
   });
 
   afterEach(function(done){
@@ -34,15 +45,6 @@ describe('re-base Tests:', function(){
   });
 
   describe('createClass()', function(){
-    it('createClass() throws an error given an invalid Firebase URL', function(){
-      invalidFirebaseURLs.forEach(function(URL){
-        try {
-          Rebase.createClass(URL)
-        } catch(err){
-          expect(err.code).toEqual('INVALID_URL');
-        }
-      });
-    });
 
     it('createClass() returns an object with the correct API', function(){
       expect(base.listenTo).toBeDefined();
@@ -57,13 +59,17 @@ describe('re-base Tests:', function(){
       expect(base.fetch).toEqual(jasmine.any(Function));
       expect(base.post).toEqual(jasmine.any(Function));
       expect(base.removeBinding).toEqual(jasmine.any(Function));
+      expect(base.storage).toEqual(jasmine.any(Function));
+      expect(base.app).toEqual(jasmine.any(Function));
+      expect(base.database).toEqual(jasmine.any(Function));
+      expect(base.auth).toEqual(jasmine.any(Function));
     });
     it('createClass() returns a singleton if it\'s already been invoked', function(){
-      var newBase = Rebase.createClass(firebaseUrl);
+      var newBase = Rebase.createClass(firebaseConfig);
       expect(base).toEqual(newBase);
     });
   });
-
+  
   describe('post()', function(){
     it('post() throws an error given a invalid endpoint', function(){
       invalidEndpoints.forEach((endpoint) => {
@@ -132,8 +138,8 @@ describe('re-base Tests:', function(){
         data: dummyObjData
       });
       var endpointString = returnedEndpoint.toString();
-      var endpointBaseUrl = endpointString.substr(0, firebaseUrl.length);
-      expect(endpointBaseUrl).toEqual(firebaseUrl);
+      var endpointBaseUrl = endpointString.substr(0, firebaseConfig.databaseURL.length);
+      expect(endpointBaseUrl).toEqual(firebaseConfig.databaseURL);
     });
 
     it('push() updates Firebase correctly', function(done){
@@ -143,7 +149,6 @@ describe('re-base Tests:', function(){
           ref.child(testEndpoint).once('value', (snapshot) => {
             var keyedData = snapshot.val();
             var data = keyedData[Object.keys(keyedData)[0]];
-
             expect(data).toEqual(dummyObjData);
             done();
           });
@@ -153,7 +158,7 @@ describe('re-base Tests:', function(){
   });
 
   describe('fetch()', function(){
-    it('fetch() throws an error given a invalid endpoint', function(done){
+    it('fetch() throws an error given a invalid endpoint', function(){
       invalidEndpoints.forEach((endpoint) => {
         try {
           base.fetch(endpoint, {
@@ -163,7 +168,6 @@ describe('re-base Tests:', function(){
           })
         } catch(err) {
           expect(err.code).toEqual('INVALID_ENDPOINT');
-          done();
         }
       });
     });
@@ -306,25 +310,25 @@ describe('re-base Tests:', function(){
           base.listenTo(endpoint, {
             context: this,
             then(data){
-              done();
             }
           })
         } catch(err) {
           expect(err.code).toEqual('INVALID_ENDPOINT');
-          done();
         }
       });
+      done();
     });
 
-    it('listenTo() throws an error given an invalid options object', function(){
+    it('listenTo() throws an error given an invalid options object', function(done){
       var invalidOptions = [[], {}, {then: function(){}}, {context: undefined}, {context: 'strNotObj'}, {context: window, then: undefined}, {context: window, then: 'strNotFn'}];
       invalidOptions.forEach((option) => {
         try {
-          base.post(testEndpoint, option);
+          base.listenTo(testEndpoint, option);
         } catch(err) {
           expect(err.code).toEqual('INVALID_OPTIONS');
         }
       });
+      done();
     });
 
     describe('Async tests', function(){
@@ -396,13 +400,12 @@ describe('re-base Tests:', function(){
             this.ref = base.listenTo(testEndpoint, {
               context: this,
               then(data){
-                this.setState({data})
+                this.setState({data});
               },
               asArray: true
             });
           }
           componentDidMount(){
-            var flag = true;
             ref.child(testEndpoint).set(dummyObjData);
           }
           componentDidUpdate(){
@@ -574,7 +577,6 @@ describe('re-base Tests:', function(){
     });
 
     it('bindToState() properly updates the local state property even when Firebase has initial date before bindToState is called', function(done){
-      ref.child(testEndpoint).set(dummyObjData);
       class TestComponent extends React.Component{
         constructor(props){
           super(props);
@@ -582,11 +584,14 @@ describe('re-base Tests:', function(){
             data: {}
           }
         }
-        componentDidMount(){
+        componentWillMount(){
           this.ref = base.bindToState(testEndpoint, {
             context: this,
             state: 'data',
           });
+        }
+        componentDidMount(){
+          ref.child(testEndpoint).set(dummyObjData);
         }
         componentDidUpdate(){
           expect(this.state.data).toEqual(dummyObjData);
@@ -760,7 +765,6 @@ describe('re-base Tests:', function(){
               context: this,
               state: 'user',
               then(){
-                debugger
                 this.setState({
                   loading: false
                 }, () => {
@@ -924,9 +928,7 @@ describe('re-base Tests:', function(){
             base.removeBinding(this.ref);
           }
           componentDidUpdate(){
-            if(!this.state.hasUpdated) this.setState({ hasUpdated: true })
-          }
-          render(){
+            if(!this.state.hasUpdated) this.setState({ hasUpdated: true });
             if(this.state.hasUpdated){
               var expectedOutput = [{
                 name: 'Al',
@@ -945,122 +947,271 @@ describe('re-base Tests:', function(){
               });
               done();
             }
+          }
+          render(){
             return <div>IQ</div>
           }
         }
         React.render(<TestComponent />, document.body);
       });
     });
-		describe('Auth tests', function(){
-			it('Fails trying to log with an unknow user', function(done){
-				base.authWithPassword({
-					email: dummyUsers.unknown.email,
-					password: dummyUsers.unknown.password
-				}, function(error, authData) {
-					expect(error).not.toBeNull();
-					expect(authData).toBeUndefined();
-					done();
-				});
-			});
 
-			it('Succeeds to log with a known user', function(done){
-				base.authWithPassword({
-					email: dummyUsers.known.email,
-					password: dummyUsers.known.password
-				}, function(error, authData) {
-					expect(error).toBeNull();
-					expect(authData).not.toBeNull();
-					done();
-				});
-			});
-			it('Listens to the auth event', function(done){
-				base.onAuth(function(authData){
-					expect(authData).not.toBeNull();
-					done();
-				})
-			});
-      it('Succeeds to get users authentication data', function(done) {
-        var authData = base.getAuth();
+    it('syncState() syncs and converts server timestamps in an array', function(done){
+      class TestComponent extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = {
+            users: [],
+            hasUpdated: false
+          }
+        }
+        componentWillMount(){
+          this.ref = base.syncState('users', {
+            context: this,
+            state: 'users'
+          })
+        }
+        componentDidMount(){
+          this.setState({
+            users: [{
+              name: 'Al',
+              timestamp: base.database.ServerValue.TIMESTAMP
+            }]
+          })
+        }
+        componentWillUnmount(){
+          base.removeBinding(this.ref);
+        }
+        componentDidUpdate(){
+          if(!this.state.hasUpdated) this.setState({ hasUpdated: true });
+          if(this.state.hasUpdated){
+            expect(this.state.users[0].timestamp).toEqual(jasmine.any(Number));
+            done();
+          }
+        }
+        render(){
+          return <div>IQ</div>
+        }
+      }
+      React.render(<TestComponent />, document.body);
+    });
 
-        expect(authData).not.toBeNull();
-        done();
+    it('syncState() syncs and converts server timestamps in a nested data structure', function(done){
+      class TestComponent extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = {
+            user: [],
+            hasUpdated: false
+          }
+        }
+        componentWillMount(){
+          this.ref = base.syncState('user', {
+            context: this,
+            state: 'user'
+          })
+        }
+        componentDidMount(){
+          this.setState({
+            user: {
+              name: 'Al',
+              timestamp: base.database.ServerValue.TIMESTAMP
+            }
+          });
+        }
+        componentWillUnmount(){
+          base.removeBinding(this.ref);
+        }
+        componentDidUpdate(){
+          if(!this.state.hasUpdated) this.setState({ hasUpdated: true });
+          if(this.state.hasUpdated){
+            expect(this.state.user.timestamp).toEqual(jasmine.any(Number));
+            done();
+          }
+        }
+        render(){
+          return <div>IQ</div>
+        }
+      }
+      React.render(<TestComponent />, document.body);
+    });
+
+  });
+
+  describe('Exposed firebase namespaces', function(){
+
+    it('storage object should be exposed', function(){
+      expect(base.storage).not.toBeUndefined();
+    });
+
+    it('storage ref should be accessible', function(){
+      var storage = base.storage();
+      var ref = storage.ref();
+      expect(ref.bucket).toEqual(firebaseConfig.storageBucket);
+      expect(ref.child).toEqual(jasmine.any(Function));
+    });
+
+    it('auth object should be exposed', function(){
+      expect(base.auth).not.toBeUndefined();
+    });
+    
+    it('database object should be exposed', function(){
+      expect(base.database).not.toBeUndefined();
+      expect(base.database.ServerValue).not.toBeUndefined();
+      expect(base.database.ServerValue.TIMESTAMP).not.toBeUndefined();
+    });
+    
+    it('app object should be exposed', function(){
+      expect(base.app).not.toBeUndefined();
+    });
+
+  });
+
+  describe('Firebase Server Info', function(){
+
+    it('correctly retrieves Server Time Offset', function(done){
+      base.fetch('.info/serverTimeOffset', {
+        context: this,
+        then: data => {
+          expect(data).toEqual(jasmine.any(Number));
+          done();
+        }
       });
-		});
-    describe('User tests', function() {
-      it('Fails to create with invalid email', function(done) {
-        base.createUser({
-          email: dummyUsers.invalid.email,
-          password: dummyUsers.invalid.password,
-        }, function(error, userData) {
+    });
+
+  });
+ 
+  describe('Auth tests', function(){
+
+      it('Fails trying to log with an unknown user', function(done){
+        base.authWithPassword({
+          email: dummyUsers.unknown.email,
+          password: dummyUsers.unknown.password
+        }, function(error, authData) {
+            expect(error).not.toBeNull();
+            expect(authData).toBeUndefined();
+            done();
+        });
+      });
+
+      it('Succeeds to log with a known user', function(done){
+        base.authWithPassword({
+          email: dummyUsers.known.email,
+          password: dummyUsers.known.password
+        }, function(error, authData) {
+            expect(error).toBeNull();
+            expect(authData).not.toBeNull();
+            done();
+        });
+
+      });
+
+      it('Listens to the auth event', function(done){
+        var unsubscribe = base.onAuth(authData => {
+          expect(authData).not.toBeNull();
+          //unsubscribe auth listener
+          unsubscribe();
+          done();
+        });
+      });
+
+      it('Succeeds to get users authentication data', function(done) {
+        //sign in first
+        base.authWithPassword({
+            email: dummyUsers.known.email,
+            password: dummyUsers.known.password
+        }, function(error, authData){
+            expect(error).toBeNull();
+            var currentUser = base.getAuth();
+            expect(currentUser).toEqual(authData);
+            done();
+        });
+      });
+
+      describe('unauth()', function() {
+
+        it('unauth() should log the user out', function(done){
+            //sign in first
+            base.authWithPassword({
+                email: dummyUsers.known.email,
+                password: dummyUsers.known.password
+            }, function(error, authData){
+                //expect user is logged in
+                expect(error).toBeNull();
+                var currentUser = base.getAuth();
+                expect(currentUser).toEqual(authData);
+                //log user out
+                base.unauth();
+                setTimeout(() => {
+                  //expect user is now logged out
+                  var user = base.getAuth();
+                  expect(user).toBeNull();
+                  done();
+                }, 500);
+            });
+        });
+
+      });
+      describe('authWithOAuthPopup()', function(){
+        
+        it('authWithOAuthPopup() should throw an error if unknown provider requested', function(done){
+            try {
+              base.authWithOAuthPopup('someauthprovider', function(error, authData){
+                done('authWithOAuthPopup() should throw but did not');
+              });
+            } catch(err) {
+                expect(err.code).toEqual('UNKNOWN AUTH PROVIDER');
+                done();
+            }
+        });
+
+      });
+  });
+
+  describe('User tests', function() {
+    it('Fails to create with invalid email', function(done) {
+      base.createUser({
+        email: dummyUsers.invalid.email,
+        password: dummyUsers.invalid.password,
+      }, function(error, userData) {
           expect(error).not.toBeNull();
           expect(userData).toBeUndefined();
           done();
         });
-      });
-      it('Succeeds to create a valid user', function(done) {
-        base.createUser({
+    });
+
+    it('Succeeds to create a valid user', function(done) {
+      base.createUser({
           email: dummyUsers.toDelete.email,
           password: dummyUsers.toDelete.password,
         }, function(error, userData) {
           expect(error).toBeNull();
           expect(userData).not.toBeNull();
-          done();
+          //delete user 
+          userData.delete().then(() => {
+            done();
+          });
         });
-      });
-      it('Fails to reset password for non-existant user', function(done) {
-        base.resetPassword({
-          email: dummyUsers.unknown.email,
-        }, function(error) {
-          expect(error).not.toBeNull();
-          done();
-        });
-      });
-      it('Succeeds to reset password for a user', function(done) {
-        base.resetPassword({
-          email: dummyUsers.known.email,
-        }, function(error) {
-          expect(error).toBeNull();
-          done();
-        });
-      });
-      it('Fails to change password without password', function(done) {
-        base.changePassword({
-          email: dummyUsers.known.email,
-          oldPassword: dummyUsers.known.email,
-          newPassword: '',
-        }, function(error) {
-          expect(error).not.toBeNull();
-          done();
-        });
-      });
-      it('Succeeds to change password', function(done) {
-        base.changePassword({
-          email: dummyUsers.toDelete.email,
-          oldPassword: dummyUsers.toDelete.password,
-          newPassword: dummyUsers.toDelete.newPassword,
-        }, function(error) {
-          expect(error).toBeNull();
-          done();
-        });
-      });
-      it('Fails to delete a non-existant user', function(done) {
-        base.removeUser({
-          email: dummyUsers.unknown.email,
-          password: dummyUsers.unknown.password,
-        }, function(error) {
-          expect(error).not.toBeNull();
-          done();
-        });
-      });
-      it('Succeeds to delete a user', function(done) {
-        base.removeUser({
-          email: dummyUsers.toDelete.email,
-          password: dummyUsers.toDelete.newPassword,
-        }, function(error) {
-          expect(error).toBeNull();
-          done();
-        });
+    });
+
+    it('Fails to reset password for non-existant user', function(done) {
+      base.resetPassword({
+        email: dummyUsers.unknown.email,
+      }, function(error) {
+        expect(error).not.toBeNull();
+        done();
       });
     });
+
+    it('Succeeds to reset password for a user', function(done) {
+      base.resetPassword({
+        email: dummyUsers.known.email,
+      }, function(error) {
+        expect(error).toBeNull();
+        done();
+      });
+    });
+
   });
+
 });

@@ -35,24 +35,33 @@ $ npm install re-base
 
 #### For more in depth examples of the API, see the [`examples`](examples) folder.
 
-## createClass(firebaseUrl)
+## createClass(firebaseConfig)
 
 ##### Purpose
-  Accepts a firebase URL as its only parameter and returns a singleton with the re-base API.
+Accepts a firebase configuration object as its only parameter and returns a singleton with the re-base API.
 
 ##### Arguments
-  1. firebaseUrl:
-      - type: string
-      - The absolute, HTTPS URL of your Firebase project
+  1. configuration
+    - type: object
+    - properties: 
+      - apiKey (string - required) your firebase API key
+      - authDomain (string - required) your firebase auth domain
+      - databaseURL (string - required) your firebase database root URL
+      - storageBucket (string - optional) your firebase storage bucket
 
 ##### Return Value
-  An object with syncState, bindToState, listenTo, fetch, post, push, removeBinding, and reset methods.
+  An object with the re-base API.
 
 ##### Example
 
 ```javascript
 var Rebase = require('re-base');
-var base = Rebase.createClass('https://myapp.firebaseio.com');
+var base = Rebase.createClass({
+  	  apiKey: "apiKey",
+      authDomain: "projectId.firebaseapp.com",
+      databaseURL: "https://databaseName.firebaseio.com",
+      storageBucket: "bucket.appspot.com",
+});
 ```
 
 <br />
@@ -337,32 +346,295 @@ The binding above will sort the `users` endpoint by iq, retrieve the last three 
 
 ## <a name='auth'>Authentication</a>
 
-re-base exposes [Firebase's web client](https://www.firebase.com/docs/web/guide/user-auth.html#section-login) `authWithPassword`, `authWithCustomToken`, `authWithOAuthPopup`, `authWithOAuthRedirect`, `authWithOAuthToken` methods to allow user authentication. `getAuth` is also exposed to access the current authentication state.
+re-base exposes a few methods of [the Firebase Auth service](https://firebase.google.com/docs/reference/js/firebase.auth.Auth) to help with user authentication.
+
+## authWithPassword(auth, authHandler)
+
+#### Purpose
+  Authenticate a user by email and password. 
+  
+  **_the Email sign-in method needs to be enabled in your firebase console_**
+
+#### Arguments
+  1. authentication object
+    - type: Object
+    - properties: 
+    	- email (string - required) 
+    	- password (string - required)
+  2. auth handler
+  	- type: function
+  		- arguments:
+  			- error (object or null)
+  			- user data (object)
+
+#### Return Value
+  No return value
+
+#### Example
 
 ```javascript
-// Simple email authentication
+var authHandler = function(error, user) {
+  if(error) doSomethingWithError(error);
+  doSomethingWithUser(user);
+}
+
+// Simple email/password authentication
 base.authWithPassword({
   email    : 'bobtony@firebase.com',
   password : 'correcthorsebatterystaple'
 }, authHandler);
 
-// Authentication via a custom authentication token
-base.authWithCustomToken(token, authHandler);
-
-// Authentication via OAuth providers ("facebook", "github", "google", or "twitter")
-base.authWithOAuthPopup("<provider>", authHandler);
-base.authWithOAuthRedirect("<provider>", authHandler);
-base.authWithOAuthToken("<provider>", token, authHandler);
-
-// Log a user out
-base.unauth()
-
-// Get authentication information
-var authData = base.getAuth();
 ```
+<br />
+
+## authWithOAuthPopup(provider, handler, settings)
+
+#### Purpose
+  Authenticate a user using an OAuth popup
+  
+  **_the sign in provider you are using needs to be enabled in your firebase console_**
+
+#### Arguments
+  1. provider
+    - type: string
+    - name of auth provider "facebook, twitter, github, google"
+  2. auth handler
+  	- type: function
+  		- arguments:
+  			- error (object or null)
+  			- user data (object)
+  3. settings (available settings vary per auth provider)
+  	- type: object (optional)
+  		- properties:
+  			- scope (array or string)
+
+#### Return Value
+  No return value
+
+#### Example
 
 ```javascript
-// Listen to authentication
+var authHandler = function(error, user) {
+  if(error) doSomethingWithError(error);
+  doSomethingWithUser(user);
+}
+//basic
+base.authWithOAuthPopup('twitter', authHandler);
+
+// with settings
+base.authWithOAuthPopup('github', authHandler, {scope: ['repos']});
+
+```
+<br />
+
+## authWithOAuthRedirect(provider, handler, settings)
+
+#### Purpose
+  Authenticate a user using an OAuth redirect
+  
+  **_the sign in provider you are using needs to be enabled in your firebase console_**
+
+#### Arguments
+  1. provider
+    - type: string
+    - name of auth provider "facebook, twitter, github, google"
+  2. auth handler
+  	- type: function
+  		- arguments:
+  			- error (object or null)
+  3. settings (available settings vary per auth provider)
+  	- type: object (optional)
+  		- properties:
+  			- scope (array or string)
+
+#### Return Value
+  No return value
+
+#### Example
+
+```javascript
+var authHandler = function(error) {
+  if(error) doSomethingWithError(error);
+  // noop if redirect is successful
+  return;
+}
+//basic
+base.authWithOAuthRedirect('twitter', authHandler);
+
+// with settings
+base.authWithOAuthRedirect('github', authHandler, {scope: ['repos']});
+
+```
+<br />
+
+## authGetOAuthRedirectResult(handler)
+
+#### Purpose
+ Completes the OAuth redirect flow initiated by `authWithOAuthRedirect`
+
+#### Arguments
+
+  1. handler
+  	- type: function
+  		- arguments:
+  			- error (object or null)
+  			- user data (object)
+
+#### Return Value
+  No return value
+
+#### <a name='redirect-example'>Example</a>
+
+```javascript
+var authHandler = function(error) {
+  if(error) console.log(error);
+  // noop if redirect is successful
+  return;
+}
+
+var onRedirectBack = function(error, authData){
+  if(error) console.log(error);
+  if(authData.user){
+    doSomethingWithAuthenticatedUser(authData.user);
+  } else {
+    //redirect to twitter for auth
+    base.authWithOAuthRedirect('twitter', authHandler);
+  }
+}
+
+base.authGetOAuthRedirectResult(onRedirectBack);
+
+
+```
+<br />
+
+## authWithOAuthToken(provider, token, handler, settings)
+
+#### Purpose
+ Authenticate with OAuth provider using a token
+
+#### Arguments
+
+  1. provider
+    - type: string
+    - name of auth provider "facebook, twitter, github, google"
+  2. token
+    - type: string
+  3. handler
+  	- type: function
+  		- arguments:
+  			- error (object or null)
+  			- user data (object)
+  4. settings (available settings vary per auth provider)
+  	- type: object (optional)
+  		- properties:
+  			- scope (array or string)
+  			- providerOptions (object)
+  				- properties:
+  					- secret (twitter only - optional)
+  					- idToken(google only - optional, must be null if using accessToken)
+  					- accessToken(google only - optional)
+
+#### Return Value
+  No return value
+
+#### Example
+
+```javascript
+var authHandler = function(error, user) {
+  if(error) doSomethingWithError(error);
+  doSomethingWithAuthenticatedUser(user);
+}
+
+//get the access token
+var offAuth = base.onAuth(function(authData) {
+  if (authData) {
+    var token = authData.providerData[authData.provider].accessToken;
+    //add settings for auth provider - optional
+    var settings = {
+        scope: ['repos']
+    };
+    //authenticate with token
+    base.authWithOAuthToken(authData.provider, token, authHandler, settings);
+  }
+});
+
+```
+<br />
+
+## authWithCustomToken(token,handler)
+
+#### Purpose
+ Authenticate OAuth redirect flow initiated by `authWithOAuthRedirect`
+
+#### Arguments
+
+  1. token
+    - type: string
+  2. auth handler
+  	- type: function
+  		- arguments:
+  			- error (object or null)
+  			- user data (object)
+
+#### Return Value
+  No return value
+
+#### Example
+
+```javascript
+var authHandler = function(error, user) {
+  if(error) doSomethingWithError(error);
+  doSomethingWithAuthenticatedUser(user);
+}
+
+base.authWithCustomToken(<yourtoken>, authHandler);
+
+
+```
+<br />
+
+## unauth()
+
+#### Purpose
+ Signs out the currently logged in user 
+
+#### Arguments
+
+none
+
+#### Return Value
+  No return value
+
+#### Example
+
+```javascript
+
+base.unauth()
+
+```
+
+<br />
+
+## onAuth(handler)
+
+#### Purpose
+ Listen to the authentication event
+
+#### Arguments
+
+  1. handler
+  	- type: function
+  		- arguments:
+  			- error (object or null)
+  			- user data (object or null) null if user is not logged in
+
+#### Return Value
+  an unsubscribe function for the added listener
+#### Example
+
+```javascript
+
 function authDataCallback(authData) {
   if (authData) {
     console.log("User " + authData.uid + " is logged in with " + authData.provider);
@@ -371,13 +643,20 @@ function authDataCallback(authData) {
   }
 }
 
-var ref = new Firebase("https://<YOUR-FIREBASE-APP>.firebaseio.com");
-ref.onAuth(authDataCallback);
+// Listen to authentication
+var unsubscribe = base.onAuth(authDataCallback);
+
+//to remove listener
+unsubscribe();
+
 ```
+
+
 
 ## <a name='users'>User Management</a>
 
-re-base exposes [`createUser`](https://www.firebase.com/docs/web/api/firebase/createuser.html), [`removeUser`](https://www.firebase.com/docs/web/api/firebase/removeuser.html), [`resetPassword`](https://www.firebase.com/docs/web/api/firebase/resetpassword.html) and [`changePassword`](https://www.firebase.com/docs/web/api/firebase/changepassword.html) methods for user management.
+re-base exposes a few helper methods for user methods for user management.
+
 
 ```javascript
 // Create
@@ -386,24 +665,97 @@ base.createUser({
   password: 'correcthorsebatterystaple'
 }, userHandler);
 
-// Remove
-base.removeUser({
-  email: 'bobtony@firebase.com',
-  password: 'correcthorsebatterystaple'
-}, errorHandler);
 
 // Reset Password
 base.resetPassword({
   email: 'bobtony@firebase.com'
 }, errorHandler);
 
-// Change Password
-base.changePassword({
-  email: 'bobtony@firebase.com',
-  oldPassword: 'correcthorsebatterystaple',
-  newPassword: 'chipsahoy'
-}, errorHandler);
 ```
+
+## <a name='firebase-services'>Firebase Services</a>
+
+re-base also exposes the underlying firebase services directly if you need them
+
+Firebase App  [Docs](https://firebase.google.com/docs/reference/js/firebase.app)
+
+`base.app`
+
+Firebase Database [Docs](https://firebase.google.com/docs/reference/js/firebase.database)
+
+`base.database`
+
+Firebase Storage [Docs](https://firebase.google.com/docs/reference/js/firebase.storage)
+
+`base.storage`
+
+Firebase Auth [Docs](https://firebase.google.com/docs/reference/js/firebase.auth)
+
+`base.auth`
+
+## <a name='upgrading'>Upgrading to re-base 2.x from 1.x</a>
+
+First follow the upgrade guide at [https://firebase.google.com/support/guides/firebase-web](https://firebase.google.com/support/guides/firebase-web)
+
+Change your re-base initialization to use the new firebase configuration.
+
+**Change** this....
+```javascript
+
+var Rebase = require('re-base');
+var base = Rebase.createClass('https://myapp.firebaseio.com');
+
+```
+
+***To*** this...
+```javascript
+
+var Rebase = require('re-base');
+var base = Rebase.createClass({
+  	  apiKey: "apiKey",
+      authDomain: "projectId.firebaseapp.com",
+      databaseURL: "https://databaseName.firebaseio.com",
+      storageBucket: "bucket.appspot.com",
+});
+
+```
+
+### Changes to Database methods
+<hr />
+
+
+No changes. Your existing code should work.
+
+<br />
+
+### Changes to Authentication methods
+<hr />
+
+
+***Deprecated Methods***
+
+`base.offAuth`
+
+`base.onAuth` now returns an unsubscribe function that removes the listener.
+
+***Behavior Changes***
+
+`base.authWithOAuthRedirect`
+
+The redirect flow needs to be completed with an added `base.authGetOAuthRedirectResult` method. See [example](#redirect-example).
+
+<br />
+### Changes to User Management
+<hr />
+
+***Deprecated Methods***
+
+`base.removeUser` - users can only remove themselves. See [firebase documentation.](https://firebase.google.com/docs/reference/js/firebase.User#delete)
+`base.changePassword` users can only change their own passwords. See [firebase documentation.](https://firebase.google.com/docs/reference/js/firebase.User#updatePassword)
+
+***Behavior Changes***
+
+`base.createUser` - This method will now log you in as the newly created user on success. See [firebase documentation.](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#createUserWithEmailAndPassword)
 
 ## Contributing
 
