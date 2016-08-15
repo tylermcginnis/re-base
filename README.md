@@ -483,7 +483,7 @@ base.authWithOAuthRedirect('github', authHandler, {scope: ['repos']});
 #### Return Value
   No return value
 
-#### Example
+#### <a name='redirect-example'>Example</a>
 
 ```javascript
 var authHandler = function(error) {
@@ -692,6 +692,70 @@ Firebase Storage [Docs](https://firebase.google.com/docs/reference/js/firebase.s
 Firebase Auth [Docs](https://firebase.google.com/docs/reference/js/firebase.auth)
 
 `base.auth`
+
+## <a name='upgrading'>Upgrading to re-base 2.x from 1.x</a>
+
+First follow the upgrade guide at [https://firebase.google.com/support/guides/firebase-web](https://firebase.google.com/support/guides/firebase-web)
+
+Change your re-base initialization to use the new firebase configuration.
+
+**Change** this....
+```javascript
+
+var Rebase = require('re-base');
+var base = Rebase.createClass('https://myapp.firebaseio.com');
+
+```
+
+***To*** this...
+```javascript
+
+var Rebase = require('re-base');
+var base = Rebase.createClass({
+  	  apiKey: "apiKey",
+      authDomain: "projectId.firebaseapp.com",
+      databaseURL: "https://databaseName.firebaseio.com",
+      storageBucket: "bucket.appspot.com",
+});
+
+```
+
+### Changes to Database methods
+<hr />
+
+
+No changes. Your existing code should work.
+
+<br />
+
+### Changes to Authentication methods
+<hr />
+
+
+***Deprecated Methods***
+
+`base.offAuth`
+
+`base.onAuth` now returns an unsubscribe function that removes the listener.
+
+***Behavior Changes***
+
+`base.authWithOAuthRedirect`
+
+The redirect flow needs to be completed with an added `base.authGetOAuthRedirectResult` method. See [example](#redirect-example).
+
+<br />
+### Changes to User Management
+<hr />
+
+***Deprecated Methods***
+
+`base.removeUser` - users can only remove themselves. See [firebase documentation.](https://firebase.google.com/docs/reference/js/firebase.User#delete)
+`base.changePassword` users can only change their own passwords. See [firebase documentation.](https://firebase.google.com/docs/reference/js/firebase.User#updatePassword)
+
+***Behavior Changes***
+
+`base.createUser` - This method will now log you in as the newly created user on success. See [firebase documentation.](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#createUserWithEmailAndPassword)
 
 ## Contributing
 
