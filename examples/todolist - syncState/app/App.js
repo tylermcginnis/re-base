@@ -1,9 +1,16 @@
 var React = require('react');
+var ReactDOM = require('react-dom');
 var Rebase = require('re-base');
 var List = require('./List');
 var AddItem = require('./AddItem');
 
-var base = Rebase.createClass('https://rebase-demo.firebaseio.com/todo-example');
+var base = Rebase.createClass({
+    apiKey: "AIzaSyBm3py9af9BqQMfUMnMKpAXJUfxlsegnDI",
+    authDomain: "qwales1-test.firebaseapp.com",
+    databaseURL: "https://qwales1-test.firebaseio.com",
+    storageBucket: "qwales1-test.appspot.com",
+});
+console.log('Please change to your own firebase address in app/App.js');
 
 class App extends React.Component{
   constructor(props){
@@ -55,4 +62,4 @@ class App extends React.Component{
   }
 };
 
-React.render(<App />, document.getElementById('app'));
+ReactDOM.render(<App />, document.getElementById('app'));

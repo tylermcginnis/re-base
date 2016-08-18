@@ -1,5 +1,4 @@
 import React from 'react';
-import { RouteHandler } from 'react-router';
 import SearchGithub from './SearchGithub';
 
 class Main extends React.Component{
@@ -12,7 +11,7 @@ class Main extends React.Component{
           </div>
         </nav>
         <div className="container">
-          <RouteHandler {...this.props}/>
+           {this.props.children}
         </div>
       </div>
     )

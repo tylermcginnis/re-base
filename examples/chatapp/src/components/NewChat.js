@@ -1,7 +1,13 @@
 import React from 'react';
 import Rebase from 're-base';
+import ReactDOM from 'react-dom';
 
-var base = Rebase.createClass('https://jt-ts.firebaseio.com/rebase-chat');
+var base = Rebase.createClass({
+    apiKey: "AIzaSyBm3py9af9BqQMfUMnMKpAXJUfxlsegnDI",
+    authDomain: "qwales1-test.firebaseapp.com",
+    databaseURL: "https://qwales1-test.firebaseio.com",
+    storageBucket: "qwales1-test.appspot.com",
+});
 console.log('Please change to your own firebase address in components/NewChat.js');
 
 
@@ -23,8 +29,8 @@ class NewChat extends React.Component {
 
     base.post('chats', {
       data: this.props.chats.concat([{
-        title: this.refs.title.getDOMNode().value ,
-        message: this.refs.message.getDOMNode().value
+        title: ReactDOM.findDOMNode(this.refs.title).value,
+        message: ReactDOM.findDOMNode(this.refs.message).value
       }]),
       context: this,
       /*
@@ -36,8 +42,8 @@ class NewChat extends React.Component {
       }
     });
 
-    this.refs.message.getDOMNode().value = '';
-    this.refs.title.getDOMNode().value = '';
+    ReactDOM.findDOMNode(this.refs.message).value = '';
+    ReactDOM.findDOMNode(this.refs.title).value = '';
 
   }
   render(){

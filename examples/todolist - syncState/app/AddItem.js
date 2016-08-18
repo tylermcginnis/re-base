@@ -1,10 +1,11 @@
 var React = require('react');
+var ReactDOM = require('react-dom');
 
 class AddItem extends React.Component{
   handleSubmit(e){
     if(e.keyCode === 13){
-      this.props.add(this.refs.newItem.getDOMNode().value);
-      this.refs.newItem.getDOMNode().value = '';
+      this.props.add(ReactDOM.findDOMNode(this.refs.newItem).value);
+      ReactDOM.findDOMNode(this.refs.newItem).value = '';
     }
   }
   render(){

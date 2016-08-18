@@ -1,9 +1,16 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import Container from './components/Container';
 import NewChat from './components/NewChat';
 
 import Rebase from 're-base';
-var base = Rebase.createClass('https://jt-ts.firebaseio.com/rebase-chat');
+var base = Rebase.createClass({
+    apiKey: "AIzaSyBm3py9af9BqQMfUMnMKpAXJUfxlsegnDI",
+    authDomain: "qwales1-test.firebaseapp.com",
+    databaseURL: "https://qwales1-test.firebaseio.com",
+    storageBucket: "qwales1-test.appspot.com",
+});
+console.log('Please change to your own firebase address in src/App.js');
 
 class Main extends React.Component {
   constructor(props){
@@ -34,4 +41,4 @@ class Main extends React.Component {
   }
 }
 
-React.render(<Main />, document.getElementById('app'));
+ReactDOM.render(<Main />, document.getElementById('app'));

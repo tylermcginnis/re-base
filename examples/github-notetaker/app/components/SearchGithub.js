@@ -1,11 +1,13 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
+import { withRouter } from 'react-router';
 
 class SearchGithub extends React.Component{
-  handleSubmit(){
-    var router = this.context.router;
-    var username = this.refs.username.getDOMNode().value;
-    this.refs.username.getDOMNode().value = '';
-    router.transitionTo('profile', {username: username});
+  handleSubmit(e){
+    e.preventDefault();
+    var username = ReactDOM.findDOMNode(this.refs.username).value;
+    ReactDOM.findDOMNode(this.refs.username).value = '';
+    this.props.router.push(`/profile/${username}`);
   }
   render(){
     return (
@@ -24,7 +26,7 @@ class SearchGithub extends React.Component{
 };
 
 SearchGithub.contextTypes = {
-  router: React.PropTypes.func.isRequired
+  router: React.PropTypes.object.isRequired
 };
 
-export default SearchGithub;
+export default withRouter(SearchGithub);

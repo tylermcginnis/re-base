@@ -3,7 +3,12 @@ import Rebase from 're-base';
 
 import Message from './Message.js';
 
-var base = Rebase.createClass('https://jt-ts.firebaseio.com/rebase-chat');
+var base = Rebase.createClass({
+    apiKey: "AIzaSyBm3py9af9BqQMfUMnMKpAXJUfxlsegnDI",
+    authDomain: "qwales1-test.firebaseapp.com",
+    databaseURL: "https://qwales1-test.firebaseio.com",
+    storageBucket: "qwales1-test.appspot.com",
+});
 console.log('Please change to your own firebase address in components/Container.js');
 
 class Container extends React.Component {
