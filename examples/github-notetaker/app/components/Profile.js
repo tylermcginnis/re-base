@@ -5,7 +5,13 @@ import Notes from './Notes/Notes';
 import helpers from '../utils/helpers';
 import Rebase from 're-base';
 
-var base = Rebase.createClass('https://github-note-taker.firebaseio.com/');
+var base = Rebase.createClass({
+    apiKey: "AIzaSyBm3py9af9BqQMfUMnMKpAXJUfxlsegnDI",
+    authDomain: "qwales1-test.firebaseapp.com",
+    databaseURL: "https://qwales1-test.firebaseio.com",
+    storageBucket: "qwales1-test.appspot.com",
+});
+console.log('Please change to your own firebase address in app/components/Profile.js');
 
 class Profile extends React.Component{
   constructor(props){
@@ -17,22 +23,19 @@ class Profile extends React.Component{
     };
   }
   init(){
-    this.ref = base.syncState(this.router.getCurrentParams().username, {
+    this.ref = base.syncState(this.props.routeParams.username, {
       context: this,
       asArray: true,
       state: 'notes'
     });
 
-    helpers.getGithubInfo(this.router.getCurrentParams().username)
+    helpers.getGithubInfo(this.props.routeParams.username)
       .then((dataObj) => {
         this.setState({
           bio: dataObj.bio,
           repos: dataObj.repos
         });
       });
-  }
-  componentWillMount(){
-    this.router = this.context.router;
   }
   componentDidMount(){
     this.init();
@@ -50,7 +53,7 @@ class Profile extends React.Component{
     })
   }
   render(){
-    var username = this.router.getCurrentParams().username;
+    var username = this.props.routeParams.username;
     return (
       <div className="row">
         <div className="col-md-4">
@@ -71,7 +74,7 @@ class Profile extends React.Component{
 };
 
 Profile.contextTypes = {
-  router: React.PropTypes.func.isRequired
+  router: React.PropTypes.object.isRequired
 };
 
 export default Profile;
