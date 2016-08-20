@@ -253,28 +253,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	    optionValidators.context(options);
 	    optionValidators.state(options);
 	    options.queries && optionValidators.query(options);
-	    if (_sync.called !== true) {
-	      _sync.reactSetState = options.context.setState;
-	      _sync.called = true;
-	    } else {
-	      options.context.setState = _sync.reactSetState;
-	    }
+
 	    options.reactSetState = options.context.setState;
 	    options.then && (options.then.called = false);
+
 	    var ref = firebase.database().ref(endpoint);
 	    _firebaseRefsMixin(endpoint, 'syncState', ref);
 	    _addListener(endpoint, 'syncState', options, ref);
-	    options.context.setState = function (data, cb) {
-	      for (var key in data) {
-	        if (data.hasOwnProperty(key)) {
-	          if (key === options.state) {
-	            _updateSyncState.call(this, ref, data[key], key);
-	          } else {
-	            options.reactSetState.call(options.context, data, cb);
+
+	    options.context.setState = (function (setState, ref) {
+	      options.syncs = options.syncs || [];
+	      options.syncs.push(function (data, cb) {
+	        for (var key in data) {
+	          if (data.hasOwnProperty(key)) {
+	            if (key === options.state) {
+	              _updateSyncState.call(this, ref, data[key], key);
+	            } else {
+	              options.reactSetState.call(options.context, data, cb);
+	            }
 	          }
 	        }
-	      }
-	    };
+	      });
+	      return function (data, cb) {
+	        options.syncs.forEach(function (f) {
+	          f(data, cb);
+	        });
+	      };
+	    })(options.context.setState, ref);
+
 	    return _returnRef(endpoint, 'syncState');
 	  };
 
