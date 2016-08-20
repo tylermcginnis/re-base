@@ -180,7 +180,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    optionValidators.context(options);
 	    optionValidators.then(options);
 	    options.queries && optionValidators.query(options);
-	    var ref = firebase.database().ref('' + endpoint);
+	    var ref = firebase.database().ref(endpoint);
 	    ref = _addQueries(ref, options.queries);
 	    ref.once('value', function (snapshot) {
 	      var data = options.asArray === true ? _toArray(snapshot) : snapshot.val();
@@ -281,7 +281,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function _post(endpoint, options) {
 	    _validateEndpoint(endpoint);
 	    optionValidators.data(options);
-	    var ref = firebase.database().ref('' + endpoint);
+	    var ref = firebase.database().ref(endpoint);
 	    if (options.then) {
 	      ref.set(options.data, options.then);
 	    } else {
@@ -292,7 +292,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function _push(endpoint, options) {
 	    _validateEndpoint(endpoint);
 	    optionValidators.data(options);
-	    var ref = firebase.database().ref('' + endpoint);
+	    var ref = firebase.database().ref(endpoint);
 	    var returnEndpoint;
 	    if (options.then) {
 	      returnEndpoint = ref.push(options.data, options.then);
