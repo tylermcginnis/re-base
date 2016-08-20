@@ -334,6 +334,7 @@ module.exports = (function(){
     settings = settings || {};
     var authProvider = _getAuthProvider(provider, settings);
     var credential = authProvider.credential(token, ...settings.providerOptions);
+    var ref = firebase.auth();
     return ref.signInWithCredential(credential).then(authData => {
         return fn(null, authData);
     }).catch(error => {
