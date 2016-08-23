@@ -402,6 +402,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    settings = settings || {};
 	    var authProvider = _getAuthProvider(provider, settings);
 	    var credential = authProvider.credential.apply(authProvider, [token].concat(_toConsumableArray(settings.providerOptions)));
+	    var ref = firebase.auth();
 	    return ref.signInWithCredential(credential).then(function (authData) {
 	      return fn(null, authData);
 	    })['catch'](function (error) {
