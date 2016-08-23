@@ -6,7 +6,7 @@ module.exports = function(config) {
     autowatch: true,
     singleRun: !!travis,
     files: [
-      'specs/re-base.spec.js'
+      { pattern: 'specs/re-base.spec.js', watched: false }
     ],
     reporters: ["spec", "failed", "coverage"],
     browsers: [travis ? 'Firefox' : 'Chrome'],
