@@ -22,6 +22,7 @@ I spent a few weeks trying to figure out the cleanest way to implement Firebase 
 - [*fetch*](#fetchendpoint-options): Retrieve data from Firebase without setting up any binding or listeners.
 - [*post*](#postendpoint-options): Add new data to Firebase.
 - [*push*](#pushendpoint-options): Push new child data to Firebase.
+- [*update*](#updateendpoint-options): Update child data using only the referenced properties
 - [*removeBinding*](#removebindingref): Remove all of the Firebase listeners when your component unmounts.
 - [*reset*](#reset): Removes all of the Firebase listeners and resets the singleton (for testing purposes).
 
@@ -279,6 +280,41 @@ addBear(){
     }
   });
 }
+```
+
+<br />
+
+## update(endpoint, options)
+
+#### Purpose
+  Allows you to update data at a Firebase endpoint changing only the properties you pass to it.
+  **Warning: calling update with `options.data` being null will remove the all the data at that endpoint**
+
+#### Arguments
+  1. endpoint
+    - type: string
+    - The relative Firebase endpoint that you'd like to update
+  2. options
+    - type: object
+    - properties:
+      - data: (any - required) The data you're wanting to persist to Firebase
+      - then: (function - optional) A callback that will get invoked once the new data has been saved to Firebase
+
+#### Return Value
+  None
+
+#### Example
+
+```javascript
+  // bears endpoint currently holds the object { name: 'Bill', type: 'Grizzly' }
+  base.update('bears', {
+    data: {name: 'George'},
+    then(){
+      Router.transitionTo('dashboard');
+      //bears endpint is now {name: 'George', type: 'Grizzly'}
+    }
+  });
+  
 ```
 
 <br />
