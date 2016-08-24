@@ -217,6 +217,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var newState = {};
 	        options.asArray === true ? newState[options.state] = _toArray(snapshot) : newState[options.state] = data;
 	        _setState.call(options.context, newState);
+	        if (options.then && options.then.called === false) {
+	          options.then.call(options.context);
+	          options.then.called = true;
+	        }
 	      }
 	    });
 	  };
@@ -227,6 +231,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    invoker === 'listenTo' && optionValidators.then(options);
 	    invoker === 'bindToState' && optionValidators.state(options);
 	    options.queries && optionValidators.query(options);
+	    options.then && (options.then.called = false);
 	    var ref = firebase.database().ref(endpoint);
 	    _firebaseRefsMixin(endpoint, invoker, ref);
 	    _addListener(endpoint, invoker, options, ref);
@@ -402,6 +407,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    settings = settings || {};
 	    var authProvider = _getAuthProvider(provider, settings);
 	    var credential = authProvider.credential.apply(authProvider, [token].concat(_toConsumableArray(settings.providerOptions)));
+	    var ref = firebase.auth();
 	    return ref.signInWithCredential(credential).then(function (authData) {
 	      return fn(null, authData);
 	    })['catch'](function (error) {
