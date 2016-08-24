@@ -300,6 +300,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  };
 
+	  function _update(endpoint, options) {
+	    _validateEndpoint(endpoint);
+	    optionValidators.data(options);
+	    var ref = firebase.database().ref(endpoint);
+	    if (options.then) {
+	      ref.update(options.data, options.then);
+	    } else {
+	      ref.update(options.data);
+	    }
+	  };
+
 	  function _push(endpoint, options) {
 	    _validateEndpoint(endpoint);
 	    optionValidators.data(options);
@@ -543,6 +554,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      },
 	      post: function post(endpoint, options) {
 	        _post(endpoint, options);
+	      },
+	      update: function update(endpoint, options) {
+	        _update(endpoint, options);
 	      },
 	      push: function push(endpoint, options) {
 	        return _push(endpoint, options);
