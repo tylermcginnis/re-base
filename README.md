@@ -122,6 +122,7 @@ addItem(newItem){
       - state: (string - required) The state property you want to sync with Firebase
       - asArray: (boolean - optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
       - queries: (object - optional) Queries to be used with your read operations.  See [Query Options](#queries) for more details.
+      - then: (function - optional) The callback function that will be invoked when the initial listener is established with Firebase. Typically used (with bindToState) to change `this.state.loading` to false.
 
 #### Return Value
   An object which you can pass to `removeBinding` when your component unmounts to remove the Firebase listeners.

@@ -459,6 +459,42 @@ describe('re-base Tests:', function(){
     });
 
     describe('Async tests', function(){
+      it('bindToState() invokes .then when the initial listener is set', function(done){
+        class TestComponent extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              loading: true,
+            }
+          }
+          componentDidMount(){
+            this.ref = base.bindToState('userData', {
+              context: this,
+              state: 'user',
+              then(){
+                this.setState({
+                  loading: false
+                }, () => {
+                  expect(this.state.loading).toEqual(false);
+                  done();
+                });
+              }
+            });
+          }
+          componentWillUnmount(){
+            base.removeBinding(this.ref);
+          }
+          render(){
+            return (
+              <div>
+                No Data
+              </div>
+            );
+          }
+        }
+        React.render(<TestComponent />, document.body);
+      });
+
       it('bindToState() updates its local state with an empty array and object when the Firebase endpoint is null', function(done){
         class TestComponent extends React.Component{
           constructor(props){
