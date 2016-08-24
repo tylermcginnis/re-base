@@ -244,7 +244,7 @@ module.exports = (function(){
   function _update(endpoint, options){
     _validateEndpoint(endpoint);
     optionValidators.data(options);
-    var ref = new Firebase(`${baseUrl}/${endpoint}`);
+    var ref = firebase.database().ref(endpoint);
     if(options.then){
       ref.update(options.data, options.then);
     } else {
