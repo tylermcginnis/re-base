@@ -470,6 +470,99 @@ describe('re-base Tests:', function(){
         }
         React.render(<TestComponent />, document.body);
       });
+
+      it('listenTo should allow multiple components to listen to changes on the same endpoint', function(done){
+        //set up mount points
+        var div1 = document.createElement('div');
+        div1.setAttribute("id", "div1");
+        
+        var div2 = document.createElement('div');
+        div2.setAttribute("id", "div2");
+        document.body.appendChild(div1);
+        document.body.appendChild(div2);
+        
+        //keep track of updates
+        var counter = 0;
+        
+        class TestComponent1 extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              data: {}
+            }
+          }
+          componentWillMount(){
+            this.ref = base.listenTo(testEndpoint, {
+              context: this,
+              then(data){
+                this.setState({data});
+              },
+              asArray: true
+            });
+          }
+          componentDidUpdate(){
+            expect(this.state.data.indexOf(25)).not.toBe(-1);
+            expect(this.state.data.indexOf('Tyler McGinnis')).not.toBe(-1);
+            counter++;
+          }
+          componentWillUnmount(){
+            base.removeBinding(this.ref);
+          }
+          render(){
+            return (
+              <div>
+                Name: {this.state.name} <br />
+                Age: {this.state.age}
+              </div>
+            )
+          }
+        }
+        class TestComponent2 extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              data: {}
+            }
+          }
+          componentWillMount(){
+            this.ref = base.listenTo(testEndpoint, {
+              context: this,
+              then(data){
+                this.setState({data});
+              },
+              asArray: true
+            });
+          }
+          componentDidMount(){
+            ref.child(testEndpoint).set(dummyObjData);
+          }
+          componentDidUpdate(){
+            expect(this.state.data.indexOf(25)).not.toBe(-1);
+            expect(this.state.data.indexOf('Tyler McGinnis')).not.toBe(-1);
+            counter++;
+          }
+          componentWillUnmount(){
+            base.removeBinding(this.ref);
+          }
+          render(){
+            return (
+              <div>
+                Name: {this.state.name} <br />
+                Age: {this.state.age}
+              </div>
+            )
+          }
+        }
+        React.render(<TestComponent1 />, document.getElementById('div1'));
+        React.render(<TestComponent2 />, document.getElementById('div2'));
+        setTimeout(() => {
+            if(counter === 2){
+                React.unmountComponentAtNode(document.getElementById('div1'));
+                React.unmountComponentAtNode(document.getElementById('div2'));
+                done();
+            }
+        }, 500);
+      });
     });
   });
 
@@ -653,41 +746,126 @@ describe('re-base Tests:', function(){
         }
         React.render(<TestComponent />, document.body);
       });
-    });
 
-    it('bindToState() properly updates the local state property even when Firebase has initial date before bindToState is called', function(done){
-      class TestComponent extends React.Component{
-        constructor(props){
-          super(props);
-          this.state = {
-            data: {}
+      it('bindToState() properly updates the local state property even when Firebase has initial date before bindToState is called', function(done){
+        class TestComponent extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              data: {}
+            }
+          }
+          componentWillMount(){
+            this.ref = base.bindToState(testEndpoint, {
+              context: this,
+              state: 'data',
+            });
+          }
+          componentDidMount(){
+            ref.child(testEndpoint).set(dummyObjData);
+          }
+          componentDidUpdate(){
+            expect(this.state.data).toEqual(dummyObjData);
+            done();
+          }
+          componentWillUnmount(){
+            base.removeBinding(this.ref);
+          }
+          render(){
+            return (
+              <div>
+                No Data
+              </div>
+            )
           }
         }
-        componentWillMount(){
-          this.ref = base.bindToState(testEndpoint, {
-            context: this,
-            state: 'data',
-          });
+        React.render(<TestComponent />, document.body);
+      });
+
+      it('bindToState should allow multiple components to listen to changes on the same endpoint', function(done){
+        //set up mount points
+        var div1 = document.createElement('div');
+        div1.setAttribute("id", "div1");
+
+        var div2 = document.createElement('div');
+        div2.setAttribute("id", "div2");
+        document.body.appendChild(div1);
+        document.body.appendChild(div2);
+
+        //keep track of updates
+        var counter = 0;
+
+        class TestComponent1 extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              data: {}
+            }
+          }
+          componentWillMount(){
+            this.ref = base.bindToState(testEndpoint, {
+              context: this,
+              state: 'data',
+            });
+          }
+          componentDidUpdate(){
+            expect(this.state.data).toEqual(dummyObjData);
+            counter++;
+          }
+          componentWillUnmount(){
+            base.removeBinding(this.ref);
+          }
+          render(){
+            return (
+              <div>
+                Name: {this.state.name} <br />
+                Age: {this.state.age}
+              </div>
+            )
+          }
         }
-        componentDidMount(){
-          ref.child(testEndpoint).set(dummyObjData);
+        class TestComponent2 extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              data: {}
+            }
+          }
+          componentWillMount(){
+            this.ref = base.bindToState(testEndpoint, {
+              context: this,
+              state: 'data',
+            });
+          }
+          componentDidMount(){
+            ref.child(testEndpoint).set(dummyObjData);
+          }
+          componentDidUpdate(){
+            expect(this.state.data).toEqual(dummyObjData);
+            counter++;
+          }
+          componentWillUnmount(){
+            base.removeBinding(this.ref);
+          }
+          render(){
+            return (
+              <div>
+                Name: {this.state.name} <br />
+                Age: {this.state.age}
+              </div>
+            )
+          }
         }
-        componentDidUpdate(){
-          expect(this.state.data).toEqual(dummyObjData);
-          done();
-        }
-        componentWillUnmount(){
-          base.removeBinding(this.ref);
-        }
-        render(){
-          return (
-            <div>
-              No Data
-            </div>
-          )
-        }
-      }
-      React.render(<TestComponent />, document.body);
+        React.render(<TestComponent1 />, document.getElementById('div1'));
+        React.render(<TestComponent2 />, document.getElementById('div2'));
+        setTimeout(() => {
+          if(counter === 2){
+              React.unmountComponentAtNode(document.getElementById('div1'));
+              React.unmountComponentAtNode(document.getElementById('div2'));
+              done();
+          }
+        }, 500);
+      });
     });
   });
 
@@ -1119,7 +1297,7 @@ describe('re-base Tests:', function(){
         }
         React.render(<TestComponent />, document.body);
       });
-    });
+
 
     it('syncState() syncs and converts server timestamps in an array', function(done){
       class TestComponent extends React.Component{
@@ -1201,6 +1379,107 @@ describe('re-base Tests:', function(){
       React.render(<TestComponent />, document.body);
     });
 
+    it('syncState should allow multiple components to sync changes to the same endpoint', function(done){
+        //set up mount points
+        var div1 = document.createElement('div');
+        div1.setAttribute("id", "div1");
+
+        var div2 = document.createElement('div');
+        div2.setAttribute("id", "div2");
+        document.body.appendChild(div1);
+        document.body.appendChild(div2);
+
+        //keep track of updates
+        var counter = 0;
+
+        class TestComponent1 extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              friends: []
+            }
+          }
+          componentWillMount(){
+            
+          }
+          componentDidMount(){
+            this.ref = base.syncState('myFriends', {
+              context: this,
+              state: 'friends',
+              asArray: true
+            });
+            this.setState({
+              friends: dummyArrData
+            });
+          }
+          componentDidUpdate(){
+            ref.child('myFriends').once('value', (snapshot) => {
+              var data = snapshot.val();
+              expect(data).toEqual(this.state.friends);
+              expect(data).toEqual(dummyArrData);
+              counter++;
+            });
+          }
+          componentWillUnmount(){
+            base.removeBinding(this.ref);
+          }
+          render(){
+            return (
+              <div>
+                Name: {this.state.name} <br />
+                Age: {this.state.age}
+              </div>
+            )
+          }
+        }
+        class TestComponent2 extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              friends: []
+            }
+          }
+          componentDidMount(){
+            this.ref = base.syncState('myFriends', {
+                context: this,
+                state: 'friends',
+                asArray: true
+            });
+            this.setState({
+              friends: dummyArrData
+            });
+          }
+          componentDidUpdate(){
+            ref.child('myFriends').once('value', (snapshot) => {
+              var data = snapshot.val();
+              expect(data).toEqual(this.state.friends);
+              expect(data).toEqual(dummyArrData);
+              counter++;
+            });
+          }
+          componentWillUnmount(){
+            base.removeBinding(this.ref);
+          }
+          render(){
+            return (
+              <div>
+                Name: {this.state.name} <br />
+                Age: {this.state.age}
+              </div>
+            )
+          }
+        }
+        React.render(<TestComponent1 />, document.getElementById('div1'));
+        React.render(<TestComponent2 />, document.getElementById('div2'));
+        setTimeout(() => {
+          if(counter === 2){
+              React.unmountComponentAtNode(document.getElementById('div1'));
+              React.unmountComponentAtNode(document.getElementById('div2'));
+              done();
+          }
+        }, 500);
+      });
+    });
   });
 
   describe('Exposed firebase namespaces', function(){
