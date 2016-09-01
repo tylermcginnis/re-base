@@ -1479,6 +1479,60 @@ describe('re-base Tests:', function(){
           }
         }, 500);
       });
+
+      it('syncState should not call unbound sync listeners after removeBinding called', function(done){
+
+          class TestComponent extends React.Component{
+            constructor(props){
+              super(props);
+              this.state = {
+                friends: []
+              }
+            }
+            componentWillMount(){
+                this.ref = base.syncState('myFriends', {
+                  context: this,
+                  state: 'friends',
+                  asArray: true
+                });
+                this.otherRef = base.syncState('myOtherFriends', {
+                  context: this,
+                  state: 'friends',
+                  asArray: true
+                });
+            }
+            componentDidMount(){
+              base.removeBinding(this.ref);
+              this.setState({
+                 friends: dummyArrData
+              });
+            }
+            componentWillUnmount(){
+              base.removeBinding(this.otherRef);
+            }
+            render(){
+              setTimeout(() => {
+                  ref.child('myOtherFriends').once('value', (snapshot) => {
+                    var data = snapshot.val();
+                    expect(data).toEqual(dummyArrData);
+                    ref.child('myFriends').once('value', (snapshot) => {
+                      console.log('YO')
+                      var data = snapshot.val();
+                      expect(data).toEqual(null);
+                      done();
+                    });
+                  });
+              },0);
+              return (
+                <div>
+                  Name: {this.state.name} <br />
+                  Age: {this.state.age}
+                </div>
+              )
+            }
+          }
+          React.render(<TestComponent />, document.body);
+        });
     });
   });
 
