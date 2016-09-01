@@ -344,7 +344,7 @@ describe('re-base Tests:', function(){
 
         }
       });
-      expect(ref).toEqual({ endpoint: testEndpoint, method: 'listenTo' });
+      expect(ref.id).toEqual(jasmine.any(Number));
     })
 
     it('listenTo() throws an error given a invalid endpoint', function(done){

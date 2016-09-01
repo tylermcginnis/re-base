@@ -56,6 +56,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
+	var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
 
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -65,8 +67,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  var firebaseApp = null;
 	  var rebase;
-	  var firebaseRefs = {};
-	  var firebaseListeners = {};
+	  var firebaseRefs = new Map();
+	  var firebaseListeners = new Map();
 
 	  var optionValidators = {
 	    notObject: function notObject(options) {
@@ -171,8 +173,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.setState(newState);
 	  };
 
-	  function _returnRef(endpoint, method) {
-	    return { endpoint: endpoint, method: method };
+	  function _returnRef(id) {
+	    return { id: id };
 	  };
 
 	  function _fetch(endpoint, options) {
@@ -188,20 +190,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	  };
 
-	  function _firebaseRefsMixin(endpoint, invoker, ref) {
-	    if (!_isObject(firebaseRefs[endpoint])) {
-	      firebaseRefs[endpoint] = _defineProperty({}, invoker, ref);
-	      firebaseListeners[endpoint] = {};
-	    } else if (!firebaseRefs[endpoint][invoker]) {
-	      firebaseRefs[endpoint][invoker] = ref;
-	    } else {
-	      _throwError('Endpoint (' + endpoint + ') already has listener ' + invoker, "INVALID_ENDPOINT");
-	    }
+	  function _firebaseRefsMixin(id, ref) {
+	    firebaseRefs.set(id, ref);
 	  };
 
-	  function _addListener(endpoint, invoker, options, ref) {
+	  function _addListener(id, invoker, options, ref) {
 	    ref = _addQueries(ref, options.queries);
-	    firebaseListeners[endpoint][invoker] = ref.on('value', function (snapshot) {
+	    firebaseListeners.set(id, ref.on('value', function (snapshot) {
 	      var data = snapshot.val();
 	      data = data === null ? options.asArray === true ? [] : {} : data;
 	      if (invoker === 'listenTo') {
@@ -222,7 +217,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          options.then.called = true;
 	        }
 	      }
-	    });
+	    }));
 	  };
 
 	  function _bind(endpoint, options, invoker) {
@@ -232,10 +227,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    invoker === 'bindToState' && optionValidators.state(options);
 	    options.queries && optionValidators.query(options);
 	    options.then && (options.then.called = false);
+	    var id = _createHash(endpoint, invoker);
 	    var ref = firebase.database().ref(endpoint);
-	    _firebaseRefsMixin(endpoint, invoker, ref);
-	    _addListener(endpoint, invoker, options, ref);
-	    return _returnRef(endpoint, invoker);
+	    _firebaseRefsMixin(id, ref);
+	    _addListener(id, invoker, options, ref);
+	    return _returnRef(id);
 	  };
 
 	  function _updateSyncState(ref, data, key) {
@@ -263,8 +259,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    options.then && (options.then.called = false);
 
 	    var ref = firebase.database().ref(endpoint);
-	    _firebaseRefsMixin(endpoint, 'syncState', ref);
-	    _addListener(endpoint, 'syncState', options, ref);
+	    var id = _createHash(endpoint, 'syncState');
+	    _firebaseRefsMixin(id, ref);
+	    _addListener(id, 'syncState', options, ref);
 
 	    options.context.setState = (function (setState, ref) {
 	      options.syncs = options.syncs || [];
@@ -286,7 +283,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      };
 	    })(options.context.setState, ref);
 
-	    return _returnRef(endpoint, 'syncState');
+	    return _returnRef(id);
 	  };
 
 	  function _post(endpoint, options) {
@@ -345,32 +342,51 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return ref;
 	  };
 
-	  function _removeBinding(refObj) {
-	    _validateEndpoint(refObj.endpoint);
-	    if (typeof firebaseRefs[refObj.endpoint][refObj.method] === "undefined") {
-	      var errorMsg = 'Unexpected value for endpoint. ' + refObj.endpoint + ' was either never bound or has already been unbound.';
+	  function _removeBinding(_ref) {
+	    var id = _ref.id;
+
+	    var ref = firebaseRefs.get(id);
+	    var listener = firebaseListeners.get(id);
+	    if (typeof ref === "undefined") {
+	      var errorMsg = 'Unexpected value. Ref was either never bound or has already been unbound.';
 	      _throwError(errorMsg, "UNBOUND_ENDPOINT_VARIABLE");
 	    }
-	    firebaseRefs[refObj.endpoint][refObj.method].off('value', firebaseListeners[refObj.endpoint][refObj.method]);
-	    delete firebaseRefs[refObj.endpoint][refObj.method];
-	    delete firebaseListeners[refObj.endpoint][refObj.method];
+	    ref.off('value', listener);
+	    firebaseRefs['delete'](id);
+	    firebaseListeners['delete'](id);
 	  };
 
 	  function _reset() {
 	    rebase = undefined;
-	    for (var key in firebaseRefs) {
-	      if (firebaseRefs.hasOwnProperty(key)) {
-	        for (var prop in firebaseRefs[key]) {
-	          if (firebaseRefs[key].hasOwnProperty(prop)) {
-	            firebaseRefs[key][prop].off('value', firebaseListeners[key][prop]);
-	            delete firebaseRefs[key][prop];
-	            delete firebaseListeners[key][prop];
-	          }
+	    var _iteratorNormalCompletion = true;
+	    var _didIteratorError = false;
+	    var _iteratorError = undefined;
+
+	    try {
+	      for (var _iterator = firebaseRefs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	        var _step$value = _slicedToArray(_step.value, 2);
+
+	        var id = _step$value[0];
+	        var ref = _step$value[1];
+
+	        ref.off('value', firebaseListeners.get(id));
+	        firebaseRefs['delete'](id);
+	        firebaseListeners['delete'](id);
+	      }
+	    } catch (err) {
+	      _didIteratorError = true;
+	      _iteratorError = err;
+	    } finally {
+	      try {
+	        if (!_iteratorNormalCompletion && _iterator['return']) {
+	          _iterator['return']();
+	        }
+	      } finally {
+	        if (_didIteratorError) {
+	          throw _iteratorError;
 	        }
 	      }
 	    }
-	    firebaseRefs = {};
-	    firebaseListeners = {};
 	  };
 
 	  function _authWithPassword(credentials, fn) {
@@ -512,6 +528,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	      provider.addScope(scope);
 	    }
 	    return provider;
+	  }
+
+	  function _createHash(endpoint, invoker) {
+	    var hash = 0;
+	    var str = endpoint + invoker + Date.now();
+	    if (str.length == 0) return hash;
+	    for (var i = 0; i < str.length; i++) {
+	      var char = str.charCodeAt(i);
+	      hash = (hash << 5) - hash + char;
+	      hash = hash & hash;
+	    }
+	    return hash;
 	  }
 
 	  function _getAuthProvider(service, settings) {
