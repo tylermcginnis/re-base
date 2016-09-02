@@ -1018,6 +1018,47 @@ describe('re-base Tests:', function(){
         React.render(<TestComponent />, document.body);
       });
 
+      it('syncState() returns an array when there is data that was previously bound to another endpoint', function(done){
+        ref.child(`${testEndpoint}/child2`).set(dummyArrData).then(() => {
+            class TestComponent extends React.Component{
+              constructor(props){
+                super(props);
+                this.state = {
+                  data: {}
+                }
+              }
+              componentWillMount(){
+                this.ref = base.syncState(`${testEndpoint}/child1`, {
+                  context: this,
+                  state: 'data',
+                });
+              }
+              componentDidMount(){
+                base.removeBinding(this.ref);
+                this.nextRef = base.syncState(`${testEndpoint}/child2`, {
+                  context: this,
+                  state: 'data',
+                });
+              }
+              componentDidUpdate(){
+                expect(this.state.data).toEqual(dummyArrData);
+                done();
+              }
+              componentWillUnmount(){
+                base.removeBinding(this.nextRef);
+              }
+              render(){
+                return (
+                  <div>
+                    No Data
+                  </div>
+                )
+              }
+            }
+            React.render(<TestComponent />, document.body);
+        });
+      });
+
       it('syncState() returns an empty array when there is no Firebase data and asArray is true', function(done){
         class TestComponent extends React.Component{
           constructor(props){
