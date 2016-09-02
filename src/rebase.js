@@ -197,7 +197,12 @@ module.exports = (function(){
     optionValidators.context(options);
     optionValidators.state(options);
     options.queries && optionValidators.query(options);
-
+    if(_sync.called !== true){
+     _sync.reactSetState = options.context.setState;
+     _sync.called = true;
+    } else {
+     options.context.setState = _sync.reactSetState;
+    }
     options.reactSetState = options.context.setState;
     options.then && (options.then.called = false);
 
@@ -212,7 +217,7 @@ module.exports = (function(){
       options.syncs.push(function (data, cb) {
         for (var key in data) {
           if (data.hasOwnProperty(key)){
-            if (key === options.state) {
+            if (key === options.state ) {
               _updateSyncState.call(this, ref, data[key], id);
             } else {
               options.reactSetState.call(options.context, data, cb);

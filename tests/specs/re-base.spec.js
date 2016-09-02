@@ -910,22 +910,30 @@ describe('re-base Tests:', function(){
           }
 
           componentWillMount() {
+            this.counter = 0;
             this.refOne = base.syncState('one', {
               context: this,
-              state: 'one'
+              state: 'one',
+              then(){
+                this.counter++;
+              }
             });
 
             this.refTwo = base.syncState('two', {
               context: this,
-              state: 'two'
+              state: 'two',
+              then(){
+                this.counter++;
+              }
             });
 
             this.refThree = base.syncState('three', {
               context: this,
-              state: 'three'
+              state: 'three',
+              then(){
+                this.counter++;
+              }
             });
-
-            this.counter = 0;
 
             this.listenerOne = base.listenTo('one', {
               context: this,
@@ -953,7 +961,7 @@ describe('re-base Tests:', function(){
           }
 
           checkDone() {
-            if (this.counter == 3) {
+            if (this.counter === 6) {
               done();
             }
           }
@@ -1024,7 +1032,7 @@ describe('re-base Tests:', function(){
               constructor(props){
                 super(props);
                 this.state = {
-                  data: {}
+                  data: []
                 }
               }
               componentWillMount(){
