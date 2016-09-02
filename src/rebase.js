@@ -5,6 +5,7 @@ module.exports = (function(){
   var rebase;
   var firebaseRefs = new Map();
   var firebaseListeners = new Map();
+  var syncs = new Map();
 
   var optionValidators = {
     notObject(options){
@@ -113,6 +114,9 @@ module.exports = (function(){
     return { id };
   };
 
+  function _addSync(id, ref){
+    syncs.set(id,ref);
+  }
   function _fetch(endpoint, options){
     _validateEndpoint(endpoint);
     optionValidators.context(options);
@@ -170,18 +174,21 @@ module.exports = (function(){
     return _returnRef(id);
   };
 
-  function _updateSyncState(ref, data, key){
-    if(_isObject(data)) {
-      for(var prop in data){
-        //allow timestamps to be set
-        if(prop !== '.sv'){
-          _updateSyncState(ref.child(prop), data[prop], prop);
+  function _updateSyncState(ref, data, id){
+    var syncRef = syncs.get(id);
+    if(_isObject(syncRef)){
+        if(_isObject(data)) {
+          for(var prop in data){
+            //allow timestamps to be set
+            if(prop !== '.sv'){
+              _updateSyncState(ref.child(prop), data[prop], id);
+            } else {
+              ref.set(data);
+            }
+          }
         } else {
           ref.set(data);
         }
-      }
-    } else {
-      ref.set(data);
     }
   };
 
@@ -198,14 +205,15 @@ module.exports = (function(){
     var id = _createHash(endpoint, 'syncState');
     _firebaseRefsMixin(id, ref);
     _addListener(id, 'syncState', options, ref);
+    _addSync(id, ref);
 
-    options.context.setState = (function(setState,ref){
+    options.context.setState = (function(options,ref){
       options.syncs = options.syncs || [];
       options.syncs.push(function (data, cb) {
         for (var key in data) {
           if (data.hasOwnProperty(key)){
             if (key === options.state) {
-              _updateSyncState.call(this, ref, data[key], key);
+              _updateSyncState.call(this, ref, data[key], id);
             } else {
               options.reactSetState.call(options.context, data, cb);
             }
@@ -217,7 +225,7 @@ module.exports = (function(){
           f(data,cb);
         });
       }
-    })(options.context.setState, ref);
+    })(options, ref);
 
     return _returnRef(id);
 
@@ -289,6 +297,7 @@ module.exports = (function(){
     ref.off('value', listener);
     firebaseRefs.delete(id);
     firebaseListeners.delete(id);
+    syncs.delete(id);
   };
 
   function _reset(){
@@ -297,6 +306,7 @@ module.exports = (function(){
       ref.off('value', firebaseListeners.get(id));
       firebaseRefs.delete(id);
       firebaseListeners.delete(id);
+      syncs.delete(id);
     }
   };
 

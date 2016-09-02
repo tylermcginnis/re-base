@@ -561,7 +561,7 @@ describe('re-base Tests:', function(){
                 React.unmountComponentAtNode(document.getElementById('div2'));
                 done();
             }
-        }, 500);
+        }, 200);
       });
     });
   });
@@ -864,7 +864,7 @@ describe('re-base Tests:', function(){
               React.unmountComponentAtNode(document.getElementById('div2'));
               done();
           }
-        }, 500);
+      }, 200);
       });
     });
   });
@@ -1477,7 +1477,7 @@ describe('re-base Tests:', function(){
               React.unmountComponentAtNode(document.getElementById('div2'));
               done();
           }
-        }, 500);
+        }, 200);
       });
 
       it('syncState should not call unbound sync listeners after removeBinding called', function(done){
@@ -1516,9 +1516,8 @@ describe('re-base Tests:', function(){
                     var data = snapshot.val();
                     expect(data).toEqual(dummyArrData);
                     ref.child('myFriends').once('value', (snapshot) => {
-                      console.log('YO')
-                      var data = snapshot.val();
-                      expect(data).toEqual(null);
+                      var data1 = snapshot.val();
+                      expect(data1).toEqual(null);
                       done();
                     });
                   });
@@ -1645,7 +1644,7 @@ describe('re-base Tests:', function(){
                   var user = base.getAuth();
                   expect(user).toBeNull();
                   done();
-                }, 500);
+                }, 200);
             });
         });
 
