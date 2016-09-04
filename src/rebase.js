@@ -5,7 +5,7 @@ module.exports = (function(){
   var rebase;
   var firebaseRefs = new Map();
   var firebaseListeners = new Map();
-  var syncs = new Map();
+  var syncs = new WeakMap();
 
   var optionValidators = {
     notObject(options){
@@ -110,12 +110,14 @@ module.exports = (function(){
     this.setState(newState);
   };
 
-  function _returnRef(id){
-    return { id };
+  function _returnRef(endpoint, method, id, context){
+    return { endpoint, method, id, context };
   };
 
-  function _addSync(id, ref){
-    syncs.set(id,ref);
+  function _addSync(context, id, sync){
+    var existingSyncs = syncs.get(context) || [];
+    existingSyncs.push(sync);
+    syncs.set(context, existingSyncs);
   }
   function _fetch(endpoint, options){
     _validateEndpoint(endpoint);
@@ -167,28 +169,26 @@ module.exports = (function(){
     invoker === 'bindToState' && optionValidators.state(options);
     options.queries && optionValidators.query(options);
     options.then && (options.then.called = false);
+
     var id = _createHash(endpoint, invoker);
     var ref = firebase.database().ref(endpoint);
     _firebaseRefsMixin(id, ref);
     _addListener(id, invoker, options, ref);
-    return _returnRef(id);
+    return _returnRef(endpoint, invoker, id, options.context);
   };
 
-  function _updateSyncState(ref, data, id){
-    var syncRef = syncs.get(id);
-    if(_isObject(syncRef)){
-        if(_isObject(data)) {
-          for(var prop in data){
-            //allow timestamps to be set
-            if(prop !== '.sv'){
-              _updateSyncState(ref.child(prop), data[prop], id);
-            } else {
-              ref.set(data);
-            }
+  function _updateSyncState(ref, data){
+    if(_isObject(data)) {
+      for(var prop in data){
+        //allow timestamps to be set
+          if(prop !== '.sv'){
+              _updateSyncState(ref.child(prop), data[prop]);
+          } else {
+            ref.set(data);
           }
-        } else {
-          ref.set(data);
         }
+    } else {
+      ref.set(data);
     }
   };
 
@@ -197,43 +197,42 @@ module.exports = (function(){
     optionValidators.context(options);
     optionValidators.state(options);
     options.queries && optionValidators.query(options);
-    if(_sync.called !== true){
-     _sync.reactSetState = options.context.setState;
-     _sync.called = true;
-    } else {
-     options.context.setState = _sync.reactSetState;
-    }
-    options.reactSetState = options.context.setState;
     options.then && (options.then.called = false);
+
+    //store reference to react's setState
+    if(_sync.called !== true){
+      _sync.reactSetState = options.context.setState;
+      _sync.called = true;
+    }
+    options.reactSetState = _sync.reactSetState;
 
     var ref = firebase.database().ref(endpoint);
     var id = _createHash(endpoint, 'syncState');
     _firebaseRefsMixin(id, ref);
     _addListener(id, 'syncState', options, ref);
-    _addSync(id, ref);
 
-    options.context.setState = (function(options,ref){
-      options.syncs = options.syncs || [];
-      options.syncs.push(function (data, cb) {
+    var sync = {
+      id: id,
+      updateFirebase: _updateSyncState.bind(this, ref),
+      stateKey: options.state
+    }
+    _addSync(options.context, id, sync);
+
+    options.context.setState = function(data,cb){
+      var syncsToCall = syncs.get(this);
+      syncsToCall.forEach(sync => {
         for (var key in data) {
           if (data.hasOwnProperty(key)){
-            if (key === options.state ) {
-              _updateSyncState.call(this, ref, data[key], id);
+            if (key === sync.stateKey) {
+              sync.updateFirebase(data[key]);
             } else {
-              options.reactSetState.call(options.context, data, cb);
+              _sync.reactSetState.call(this, data, cb);
             }
           }
         }
       });
-      return function(data, cb){
-        options.syncs.forEach(function(f){
-          f(data,cb);
-        });
-      }
-    })(options, ref);
-
-    return _returnRef(id);
-
+    }
+    return _returnRef(endpoint, 'syncState', id, options.context);
   };
 
   function _post(endpoint, options){
@@ -292,7 +291,7 @@ module.exports = (function(){
     return ref;
   };
 
-  function _removeBinding({ id }){
+  function _removeBinding({ endpoint, method, id, context }){
     var ref = firebaseRefs.get(id);
     var listener = firebaseListeners.get(id);
     if (typeof ref === "undefined") {
@@ -302,16 +301,25 @@ module.exports = (function(){
     ref.off('value', listener);
     firebaseRefs.delete(id);
     firebaseListeners.delete(id);
-    syncs.delete(id);
+    var currentSyncs = syncs.get(context);
+    if(currentSyncs && currentSyncs.length > 0){
+      var idx = currentSyncs.findIndex((item,index) => {
+        return item.id === id;
+      });
+      if(idx !== -1){
+        currentSyncs.splice(idx,1);
+        syncs.set(context, currentSyncs);
+      }
+    }
   };
 
   function _reset(){
     rebase = undefined;
     for (var [id, ref] of firebaseRefs) {
       ref.off('value', firebaseListeners.get(id));
-      firebaseRefs.delete(id);
-      firebaseListeners.delete(id);
-      syncs.delete(id);
+      firebaseRefs = new Map();
+      firebaseListeners = new Map();
+      syncs = new WeakMap();
     }
   };
 

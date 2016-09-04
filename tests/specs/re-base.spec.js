@@ -31,9 +31,9 @@ describe('re-base Tests:', function(){
   beforeEach(function(done){
     base = Rebase.createClass(firebaseConfig);
     ref.remove(err => {
-        if(err) done(err);
-        ref = firebase.database().ref();
-        done();
+      if(err) done(err);
+      ref = firebase.database().ref();
+      done();
     });
   });
 
