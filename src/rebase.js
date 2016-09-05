@@ -1,6 +1,6 @@
 module.exports = (function(){
   var firebase = require('firebase');
-
+  var Symbol = require('es6-symbol');
   var firebaseApp = null;
   var rebase;
   var firebaseRefs = new Map();
