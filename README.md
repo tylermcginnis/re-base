@@ -279,7 +279,7 @@ addUser(){
 ```javascript
 //
 addBear(){
-  var newLocationRef = base.push('bears', {
+  var immediatelyAvailableReference = base.push('bears', {
     data: {name: 'George', type: 'Grizzly'},
     then(err){
       if(!err){
@@ -287,8 +287,8 @@ addBear(){
       }
     }
   });
-  //available immediately, you don't have to wait for the callback to be be called
-  var generatedKey = newLocationRef.key;
+  //available immediately, you don't have to wait for the callback to be called
+  var generatedKey = immediatelyAvailableReference.key;
 }
 ```
 
