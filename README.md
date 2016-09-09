@@ -231,7 +231,7 @@ getSales(){
     - type: object
     - properties:
       - data: (any - required) The data you're wanting to persist to Firebase
-      - then: (function - optional) A callback that will get invoked once the new data has been saved to Firebase
+      - then: (function - optional) A callback that will get invoked once the new data has been saved to Firebase. If there is an error, it will be the only argument to this function.
 
 #### Return Value
   No return value
@@ -242,8 +242,10 @@ getSales(){
 addUser(){
   base.post(`users/${userId}`, {
     data: {name: 'Tyler McGinnis', age: 25},
-    then(){
-      Router.transitionTo('dashboard');
+    then(err){
+      if(!err){
+        Router.transitionTo('dashboard');
+      }
     }
   });
 }
@@ -264,22 +266,48 @@ addUser(){
     - type: object
     - properties:
       - data: (any - required) The data you're wanting to persist to Firebase
-      - then: (function - optional) A callback that will get invoked once the new data has been saved to Firebase
+      - then: (function - optional) A callback that will get invoked once the new data has been saved to Firebase. If there is an error, it will be the only argument to this function.
 
 #### Return Value
-  A Firebase reference for the generated location
+  A Firebase [ThenableReference](https://firebase.google.com/docs/reference/js/firebase.database.ThenableReference)
+  which is defined by Firebase as a "Combined Promise and reference; resolves when write is complete, but can be used immediately as the reference to the child location."
 
 #### Example
 
+*Using callback*
+
 ```javascript
+//
 addBear(){
-  base.push('bears', {
+  var newLocationRef = base.push('bears', {
     data: {name: 'George', type: 'Grizzly'},
-    then(){
-      Router.transitionTo('dashboard');
+    then(err){
+      if(!err){
+        Router.transitionTo('dashboard');
+      }
     }
   });
+  //available immediately, you don't have to wait for the callback to be be called
+  var generatedKey = newLocationRef.key;
 }
+```
+
+*Using Promise interface*
+
+```javascript
+//
+addBear(){
+  var immediatelyAvailableReference = base.push('bears', {
+    data: {name: 'George', type: 'Grizzly'}
+  }).then(newLocation => {
+    var generatedKey = newLocation.key;
+  }).catch(err => {
+    //handle error
+  });
+  //available immediately, you don't have to wait for the Promise to resolve
+  var generatedKey = immediatelyAvailableReference.key; 
+}
+
 ```
 
 <br />
@@ -298,7 +326,7 @@ addBear(){
     - type: object
     - properties:
       - data: (any - required) The data you're wanting to persist to Firebase
-      - then: (function - optional) A callback that will get invoked once the new data has been saved to Firebase
+      - then: (function - optional) A callback that will get invoked once the new data has been saved to Firebase. If there is an error, it will be the only argument to this function.
 
 #### Return Value
   None
@@ -309,9 +337,11 @@ addBear(){
   // bears endpoint currently holds the object { name: 'Bill', type: 'Grizzly' }
   base.update('bears', {
     data: {name: 'George'},
-    then(){
-      Router.transitionTo('dashboard');
-      //bears endpint is now {name: 'George', type: 'Grizzly'}
+    then(err){
+      if(!err){
+        Router.transitionTo('dashboard');
+        //bears endpint is now {name: 'George', type: 'Grizzly'}
+      }
     }
   });
   
