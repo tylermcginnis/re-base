@@ -294,9 +294,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    optionValidators.data(options);
 	    var ref = firebase.database().ref(endpoint);
 	    if (options.then) {
-	      ref.set(options.data, options.then);
+	      return ref.set(options.data, options.then);
 	    } else {
-	      ref.set(options.data);
+	      return ref.set(options.data);
 	    }
 	  };
 
@@ -553,7 +553,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _fetch(endpoint, options);
 	      },
 	      post: function post(endpoint, options) {
-	        _post(endpoint, options);
+	        return _post(endpoint, options);
 	      },
 	      update: function update(endpoint, options) {
 	        _update(endpoint, options);

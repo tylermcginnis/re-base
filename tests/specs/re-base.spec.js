@@ -106,6 +106,20 @@ describe('re-base Tests:', function(){
         }
       })
     });
+
+    it('post() returns a Promise that resolves on successful write', function(done){
+      base.post(testEndpoint, {
+         data: dummyObjData
+      }).then(() => {
+         ref.child(testEndpoint).once('value', (snapshot) => {
+           var data = snapshot.val();
+           expect(data).toEqual(dummyObjData);
+           done();
+         });
+      }).catch(err => {
+         done.fail('Promise rejected');
+     });
+    });
   });
 
   describe('update()', function(){
