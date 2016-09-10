@@ -200,9 +200,11 @@ componentDidMount(){
       - queries: (object - optional) Queries to be used with your read operations.  See [Query Options](#queries) for more details.
 
 #### Return Value
-  No return value
+  A Firebase [Promise](https://firebase.google.com/docs/reference/js/firebase.Promise) which resolves when the write is complete and rejects if there is an error
 
 #### Example
+
+*Using callback*
 
 ```javascript
 getSales(){
@@ -213,6 +215,21 @@ getSales(){
       console.log(data);
     }
   });
+}
+```
+
+*Using Promise*
+
+```javascript
+getSales(){
+  base.fetch('sales', {
+    context: this,
+    asArray: true
+  }).then(data => {
+    console.log(data);
+  }).catch(error => {
+    //handle error
+  })
 }
 ```
 
