@@ -1426,11 +1426,19 @@ describe('re-base Tests:', function(){
     });
 
     it('Succeeds to reset password for a user', function(done) {
-      base.resetPassword({
-        email: dummyUsers.known.email,
-      }, function(error) {
-        expect(error).toBeNull();
-        done();
+      base.createUser({
+        email: dummyUsers.toDelete.email,
+        password: dummyUsers.toDelete.password,
+      }, function (error,userData){
+          base.resetPassword({
+            email: dummyUsers.toDelete.email,
+          }, function(error) {
+            expect(error).toBeNull();
+            //delete user 
+            userData.delete().then(() => {
+              done();
+            });
+          });
       });
     });
 
