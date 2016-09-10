@@ -164,6 +164,27 @@ describe('re-base Tests:', function(){
         }
       })
     });
+
+    it('update() returns a Promise that resolves on successful write', function(done){
+        var prePopData = {name: 'Chris Buusmann', age: 29, human: true};
+        base.post(testEndpoint, {
+          data: prePopData,
+          then(){
+            base.update(testEndpoint, {
+              data: dummyObjData
+            }).then(() => {
+              ref.child(testEndpoint).once('value', (snapshot) => {
+                var data = snapshot.val();
+                expect(data.human).toEqual(true);
+                done();
+              });
+            }).catch(err => {
+              done.fail('Promise rejected');
+            });
+          }
+        });
+    });
+
   });
 
   describe('push()', function(){

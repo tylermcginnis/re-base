@@ -345,9 +345,11 @@ addBear(){
       - then: (function - optional) A callback that will get invoked once the new data has been saved to Firebase. If there is an error, it will be the only argument to this function.
 
 #### Return Value
-  None
+  A Firebase [Promise](https://firebase.google.com/docs/reference/js/firebase.Promise) which resolves when the write is complete and rejects if there is an error
 
 #### Example
+
+*Using callback*
 
 ```javascript
   // bears endpoint currently holds the object { name: 'Bill', type: 'Grizzly' }
@@ -361,6 +363,19 @@ addBear(){
     }
   });
   
+```
+
+*Using Promise*
+
+```javascript
+  // bears endpoint currently holds the object { name: 'Bill', type: 'Grizzly' }
+  base.update('bears', {
+    data: {name: 'George'}
+  }).then(() => {
+    Router.transitionTo('dashboard');
+  }).catch(err => {
+    //handle error
+  });
 ```
 
 <br />

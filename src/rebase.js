@@ -246,9 +246,9 @@ module.exports = (function(){
     optionValidators.data(options);
     var ref = firebase.database().ref(endpoint);
     if(options.then){
-      ref.update(options.data, options.then);
+      return ref.update(options.data, options.then);
     } else {
-      ref.update(options.data);
+      return ref.update(options.data);
     }
   };
 
@@ -492,7 +492,7 @@ module.exports = (function(){
         return _post(endpoint, options);
       },
       update(endpoint, options){
-        _update(endpoint, options);
+        return _update(endpoint, options);
       },
       push(endpoint, options){
         return _push(endpoint, options);
