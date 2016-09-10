@@ -21,7 +21,7 @@ var dummyArrData = ['Tyler McGinnis', 'Jacob Turner', 'Ean Platter'];
 var testEndpoint = 'test/child';
 var dummyUsers = {
   'unknown': {email: 'unknown@thisdomainisfake.com', password: 'nonono'},
-  'known': {email: 'fakeymcfakefake@chriswal.es', password: '123456password'},
+  'known': {email: 'fake@chriswal.es', password: '123456password'},
   'invalid': {email: 'invalid@com', password: 'correcthorsebatterystaple'},
   'toDelete': {email: 'test@example.com', password: 'correcthorsebatterystaple', newPassword: 'chipsahoy'},
 };

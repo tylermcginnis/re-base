@@ -187,6 +187,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        options.then.call(options.context, data);
 	      }
 	      return data;
+	    }, function (err) {
+	      //call onFailure callback if it exists otherwise return a rejected promise
+	      if (options.onFailure && typeof options.onFailure === 'function') {
+	        options.onFailure.call(options.context, err);
+	      } else {
+	        return firebase.Promise.reject(err);
+	      }
 	    });
 	  };
 
