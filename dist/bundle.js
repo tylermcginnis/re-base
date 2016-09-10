@@ -178,13 +178,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function _fetch(endpoint, options) {
 	    _validateEndpoint(endpoint);
 	    optionValidators.context(options);
-	    optionValidators.then(options);
 	    options.queries && optionValidators.query(options);
 	    var ref = firebase.database().ref(endpoint);
 	    ref = _addQueries(ref, options.queries);
-	    ref.once('value', function (snapshot) {
+	    return ref.once('value').then(function (snapshot) {
 	      var data = options.asArray === true ? _toArray(snapshot) : snapshot.val();
-	      options.then.call(options.context, data);
+	      if (options.then) {
+	        options.then.call(options.context, data);
+	      }
+	      return data;
 	    });
 	  };
 
@@ -550,7 +552,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return _sync(endpoint, options);
 	      },
 	      fetch: function fetch(endpoint, options) {
-	        _fetch(endpoint, options);
+	        return _fetch(endpoint, options);
 	      },
 	      post: function post(endpoint, options) {
 	        return _post(endpoint, options);

@@ -278,6 +278,15 @@ describe('re-base Tests:', function(){
         });
       });
 
+      it('fetch()\'s .then gets invoked with the data from Firebase once the data is retrieved using returned Promise', function(done){
+        base.fetch(testEndpoint, {
+          context: {}
+        }).then(data => {
+          expect(data).toEqual(dummyObjData);
+          done();
+        }).catch(done.fail)
+      });
+
       it('fetch()\'s asArray property should return the data from Firebase as an array', function(done){
         base.fetch(testEndpoint, {
           asArray: true,
@@ -287,6 +296,19 @@ describe('re-base Tests:', function(){
             expect(data.indexOf(25)).not.toBe(-1);
             done();
           }
+        });
+      });
+
+      it('fetch()\'s asArray property should return the data from Firebase as an array when using returned Promise', function(done){
+        base.fetch(testEndpoint, {
+          asArray: true,
+          context: {}
+        }).then(data => {
+          expect(data.indexOf('Tyler McGinnis')).not.toBe(-1);
+          expect(data.indexOf(25)).not.toBe(-1);
+          done();
+        }).catch(err => {
+          done.fail(err) 
         });
       });
 

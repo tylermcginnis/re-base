@@ -116,13 +116,15 @@ module.exports = (function(){
   function _fetch(endpoint, options){
     _validateEndpoint(endpoint);
     optionValidators.context(options);
-    optionValidators.then(options);
     options.queries && optionValidators.query(options);
     var ref = firebase.database().ref(endpoint);
     ref = _addQueries(ref, options.queries);
-    ref.once('value', (snapshot) => {
+    return ref.once('value').then(snapshot => {
       var data = options.asArray === true ? _toArray(snapshot) : snapshot.val();
-      options.then.call(options.context, data);
+      if(options.then){
+        options.then.call(options.context, data);
+      }
+      return data;
     });
   };
 
@@ -486,7 +488,7 @@ module.exports = (function(){
         return _sync(endpoint, options);
       },
       fetch(endpoint, options){
-        _fetch(endpoint, options);
+        return _fetch(endpoint, options);
       },
       post(endpoint, options){
         return _post(endpoint, options);
