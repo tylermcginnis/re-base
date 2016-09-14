@@ -21,7 +21,7 @@ var dummyArrData = ['Tyler McGinnis', 'Jacob Turner', 'Ean Platter'];
 var testEndpoint = 'test/child';
 var dummyUsers = {
   'unknown': {email: 'unknown@thisdomainisfake.com', password: 'nonono'},
-  'known': {email: 'fakeymcfakefake@chriswal.es', password: '123456password'},
+  'known': {email: 'fake@chriswal.es', password: '123456password'},
   'invalid': {email: 'invalid@com', password: 'correcthorsebatterystaple'},
   'toDelete': {email: 'test@example.com', password: 'correcthorsebatterystaple', newPassword: 'chipsahoy'},
 };
@@ -106,6 +106,20 @@ describe('re-base Tests:', function(){
         }
       })
     });
+
+    it('post() returns a Promise that resolves on successful write', function(done){
+      base.post(testEndpoint, {
+         data: dummyObjData
+      }).then(() => {
+         ref.child(testEndpoint).once('value', (snapshot) => {
+           var data = snapshot.val();
+           expect(data).toEqual(dummyObjData);
+           done();
+         });
+      }).catch(err => {
+         done.fail('Promise rejected');
+     });
+    });
   });
 
   describe('update()', function(){
@@ -150,6 +164,27 @@ describe('re-base Tests:', function(){
         }
       })
     });
+
+    it('update() returns a Promise that resolves on successful write', function(done){
+        var prePopData = {name: 'Chris Buusmann', age: 29, human: true};
+        base.post(testEndpoint, {
+          data: prePopData,
+          then(){
+            base.update(testEndpoint, {
+              data: dummyObjData
+            }).then(() => {
+              ref.child(testEndpoint).once('value', (snapshot) => {
+                var data = snapshot.val();
+                expect(data.human).toEqual(true);
+                done();
+              });
+            }).catch(err => {
+              done.fail('Promise rejected');
+            });
+          }
+        });
+    });
+
   });
 
   describe('push()', function(){
@@ -243,6 +278,15 @@ describe('re-base Tests:', function(){
         });
       });
 
+      it('fetch()\'s .then gets invoked with the data from Firebase once the data is retrieved using returned Promise', function(done){
+        base.fetch(testEndpoint, {
+          context: {}
+        }).then(data => {
+          expect(data).toEqual(dummyObjData);
+          done();
+        }).catch(done.fail)
+      });
+
       it('fetch()\'s asArray property should return the data from Firebase as an array', function(done){
         base.fetch(testEndpoint, {
           asArray: true,
@@ -252,6 +296,19 @@ describe('re-base Tests:', function(){
             expect(data.indexOf(25)).not.toBe(-1);
             done();
           }
+        });
+      });
+
+      it('fetch()\'s asArray property should return the data from Firebase as an array when using returned Promise', function(done){
+        base.fetch(testEndpoint, {
+          asArray: true,
+          context: {}
+        }).then(data => {
+          expect(data.indexOf('Tyler McGinnis')).not.toBe(-1);
+          expect(data.indexOf(25)).not.toBe(-1);
+          done();
+        }).catch(err => {
+          done.fail(err) 
         });
       });
 
@@ -1750,11 +1807,19 @@ describe('re-base Tests:', function(){
     });
 
     it('Succeeds to reset password for a user', function(done) {
-      base.resetPassword({
-        email: dummyUsers.known.email,
-      }, function(error) {
-        expect(error).toBeNull();
-        done();
+      base.createUser({
+        email: dummyUsers.toDelete.email,
+        password: dummyUsers.toDelete.password,
+      }, function (error,userData){
+          base.resetPassword({
+            email: dummyUsers.toDelete.email,
+          }, function(error) {
+            expect(error).toBeNull();
+            //delete user 
+            userData.delete().then(() => {
+              done();
+            });
+          });
       });
     });
 

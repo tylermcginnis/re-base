@@ -193,13 +193,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function _fetch(endpoint, options) {
 	    _validateEndpoint(endpoint);
 	    optionValidators.context(options);
-	    optionValidators.then(options);
 	    options.queries && optionValidators.query(options);
 	    var ref = firebase.database().ref(endpoint);
 	    ref = _addQueries(ref, options.queries);
-	    ref.once('value', function (snapshot) {
+	    return ref.once('value').then(function (snapshot) {
 	      var data = options.asArray === true ? _toArray(snapshot) : snapshot.val();
-	      options.then.call(options.context, data);
+	      if (options.then) {
+	        options.then.call(options.context, data);
+	      }
+	      return data;
+	    }, function (err) {
+	      //call onFailure callback if it exists otherwise return a rejected promise
+	      if (options.onFailure && typeof options.onFailure === 'function') {
+	        options.onFailure.call(options.context, err);
+	      } else {
+	        return firebase.Promise.reject(err);
+	      }
 	    });
 	  };
 
@@ -313,9 +322,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    optionValidators.data(options);
 	    var ref = firebase.database().ref(endpoint);
 	    if (options.then) {
-	      ref.set(options.data, options.then);
+	      return ref.set(options.data, options.then);
 	    } else {
-	      ref.set(options.data);
+	      return ref.set(options.data);
 	    }
 	  };
 
@@ -324,9 +333,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    optionValidators.data(options);
 	    var ref = firebase.database().ref(endpoint);
 	    if (options.then) {
-	      ref.update(options.data, options.then);
+	      return ref.update(options.data, options.then);
 	    } else {
-	      ref.update(options.data);
+	      return ref.update(options.data);
 	    }
 	  };
 
@@ -614,13 +623,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return _sync(endpoint, options);
 	      },
 	      fetch: function fetch(endpoint, options) {
-	        _fetch(endpoint, options);
+	        return _fetch(endpoint, options);
 	      },
 	      post: function post(endpoint, options) {
-	        _post(endpoint, options);
+	        return _post(endpoint, options);
 	      },
 	      update: function update(endpoint, options) {
-	        _update(endpoint, options);
+	        return _update(endpoint, options);
 	      },
 	      push: function push(endpoint, options) {
 	        return _push(endpoint, options);

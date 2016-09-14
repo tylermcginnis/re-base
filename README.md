@@ -197,12 +197,15 @@ componentDidMount(){
       - context: (object - required) The context of your component
       - asArray: (boolean - optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
       - then: (function - required) The callback function that will be invoked with the data from the specified endpoint when the endpoint changes
+      - onFailure: (function - optional) The callback function that will be invoked with an error that occurs reading data from the specified endpoint
       - queries: (object - optional) Queries to be used with your read operations.  See [Query Options](#queries) for more details.
 
 #### Return Value
-  No return value
+  A Firebase [Promise](https://firebase.google.com/docs/reference/js/firebase.Promise) which resolves when the write is complete and rejects if there is an error
 
 #### Example
+
+*Using callback*
 
 ```javascript
 getSales(){
@@ -213,6 +216,21 @@ getSales(){
       console.log(data);
     }
   });
+}
+```
+
+*Using Promise*
+
+```javascript
+getSales(){
+  base.fetch('sales', {
+    context: this,
+    asArray: true
+  }).then(data => {
+    console.log(data);
+  }).catch(error => {
+    //handle error
+  })
 }
 ```
 
@@ -234,9 +252,11 @@ getSales(){
       - then: (function - optional) A callback that will get invoked once the new data has been saved to Firebase. If there is an error, it will be the only argument to this function.
 
 #### Return Value
-  No return value
+  A Firebase [Promise](https://firebase.google.com/docs/reference/js/firebase.Promise) which resolves when the write is complete and rejects if there is an error
 
 #### Example
+
+*Using callback*
 
 ```javascript
 addUser(){
@@ -247,6 +267,20 @@ addUser(){
         Router.transitionTo('dashboard');
       }
     }
+  });
+}
+```
+
+*Using promise*
+
+```javascript
+addUser(){
+  base.post(`users/${userId}`, {
+    data: {name: 'Tyler McGinnis', age: 25}
+  }).then(() => {
+    Router.transitionTo('dashboard');
+  }).catch(err => {
+    // handle error
   });
 }
 ```
@@ -329,9 +363,11 @@ addBear(){
       - then: (function - optional) A callback that will get invoked once the new data has been saved to Firebase. If there is an error, it will be the only argument to this function.
 
 #### Return Value
-  None
+  A Firebase [Promise](https://firebase.google.com/docs/reference/js/firebase.Promise) which resolves when the write is complete and rejects if there is an error
 
 #### Example
+
+*Using callback*
 
 ```javascript
   // bears endpoint currently holds the object { name: 'Bill', type: 'Grizzly' }
@@ -345,6 +381,19 @@ addBear(){
     }
   });
   
+```
+
+*Using Promise*
+
+```javascript
+  // bears endpoint currently holds the object { name: 'Bill', type: 'Grizzly' }
+  base.update('bears', {
+    data: {name: 'George'}
+  }).then(() => {
+    Router.transitionTo('dashboard');
+  }).catch(err => {
+    //handle error
+  });
 ```
 
 <br />
