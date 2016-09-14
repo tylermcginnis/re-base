@@ -7,7 +7,7 @@
 		var a = typeof exports === 'object' ? factory(require("firebase")) : factory(root["Firebase"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_2__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -54,19 +54,29 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+	module.exports = __webpack_require__(1);
+
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
+
+	var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
 
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
 
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 	module.exports = (function () {
-	  var firebase = __webpack_require__(1);
-
+	  var firebase = __webpack_require__(2);
+	  var Symbol = __webpack_require__(3);
 	  var firebaseApp = null;
 	  var rebase;
-	  var firebaseRefs = {};
-	  var firebaseListeners = {};
+	  var firebaseRefs = new Map();
+	  var firebaseListeners = new Map();
+	  var syncs = new WeakMap();
 
 	  var optionValidators = {
 	    notObject: function notObject(options) {
@@ -171,10 +181,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.setState(newState);
 	  };
 
-	  function _returnRef(endpoint, method) {
-	    return { endpoint: endpoint, method: method };
+	  function _returnRef(endpoint, method, id, context) {
+	    return { endpoint: endpoint, method: method, id: id, context: context };
 	  };
 
+	  function _addSync(context, id, sync) {
+	    var existingSyncs = syncs.get(context) || [];
+	    existingSyncs.push(sync);
+	    syncs.set(context, existingSyncs);
+	  }
 	  function _fetch(endpoint, options) {
 	    _validateEndpoint(endpoint);
 	    optionValidators.context(options);
@@ -188,20 +203,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	  };
 
-	  function _firebaseRefsMixin(endpoint, invoker, ref) {
-	    if (!_isObject(firebaseRefs[endpoint])) {
-	      firebaseRefs[endpoint] = _defineProperty({}, invoker, ref);
-	      firebaseListeners[endpoint] = {};
-	    } else if (!firebaseRefs[endpoint][invoker]) {
-	      firebaseRefs[endpoint][invoker] = ref;
-	    } else {
-	      _throwError('Endpoint (' + endpoint + ') already has listener ' + invoker, "INVALID_ENDPOINT");
-	    }
+	  function _firebaseRefsMixin(id, ref) {
+	    firebaseRefs.set(id, ref);
 	  };
 
-	  function _addListener(endpoint, invoker, options, ref) {
+	  function _addListener(id, invoker, options, ref) {
 	    ref = _addQueries(ref, options.queries);
-	    firebaseListeners[endpoint][invoker] = ref.on('value', function (snapshot) {
+	    firebaseListeners.set(id, ref.on('value', function (snapshot) {
 	      var data = snapshot.val();
 	      data = data === null ? options.asArray === true ? [] : {} : data;
 	      if (invoker === 'listenTo') {
@@ -222,7 +230,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          options.then.called = true;
 	        }
 	      }
-	    });
+	    }));
 	  };
 
 	  function _bind(endpoint, options, invoker) {
@@ -232,18 +240,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    invoker === 'bindToState' && optionValidators.state(options);
 	    options.queries && optionValidators.query(options);
 	    options.then && (options.then.called = false);
+
+	    var id = _createHash(endpoint, invoker);
 	    var ref = firebase.database().ref(endpoint);
-	    _firebaseRefsMixin(endpoint, invoker, ref);
-	    _addListener(endpoint, invoker, options, ref);
-	    return _returnRef(endpoint, invoker);
+	    _firebaseRefsMixin(id, ref);
+	    _addListener(id, invoker, options, ref);
+	    return _returnRef(endpoint, invoker, id, options.context);
 	  };
 
-	  function _updateSyncState(ref, data, key) {
+	  function _updateSyncState(ref, data) {
 	    if (_isObject(data)) {
 	      for (var prop in data) {
 	        //allow timestamps to be set
 	        if (prop !== '.sv') {
-	          _updateSyncState(ref.child(prop), data[prop], prop);
+	          _updateSyncState(ref.child(prop), data[prop]);
 	        } else {
 	          ref.set(data);
 	        }
@@ -258,35 +268,44 @@ return /******/ (function(modules) { // webpackBootstrap
 	    optionValidators.context(options);
 	    optionValidators.state(options);
 	    options.queries && optionValidators.query(options);
-
-	    options.reactSetState = options.context.setState;
 	    options.then && (options.then.called = false);
 
-	    var ref = firebase.database().ref(endpoint);
-	    _firebaseRefsMixin(endpoint, 'syncState', ref);
-	    _addListener(endpoint, 'syncState', options, ref);
+	    //store reference to react's setState
+	    if (_sync.called !== true) {
+	      _sync.reactSetState = options.context.setState;
+	      _sync.called = true;
+	    }
+	    options.reactSetState = _sync.reactSetState;
 
-	    options.context.setState = (function (setState, ref) {
-	      options.syncs = options.syncs || [];
-	      options.syncs.push(function (data, cb) {
+	    var ref = firebase.database().ref(endpoint);
+	    var id = _createHash(endpoint, 'syncState');
+	    _firebaseRefsMixin(id, ref);
+	    _addListener(id, 'syncState', options, ref);
+
+	    var sync = {
+	      id: id,
+	      updateFirebase: _updateSyncState.bind(this, ref),
+	      stateKey: options.state
+	    };
+	    _addSync(options.context, id, sync);
+
+	    options.context.setState = function (data, cb) {
+	      var _this = this;
+
+	      var syncsToCall = syncs.get(this);
+	      syncsToCall.forEach(function (sync) {
 	        for (var key in data) {
 	          if (data.hasOwnProperty(key)) {
-	            if (key === options.state) {
-	              _updateSyncState.call(this, ref, data[key], key);
+	            if (key === sync.stateKey) {
+	              sync.updateFirebase(data[key]);
 	            } else {
-	              options.reactSetState.call(options.context, data, cb);
+	              _sync.reactSetState.call(_this, data, cb);
 	            }
 	          }
 	        }
 	      });
-	      return function (data, cb) {
-	        options.syncs.forEach(function (f) {
-	          f(data, cb);
-	        });
-	      };
-	    })(options.context.setState, ref);
-
-	    return _returnRef(endpoint, 'syncState');
+	    };
+	    return _returnRef(endpoint, 'syncState', id, options.context);
 	  };
 
 	  function _post(endpoint, options) {
@@ -345,32 +364,65 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return ref;
 	  };
 
-	  function _removeBinding(refObj) {
-	    _validateEndpoint(refObj.endpoint);
-	    if (typeof firebaseRefs[refObj.endpoint][refObj.method] === "undefined") {
-	      var errorMsg = 'Unexpected value for endpoint. ' + refObj.endpoint + ' was either never bound or has already been unbound.';
+	  function _removeBinding(_ref) {
+	    var endpoint = _ref.endpoint;
+	    var method = _ref.method;
+	    var id = _ref.id;
+	    var context = _ref.context;
+
+	    var ref = firebaseRefs.get(id);
+	    var listener = firebaseListeners.get(id);
+	    if (typeof ref === "undefined") {
+	      var errorMsg = 'Unexpected value. Ref was either never bound or has already been unbound.';
 	      _throwError(errorMsg, "UNBOUND_ENDPOINT_VARIABLE");
 	    }
-	    firebaseRefs[refObj.endpoint][refObj.method].off('value', firebaseListeners[refObj.endpoint][refObj.method]);
-	    delete firebaseRefs[refObj.endpoint][refObj.method];
-	    delete firebaseListeners[refObj.endpoint][refObj.method];
+	    ref.off('value', listener);
+	    firebaseRefs['delete'](id);
+	    firebaseListeners['delete'](id);
+	    var currentSyncs = syncs.get(context);
+	    if (currentSyncs && currentSyncs.length > 0) {
+	      var idx = currentSyncs.findIndex(function (item, index) {
+	        return item.id === id;
+	      });
+	      if (idx !== -1) {
+	        currentSyncs.splice(idx, 1);
+	        syncs.set(context, currentSyncs);
+	      }
+	    }
 	  };
 
 	  function _reset() {
 	    rebase = undefined;
-	    for (var key in firebaseRefs) {
-	      if (firebaseRefs.hasOwnProperty(key)) {
-	        for (var prop in firebaseRefs[key]) {
-	          if (firebaseRefs[key].hasOwnProperty(prop)) {
-	            firebaseRefs[key][prop].off('value', firebaseListeners[key][prop]);
-	            delete firebaseRefs[key][prop];
-	            delete firebaseListeners[key][prop];
-	          }
+	    var _iteratorNormalCompletion = true;
+	    var _didIteratorError = false;
+	    var _iteratorError = undefined;
+
+	    try {
+	      for (var _iterator = firebaseRefs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	        var _step$value = _slicedToArray(_step.value, 2);
+
+	        var id = _step$value[0];
+	        var ref = _step$value[1];
+
+	        ref.off('value', firebaseListeners.get(id));
+	        firebaseRefs = new Map();
+	        firebaseListeners = new Map();
+	        syncs = new WeakMap();
+	      }
+	    } catch (err) {
+	      _didIteratorError = true;
+	      _iteratorError = err;
+	    } finally {
+	      try {
+	        if (!_iteratorNormalCompletion && _iterator['return']) {
+	          _iterator['return']();
+	        }
+	      } finally {
+	        if (_didIteratorError) {
+	          throw _iteratorError;
 	        }
 	      }
 	    }
-	    firebaseRefs = {};
-	    firebaseListeners = {};
 	  };
 
 	  function _authWithPassword(credentials, fn) {
@@ -514,6 +566,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return provider;
 	  }
 
+	  function _createHash(endpoint, invoker) {
+	    var hash = 0;
+	    var str = endpoint + invoker + Date.now();
+	    if (str.length == 0) return hash;
+	    for (var i = 0; i < str.length; i++) {
+	      var char = str.charCodeAt(i);
+	      hash = (hash << 5) - hash + char;
+	      hash = hash & hash;
+	    }
+	    return hash;
+	  }
+
 	  function _getAuthProvider(service, settings) {
 	    switch (service) {
 	      case 'twitter':
@@ -619,10 +683,440 @@ return /******/ (function(modules) { // webpackBootstrap
 	})();
 
 /***/ },
-/* 1 */
+/* 2 */
 /***/ function(module, exports) {
 
-	module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
+	module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	module.exports = __webpack_require__(4)() ? Symbol : __webpack_require__(5);
+
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var validTypes = { object: true, symbol: true };
+
+	module.exports = function () {
+		var symbol;
+		if (typeof Symbol !== 'function') return false;
+		symbol = Symbol('test symbol');
+		try { String(symbol); } catch (e) { return false; }
+
+		// Return 'true' also for polyfills
+		if (!validTypes[typeof Symbol.iterator]) return false;
+		if (!validTypes[typeof Symbol.toPrimitive]) return false;
+		if (!validTypes[typeof Symbol.toStringTag]) return false;
+
+		return true;
+	};
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// ES2015 Symbol polyfill for environments that do not support it (or partially support it)
+
+	'use strict';
+
+	var d              = __webpack_require__(6)
+	  , validateSymbol = __webpack_require__(19)
+
+	  , create = Object.create, defineProperties = Object.defineProperties
+	  , defineProperty = Object.defineProperty, objPrototype = Object.prototype
+	  , NativeSymbol, SymbolPolyfill, HiddenSymbol, globalSymbols = create(null)
+	  , isNativeSafe;
+
+	if (typeof Symbol === 'function') {
+		NativeSymbol = Symbol;
+		try {
+			String(NativeSymbol());
+			isNativeSafe = true;
+		} catch (ignore) {}
+	}
+
+	var generateName = (function () {
+		var created = create(null);
+		return function (desc) {
+			var postfix = 0, name, ie11BugWorkaround;
+			while (created[desc + (postfix || '')]) ++postfix;
+			desc += (postfix || '');
+			created[desc] = true;
+			name = '@@' + desc;
+			defineProperty(objPrototype, name, d.gs(null, function (value) {
+				// For IE11 issue see:
+				// https://connect.microsoft.com/IE/feedbackdetail/view/1928508/
+				//    ie11-broken-getters-on-dom-objects
+				// https://github.com/medikoo/es6-symbol/issues/12
+				if (ie11BugWorkaround) return;
+				ie11BugWorkaround = true;
+				defineProperty(this, name, d(value));
+				ie11BugWorkaround = false;
+			}));
+			return name;
+		};
+	}());
+
+	// Internal constructor (not one exposed) for creating Symbol instances.
+	// This one is used to ensure that `someSymbol instanceof Symbol` always return false
+	HiddenSymbol = function Symbol(description) {
+		if (this instanceof HiddenSymbol) throw new TypeError('TypeError: Symbol is not a constructor');
+		return SymbolPolyfill(description);
+	};
+
+	// Exposed `Symbol` constructor
+	// (returns instances of HiddenSymbol)
+	module.exports = SymbolPolyfill = function Symbol(description) {
+		var symbol;
+		if (this instanceof Symbol) throw new TypeError('TypeError: Symbol is not a constructor');
+		if (isNativeSafe) return NativeSymbol(description);
+		symbol = create(HiddenSymbol.prototype);
+		description = (description === undefined ? '' : String(description));
+		return defineProperties(symbol, {
+			__description__: d('', description),
+			__name__: d('', generateName(description))
+		});
+	};
+	defineProperties(SymbolPolyfill, {
+		for: d(function (key) {
+			if (globalSymbols[key]) return globalSymbols[key];
+			return (globalSymbols[key] = SymbolPolyfill(String(key)));
+		}),
+		keyFor: d(function (s) {
+			var key;
+			validateSymbol(s);
+			for (key in globalSymbols) if (globalSymbols[key] === s) return key;
+		}),
+
+		// If there's native implementation of given symbol, let's fallback to it
+		// to ensure proper interoperability with other native functions e.g. Array.from
+		hasInstance: d('', (NativeSymbol && NativeSymbol.hasInstance) || SymbolPolyfill('hasInstance')),
+		isConcatSpreadable: d('', (NativeSymbol && NativeSymbol.isConcatSpreadable) ||
+			SymbolPolyfill('isConcatSpreadable')),
+		iterator: d('', (NativeSymbol && NativeSymbol.iterator) || SymbolPolyfill('iterator')),
+		match: d('', (NativeSymbol && NativeSymbol.match) || SymbolPolyfill('match')),
+		replace: d('', (NativeSymbol && NativeSymbol.replace) || SymbolPolyfill('replace')),
+		search: d('', (NativeSymbol && NativeSymbol.search) || SymbolPolyfill('search')),
+		species: d('', (NativeSymbol && NativeSymbol.species) || SymbolPolyfill('species')),
+		split: d('', (NativeSymbol && NativeSymbol.split) || SymbolPolyfill('split')),
+		toPrimitive: d('', (NativeSymbol && NativeSymbol.toPrimitive) || SymbolPolyfill('toPrimitive')),
+		toStringTag: d('', (NativeSymbol && NativeSymbol.toStringTag) || SymbolPolyfill('toStringTag')),
+		unscopables: d('', (NativeSymbol && NativeSymbol.unscopables) || SymbolPolyfill('unscopables'))
+	});
+
+	// Internal tweaks for real symbol producer
+	defineProperties(HiddenSymbol.prototype, {
+		constructor: d(SymbolPolyfill),
+		toString: d('', function () { return this.__name__; })
+	});
+
+	// Proper implementation of methods exposed on Symbol.prototype
+	// They won't be accessible on produced symbol instances as they derive from HiddenSymbol.prototype
+	defineProperties(SymbolPolyfill.prototype, {
+		toString: d(function () { return 'Symbol (' + validateSymbol(this).__description__ + ')'; }),
+		valueOf: d(function () { return validateSymbol(this); })
+	});
+	defineProperty(SymbolPolyfill.prototype, SymbolPolyfill.toPrimitive, d('', function () {
+		var symbol = validateSymbol(this);
+		if (typeof symbol === 'symbol') return symbol;
+		return symbol.toString();
+	}));
+	defineProperty(SymbolPolyfill.prototype, SymbolPolyfill.toStringTag, d('c', 'Symbol'));
+
+	// Proper implementaton of toPrimitive and toStringTag for returned symbol instances
+	defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toStringTag,
+		d('c', SymbolPolyfill.prototype[SymbolPolyfill.toStringTag]));
+
+	// Note: It's important to define `toPrimitive` as last one, as some implementations
+	// implement `toPrimitive` natively without implementing `toStringTag` (or other specified symbols)
+	// And that may invoke error in definition flow:
+	// See: https://github.com/medikoo/es6-symbol/issues/13#issuecomment-164146149
+	defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toPrimitive,
+		d('c', SymbolPolyfill.prototype[SymbolPolyfill.toPrimitive]));
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var assign        = __webpack_require__(7)
+	  , normalizeOpts = __webpack_require__(14)
+	  , isCallable    = __webpack_require__(15)
+	  , contains      = __webpack_require__(16)
+
+	  , d;
+
+	d = module.exports = function (dscr, value/*, options*/) {
+		var c, e, w, options, desc;
+		if ((arguments.length < 2) || (typeof dscr !== 'string')) {
+			options = value;
+			value = dscr;
+			dscr = null;
+		} else {
+			options = arguments[2];
+		}
+		if (dscr == null) {
+			c = w = true;
+			e = false;
+		} else {
+			c = contains.call(dscr, 'c');
+			e = contains.call(dscr, 'e');
+			w = contains.call(dscr, 'w');
+		}
+
+		desc = { value: value, configurable: c, enumerable: e, writable: w };
+		return !options ? desc : assign(normalizeOpts(options), desc);
+	};
+
+	d.gs = function (dscr, get, set/*, options*/) {
+		var c, e, options, desc;
+		if (typeof dscr !== 'string') {
+			options = set;
+			set = get;
+			get = dscr;
+			dscr = null;
+		} else {
+			options = arguments[3];
+		}
+		if (get == null) {
+			get = undefined;
+		} else if (!isCallable(get)) {
+			options = get;
+			get = set = undefined;
+		} else if (set == null) {
+			set = undefined;
+		} else if (!isCallable(set)) {
+			options = set;
+			set = undefined;
+		}
+		if (dscr == null) {
+			c = true;
+			e = false;
+		} else {
+			c = contains.call(dscr, 'c');
+			e = contains.call(dscr, 'e');
+		}
+
+		desc = { get: get, set: set, configurable: c, enumerable: e };
+		return !options ? desc : assign(normalizeOpts(options), desc);
+	};
+
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	module.exports = __webpack_require__(8)()
+		? Object.assign
+		: __webpack_require__(9);
+
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	module.exports = function () {
+		var assign = Object.assign, obj;
+		if (typeof assign !== 'function') return false;
+		obj = { foo: 'raz' };
+		assign(obj, { bar: 'dwa' }, { trzy: 'trzy' });
+		return (obj.foo + obj.bar + obj.trzy) === 'razdwatrzy';
+	};
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var keys  = __webpack_require__(10)
+	  , value = __webpack_require__(13)
+
+	  , max = Math.max;
+
+	module.exports = function (dest, src/*, …srcn*/) {
+		var error, i, l = max(arguments.length, 2), assign;
+		dest = Object(value(dest));
+		assign = function (key) {
+			try { dest[key] = src[key]; } catch (e) {
+				if (!error) error = e;
+			}
+		};
+		for (i = 1; i < l; ++i) {
+			src = arguments[i];
+			keys(src).forEach(assign);
+		}
+		if (error !== undefined) throw error;
+		return dest;
+	};
+
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	module.exports = __webpack_require__(11)()
+		? Object.keys
+		: __webpack_require__(12);
+
+
+/***/ },
+/* 11 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	module.exports = function () {
+		try {
+			Object.keys('primitive');
+			return true;
+		} catch (e) { return false; }
+	};
+
+
+/***/ },
+/* 12 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var keys = Object.keys;
+
+	module.exports = function (object) {
+		return keys(object == null ? object : Object(object));
+	};
+
+
+/***/ },
+/* 13 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	module.exports = function (value) {
+		if (value == null) throw new TypeError("Cannot use null or undefined");
+		return value;
+	};
+
+
+/***/ },
+/* 14 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var forEach = Array.prototype.forEach, create = Object.create;
+
+	var process = function (src, obj) {
+		var key;
+		for (key in src) obj[key] = src[key];
+	};
+
+	module.exports = function (options/*, …options*/) {
+		var result = create(null);
+		forEach.call(arguments, function (options) {
+			if (options == null) return;
+			process(Object(options), result);
+		});
+		return result;
+	};
+
+
+/***/ },
+/* 15 */
+/***/ function(module, exports) {
+
+	// Deprecated
+
+	'use strict';
+
+	module.exports = function (obj) { return typeof obj === 'function'; };
+
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	module.exports = __webpack_require__(17)()
+		? String.prototype.contains
+		: __webpack_require__(18);
+
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var str = 'razdwatrzy';
+
+	module.exports = function () {
+		if (typeof str.contains !== 'function') return false;
+		return ((str.contains('dwa') === true) && (str.contains('foo') === false));
+	};
+
+
+/***/ },
+/* 18 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var indexOf = String.prototype.indexOf;
+
+	module.exports = function (searchString/*, position*/) {
+		return indexOf.call(this, searchString, arguments[1]) > -1;
+	};
+
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var isSymbol = __webpack_require__(20);
+
+	module.exports = function (value) {
+		if (!isSymbol(value)) throw new TypeError(value + " is not a symbol");
+		return value;
+	};
+
+
+/***/ },
+/* 20 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	module.exports = function (x) {
+		if (!x) return false;
+		if (typeof x === 'symbol') return true;
+		if (!x.constructor) return false;
+		if (x.constructor.name !== 'Symbol') return false;
+		return (x[x.constructor.toStringTag] === 'Symbol');
+	};
+
 
 /***/ }
 /******/ ])

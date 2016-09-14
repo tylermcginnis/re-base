@@ -1,5 +1,5 @@
 module.exports = {
-  entry: "./src/rebase.js",
+  entry: ['./src/rebase.js'],
   output: {
     filename: "dist/bundle.js",
     libraryTarget: 'umd'
@@ -22,4 +22,3 @@ module.exports = {
     ]
   }
 };
-
