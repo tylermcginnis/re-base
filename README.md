@@ -44,7 +44,7 @@ Accepts a firebase configuration object as its only parameter and returns a sing
 ##### Arguments
   1. configuration
     - type: object
-    - properties: 
+    - properties:
       - apiKey (string - required) your firebase API key
       - authDomain (string - required) your firebase auth domain
       - databaseURL (string - required) your firebase database root URL
@@ -339,7 +339,7 @@ addBear(){
     //handle error
   });
   //available immediately, you don't have to wait for the Promise to resolve
-  var generatedKey = immediatelyAvailableReference.key; 
+  var generatedKey = immediatelyAvailableReference.key;
 }
 
 ```
@@ -380,7 +380,7 @@ addBear(){
       }
     }
   });
-  
+
 ```
 
 *Using Promise*
@@ -467,15 +467,15 @@ re-base exposes a few methods of [the Firebase Auth service](https://firebase.go
 ## authWithPassword(auth, authHandler)
 
 #### Purpose
-  Authenticate a user by email and password. 
-  
+  Authenticate a user by email and password.
+
   **_the Email sign-in method needs to be enabled in your firebase console_**
 
 #### Arguments
   1. authentication object
     - type: Object
-    - properties: 
-    	- email (string - required) 
+    - properties:
+    	- email (string - required)
     	- password (string - required)
   2. auth handler
   	- type: function
@@ -507,7 +507,7 @@ base.authWithPassword({
 
 #### Purpose
   Authenticate a user using an OAuth popup
-  
+
   **_the sign in provider you are using needs to be enabled in your firebase console_**
 
 #### Arguments
@@ -547,7 +547,7 @@ base.authWithOAuthPopup('github', authHandler, {scope: ['repos']});
 
 #### Purpose
   Authenticate a user using an OAuth redirect
-  
+
   **_the sign in provider you are using needs to be enabled in your firebase console_**
 
 #### Arguments
@@ -662,18 +662,10 @@ var authHandler = function(error, user) {
   doSomethingWithAuthenticatedUser(user);
 }
 
-//get the access token
-var offAuth = base.onAuth(function(authData) {
-  if (authData) {
-    var token = authData.providerData[authData.provider].accessToken;
-    //add settings for auth provider - optional
-    var settings = {
-        scope: ['repos']
-    };
-    //authenticate with token
-    base.authWithOAuthToken(authData.provider, token, authHandler, settings);
-  }
-});
+// optional settings for auth provider
+var settings = { scope: ['repos'] };
+
+base.authWithOAuthToken('twitter', <yourtoken>, authHandler, settings);
 
 ```
 <br />
@@ -713,7 +705,7 @@ base.authWithCustomToken(<yourtoken>, authHandler);
 ## unauth()
 
 #### Purpose
- Signs out the currently logged in user 
+ Signs out the currently logged in user
 
 #### Arguments
 
@@ -742,7 +734,6 @@ base.unauth()
   1. handler
   	- type: function
   		- arguments:
-  			- error (object or null)
   			- user data (object or null) null if user is not logged in
 
 #### Return Value
@@ -751,9 +742,9 @@ base.unauth()
 
 ```javascript
 
-function authDataCallback(authData) {
-  if (authData) {
-    console.log("User " + authData.uid + " is logged in with " + authData.provider);
+function authDataCallback(user) {
+  if (user) {
+    console.log("User " + user.uid + " is logged in with " + user.providerId);
   } else {
     console.log("User is logged out");
   }
