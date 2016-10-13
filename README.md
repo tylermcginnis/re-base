@@ -322,7 +322,7 @@ addBear(){
     }
   });
   //available immediately, you don't have to wait for the callback to be called
-  var generatedKey = immediatelyAvailableReference.key;
+  var generatedKey = immediatelyAvailableReference.key();
 }
 ```
 
@@ -334,12 +334,12 @@ addBear(){
   var immediatelyAvailableReference = base.push('bears', {
     data: {name: 'George', type: 'Grizzly'}
   }).then(newLocation => {
-    var generatedKey = newLocation.key;
+    var generatedKey = newLocation.key();
   }).catch(err => {
     //handle error
   });
   //available immediately, you don't have to wait for the Promise to resolve
-  var generatedKey = immediatelyAvailableReference.key;
+  var generatedKey = immediatelyAvailableReference.key();
 }
 
 ```
