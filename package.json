@@ -1,6 +1,6 @@
 {
   "name": "re-base",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "A Relay inspired library for building React.js + Firebase applications.",
   "main": "index.js",
   "repository": {
@@ -9,8 +9,10 @@
   },
   "author": "Tyler McGinnis and Jacob Turner",
   "dependencies": {
-    "firebase": "^3.3.0",
-    "es6-symbol": "^3.1.0"
+    "es6-map": "^0.1.4",
+    "es6-symbol": "^3.1.0",
+    "es6-weak-map": "^2.0.1",
+    "firebase": "^3.3.0"
   },
   "devDependencies": {
     "babel": "^5.8.38",
