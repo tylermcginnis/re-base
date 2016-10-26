@@ -10,6 +10,7 @@
   "author": "Tyler McGinnis and Jacob Turner",
   "dependencies": {
     "es6-map": "^0.1.4",
+    "es6-symbol": "^3.1.0",
     "es6-weak-map": "^2.0.1",
     "firebase": "^3.3.0"
   },
