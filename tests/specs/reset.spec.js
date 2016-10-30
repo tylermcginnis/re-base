@@ -30,7 +30,9 @@ describe('reset()', function(){
   });
 
   afterEach(done => {
-    base.delete().then(done);
+    ref.child(testEndpoint).set(null).then(() => {
+      base.delete().then(done);
+    });
   });
 
   it('should remove listeners set by the app', function(done){

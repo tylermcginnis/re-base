@@ -5,7 +5,7 @@ var ReactDOM = require('react-dom');
 var config = require('../fixtures/config');
 var dummyObjData = require('../fixtures/dummyObjData');
 
-describe('removeBinding()', function(){
+fdescribe('removeBinding()', function(){
   var base;
   var ref;
   var testApp;
@@ -30,7 +30,9 @@ describe('removeBinding()', function(){
   });
 
   afterEach(done => {
-    base.delete().then(done);
+    ref.child(testEndpoint).set(null).then(() => {
+      base.delete().then(done);
+    });
   });
 
   it('should remove listeners set by the app', function(done){
