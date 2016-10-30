@@ -170,7 +170,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        storage: app.storage,
 	        database: app.database,
 	        auth: app.auth,
-	        app: _firebase2['default'].app,
+	        app: app,
 	        ServerValue: _firebase2['default'].database.ServerValue,
 	        listenTo: function listenTo(endpoint, options) {
 	          return _libDatabaseBind2['default'].call(this, endpoint, options, 'listenTo', {
@@ -260,7 +260,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          var _this = this;
 
 	          delete apps[this.name];
-	          return this.app(this.name)['delete']().then(function () {
+	          return this.app['delete']().then(function () {
 	            _this.reset();
 	            if (typeof fn === 'function') {
 	              fn.call(null, true);

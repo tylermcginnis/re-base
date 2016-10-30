@@ -784,21 +784,21 @@ base.resetPassword({
 
 ## <a name='firebase-services'>Firebase Services</a>
 
-re-base also exposes the underlying firebase services directly if you need them
+re-base also exposes the firebase services for the current app
 
-Firebase App  [Docs](https://firebase.google.com/docs/reference/js/firebase.app)
+Firebase App [Docs](https://firebase.google.com/docs/reference/js/firebase.app.App)
 
 `base.app`
 
-Firebase Database [Docs](https://firebase.google.com/docs/reference/js/firebase.database)
+Firebase Database [Docs](https://firebase.google.com/docs/reference/js/firebase.app.App#database)
 
 `base.database`
 
-Firebase Storage [Docs](https://firebase.google.com/docs/reference/js/firebase.storage)
+Firebase Storage [Docs](https://firebase.google.com/docs/reference/js/firebase.app.App#storage)
 
 `base.storage`
 
-Firebase Auth [Docs](https://firebase.google.com/docs/reference/js/firebase.auth)
+Firebase Auth [Docs](https://firebase.google.com/docs/reference/js/firebase.app.App#auth)
 
 `base.auth`
 

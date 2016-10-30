@@ -44,7 +44,7 @@ module.exports = (function(){
         storage : app.storage,
         database: app.database,
         auth: app.auth,
-        app: firebase.app,
+        app: app,
         ServerValue: firebase.database.ServerValue,
         listenTo(endpoint, options) {
           return _bind.call(this, endpoint, options, 'listenTo', {
@@ -132,7 +132,7 @@ module.exports = (function(){
         },
         delete(fn) {
           delete apps[this.name];
-          return this.app(this.name).delete().then(() => {
+          return this.app.delete().then(() => {
             this.reset();
             if(typeof fn === 'function'){
               fn.call(null, true);
