@@ -69,6 +69,36 @@ var base = Rebase.createClass({
 
 <br />
 
+##delete(callback)
+
+##### Purpose
+  Deletes the instance of re-base returned from `Rebase.createClass`, removing all the listeners that were added by the instance, and the underlying firebase app that was created.
+  **Note**: _You cannot re-initialize an app of the same name after it has been deleted._
+
+
+#### Arguments
+  1. callback
+   - type: (function - optional)
+   - function that is called when the app has been deleted
+
+#### Example
+
+```javascript
+
+var Rebase = require('re-base');
+var myApp = Rebase.createClass({
+      apiKey: "apiKey",
+      authDomain: "projectId.firebaseapp.com",
+      databaseURL: "https://databaseName.firebaseio.com",
+      storageBucket: "bucket.appspot.com",
+}, 'myApp');
+
+myApp.delete(() => {
+	//app has been deleted
+});
+
+```
+
 ## syncState(endpoint, options)
 
 ##### Purpose
