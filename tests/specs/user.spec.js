@@ -35,7 +35,7 @@ describe('User tests', function(){
         }, function(error, userData) {
           expect(error).toBeNull();
           expect(userData).not.toBeNull();
-          //delete user 
+          //delete user
           userData.delete().then(() => {
             done();
           });
@@ -60,11 +60,12 @@ describe('User tests', function(){
         email: dummyUsers.toDelete.email,
         password: dummyUsers.toDelete.password,
       }, function (error,userData){
+          if(error) return done.fail(error);
           base.resetPassword({
             email: dummyUsers.toDelete.email,
           }, function(error) {
             expect(error).toBeNull();
-            //delete user 
+            //delete user
             userData.delete().then(() => {
               done();
             });
@@ -74,4 +75,3 @@ describe('User tests', function(){
 
   });
 });
-  
