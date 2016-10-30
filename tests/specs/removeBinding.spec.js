@@ -5,7 +5,7 @@ var ReactDOM = require('react-dom');
 var config = require('../fixtures/config');
 var dummyObjData = require('../fixtures/dummyObjData');
 
-fdescribe('removeBinding()', function(){
+describe('removeBinding()', function(){
   var base;
   var ref;
   var testApp;
