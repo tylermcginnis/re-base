@@ -522,7 +522,7 @@ describe('syncState()', function(){
         this.setState({
           users: [{
             name: 'Al',
-            timestamp: base.database.ServerValue.TIMESTAMP
+            timestamp: base.ServerValue.TIMESTAMP
           }]
         })
       }
@@ -560,7 +560,7 @@ describe('syncState()', function(){
         this.setState({
           user: {
             name: 'Al',
-            timestamp: base.database.ServerValue.TIMESTAMP
+            timestamp: base.ServerValue.TIMESTAMP
           }
         });
       }

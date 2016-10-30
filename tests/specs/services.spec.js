@@ -36,8 +36,8 @@ describe('Exposed firebase services', function(){
   describe('database', function(){
     it('database service should be exposed', function(){
       expect(base.database).not.toBeUndefined();
-      expect(base.database.ServerValue).not.toBeUndefined();
-      expect(base.database.ServerValue.TIMESTAMP).not.toBeUndefined();
+      var ref = base.database().ref();
+      expect(ref.child).toEqual(jasmine.any(Function));
     });
   });
 
