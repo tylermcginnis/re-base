@@ -164,7 +164,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var firebaseRefs = new Map();
 	      var firebaseListeners = new Map();
 	      var syncs = new WeakMap();
-	      app.database.ServerValue = _firebase2['default'].database.ServerValue;
 
 	      return {
 	        name: app.name,
@@ -172,6 +171,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        database: app.database,
 	        auth: app.auth,
 	        app: _firebase2['default'].app,
+	        ServerValue: _firebase2['default'].database.ServerValue,
 	        listenTo: function listenTo(endpoint, options) {
 	          return _libDatabaseBind2['default'].call(this, endpoint, options, 'listenTo', {
 	            db: this.database,

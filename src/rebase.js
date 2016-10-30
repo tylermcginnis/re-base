@@ -38,7 +38,6 @@ module.exports = (function(){
       var firebaseRefs = new Map();
       var firebaseListeners = new Map();
       var syncs = new WeakMap();
-      app.database.ServerValue = firebase.database.ServerValue;
 
       return {
         name: app.name,
@@ -46,6 +45,7 @@ module.exports = (function(){
         database: app.database,
         auth: app.auth,
         app: firebase.app,
+        ServerValue: firebase.database.ServerValue,
         listenTo(endpoint, options) {
           return _bind.call(this, endpoint, options, 'listenTo', {
             db: this.database,
