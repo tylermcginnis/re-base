@@ -782,6 +782,21 @@ base.resetPassword({
 
 ```
 
+## <a name='firebase-services'>Firebase Server Timestamp</a>
+
+re-base exposes the `firebase.database.ServerValue.TIMESTAMP` which placeholder value for auto-populating the current timestamp
+
+```javascript
+
+base.update('/people/-KVMgJvxoVHw141-HL5H', {
+  data: {
+    name: 'Chris',
+    registered: base.timestamp
+  }
+});
+
+```
+
 ## <a name='firebase-services'>Firebase Services</a>
 
 re-base also exposes the firebase services for the current app
