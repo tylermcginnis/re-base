@@ -1,7 +1,4 @@
-import {
-  _validateEndpoint,
-  optionValidators
-} from '../validators';
+import { _validateEndpoint, optionValidators } from '../validators';
 
 import {
   _createHash,

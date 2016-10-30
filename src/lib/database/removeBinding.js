@@ -1,6 +1,4 @@
-import {
-  _throwError
-} from '../utils';
+import { _throwError } from '../utils';
 
 export default function _removeBinding({endpoint, method, id, context }, {refs, listeners, syncs}){
   var ref = refs.get(id);
