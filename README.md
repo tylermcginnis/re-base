@@ -36,10 +36,10 @@ $ npm install re-base
 
 #### For more in depth examples of the API, see the [`examples`](examples) folder.
 
-## createClass(firebaseConfig)
+## createClass(firebaseConfig, name)
 
 ##### Purpose
-Accepts a firebase configuration object as its only parameter and returns a singleton with the re-base API.
+Accepts a firebase configuration object as the first parameter and an optional 'name' for the app
 
 ##### Arguments
   1. configuration
@@ -49,9 +49,11 @@ Accepts a firebase configuration object as its only parameter and returns a sing
       - authDomain (string - required) your firebase auth domain
       - databaseURL (string - required) your firebase database root URL
       - storageBucket (string - optional) your firebase storage bucket
+  2. app name
+    - type: string (optional, defaults to '[DEFAULT]')
 
 ##### Return Value
-  An object with the re-base API.
+  An instance of re-base.
 
 ##### Example
 
@@ -62,7 +64,7 @@ var base = Rebase.createClass({
       authDomain: "projectId.firebaseapp.com",
       databaseURL: "https://databaseName.firebaseio.com",
       storageBucket: "bucket.appspot.com",
-});
+}, 'myApp');
 ```
 
 <br />
