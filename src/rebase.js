@@ -45,7 +45,7 @@ module.exports = (function(){
         database: app.database,
         auth: app.auth,
         app: app,
-        ServerValue: firebase.database.ServerValue,
+        timestamp: firebase.database.ServerValue.TIMESTAMP,
         listenTo(endpoint, options) {
           return _bind.call(this, endpoint, options, 'listenTo', {
             db: this.database,

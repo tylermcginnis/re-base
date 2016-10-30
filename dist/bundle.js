@@ -171,7 +171,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        database: app.database,
 	        auth: app.auth,
 	        app: app,
-	        ServerValue: _firebase2['default'].database.ServerValue,
+	        timestamp: _firebase2['default'].database.ServerValue.TIMESTAMP,
 	        listenTo: function listenTo(endpoint, options) {
 	          return _libDatabaseBind2['default'].call(this, endpoint, options, 'listenTo', {
 	            db: this.database,
