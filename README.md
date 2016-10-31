@@ -23,6 +23,7 @@ I spent a few weeks trying to figure out the cleanest way to implement Firebase 
 - [*post*](#postendpoint-options): Add new data to Firebase.
 - [*push*](#pushendpoint-options): Push new child data to Firebase.
 - [*update*](#updateendpoint-options): Update child data using only the referenced properties
+- [*remove*](#removeendpoint-callback): Remove data from Firebase
 - [*removeBinding*](#removebindingref): Remove all of the Firebase listeners when your component unmounts.
 - [*reset*](#reset): Removes all of the Firebase listeners and resets the singleton (for testing purposes).
 
