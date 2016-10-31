@@ -9,7 +9,7 @@ module.exports = function(config) {
       { pattern: 'specs/*.spec.js', watched: false }
     ],
     reporters: ["spec", "failed", "coverage"],
-    browsers: [travis ? 'Firefox' : 'Firefox'],
+    browsers: [travis ? 'Firefox' : 'Chrome'],
     preprocessors: {
     'specs/*.spec.js': ['webpack'],
     },
