@@ -63,108 +63,102 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
 	var _firebase = __webpack_require__(2);
 
 	var _firebase2 = _interopRequireDefault(_firebase);
 
-	//helpers
+	var _utils = __webpack_require__(3);
 
-	var _libUtils = __webpack_require__(3);
+	var _validators = __webpack_require__(4);
 
-	var _libValidators = __webpack_require__(4);
+	var _push2 = __webpack_require__(5);
+
+	var _push3 = _interopRequireDefault(_push2);
+
+	var _fetch2 = __webpack_require__(6);
+
+	var _fetch3 = _interopRequireDefault(_fetch2);
+
+	var _post2 = __webpack_require__(7);
+
+	var _post3 = _interopRequireDefault(_post2);
+
+	var _sync2 = __webpack_require__(8);
+
+	var _sync3 = _interopRequireDefault(_sync2);
+
+	var _bind2 = __webpack_require__(9);
+
+	var _bind3 = _interopRequireDefault(_bind2);
+
+	var _update2 = __webpack_require__(10);
+
+	var _update3 = _interopRequireDefault(_update2);
+
+	var _reset2 = __webpack_require__(11);
+
+	var _reset3 = _interopRequireDefault(_reset2);
+
+	var _removeBinding2 = __webpack_require__(12);
+
+	var _removeBinding3 = _interopRequireDefault(_removeBinding2);
+
+	var _remove2 = __webpack_require__(13);
+
+	var _remove3 = _interopRequireDefault(_remove2);
+
+	var _resetPassword2 = __webpack_require__(14);
+
+	var _resetPassword3 = _interopRequireDefault(_resetPassword2);
+
+	var _createUser2 = __webpack_require__(15);
+
+	var _createUser3 = _interopRequireDefault(_createUser2);
+
+	var _authWithPassword2 = __webpack_require__(16);
+
+	var _authWithPassword3 = _interopRequireDefault(_authWithPassword2);
+
+	var _authWithCustomToken2 = __webpack_require__(17);
+
+	var _authWithCustomToken3 = _interopRequireDefault(_authWithCustomToken2);
+
+	var _authWithOAuthPopup2 = __webpack_require__(18);
+
+	var _authWithOAuthPopup3 = _interopRequireDefault(_authWithOAuthPopup2);
+
+	var _getOAuthRedirectResult2 = __webpack_require__(20);
+
+	var _getOAuthRedirectResult3 = _interopRequireDefault(_getOAuthRedirectResult2);
+
+	var _authWithOAuthToken2 = __webpack_require__(21);
+
+	var _authWithOAuthToken3 = _interopRequireDefault(_authWithOAuthToken2);
+
+	var _onAuth2 = __webpack_require__(22);
+
+	var _onAuth3 = _interopRequireDefault(_onAuth2);
+
+	var _unauth2 = __webpack_require__(23);
+
+	var _unauth3 = _interopRequireDefault(_unauth2);
+
+	var _getAuth2 = __webpack_require__(24);
+
+	var _getAuth3 = _interopRequireDefault(_getAuth2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	//database
 
-	var _libDatabasePush = __webpack_require__(5);
 
-	var _libDatabasePush2 = _interopRequireDefault(_libDatabasePush);
-
-	var _libDatabaseFetch = __webpack_require__(6);
-
-	var _libDatabaseFetch2 = _interopRequireDefault(_libDatabaseFetch);
-
-	var _libDatabasePost = __webpack_require__(7);
-
-	var _libDatabasePost2 = _interopRequireDefault(_libDatabasePost);
-
-	var _libDatabaseSync = __webpack_require__(8);
-
-	var _libDatabaseSync2 = _interopRequireDefault(_libDatabaseSync);
-
-	var _libDatabaseBind = __webpack_require__(9);
-
-	var _libDatabaseBind2 = _interopRequireDefault(_libDatabaseBind);
-
-	var _libDatabaseUpdate = __webpack_require__(10);
-
-	var _libDatabaseUpdate2 = _interopRequireDefault(_libDatabaseUpdate);
-
-	var _libDatabaseReset = __webpack_require__(11);
-
-	var _libDatabaseReset2 = _interopRequireDefault(_libDatabaseReset);
-
-	var _libDatabaseRemoveBinding = __webpack_require__(12);
-
-	var _libDatabaseRemoveBinding2 = _interopRequireDefault(_libDatabaseRemoveBinding);
-
-	var _libDatabaseRemove = __webpack_require__(13);
-
-	var _libDatabaseRemove2 = _interopRequireDefault(_libDatabaseRemove);
-
-	//user
-
-	var _libUserResetPassword = __webpack_require__(14);
-
-	var _libUserResetPassword2 = _interopRequireDefault(_libUserResetPassword);
-
-	var _libUserCreateUser = __webpack_require__(15);
-
-	var _libUserCreateUser2 = _interopRequireDefault(_libUserCreateUser);
-
-	//auth
-
-	var _libAuthAuthWithPassword = __webpack_require__(16);
-
-	var _libAuthAuthWithPassword2 = _interopRequireDefault(_libAuthAuthWithPassword);
-
-	var _libAuthAuthWithCustomToken = __webpack_require__(17);
-
-	var _libAuthAuthWithCustomToken2 = _interopRequireDefault(_libAuthAuthWithCustomToken);
-
-	var _libAuthAuthWithOAuthPopup = __webpack_require__(18);
-
-	var _libAuthAuthWithOAuthPopup2 = _interopRequireDefault(_libAuthAuthWithOAuthPopup);
-
-	var _libAuthGetOAuthRedirectResult = __webpack_require__(20);
-
-	var _libAuthGetOAuthRedirectResult2 = _interopRequireDefault(_libAuthGetOAuthRedirectResult);
-
-	var _libAuthAuthWithOAuthToken = __webpack_require__(21);
-
-	var _libAuthAuthWithOAuthToken2 = _interopRequireDefault(_libAuthAuthWithOAuthToken);
-
-	var _libAuthAuthWithOAuthToken3 = _interopRequireDefault(_libAuthAuthWithOAuthToken);
-
-	var _libAuthOnAuth = __webpack_require__(22);
-
-	var _libAuthOnAuth2 = _interopRequireDefault(_libAuthOnAuth);
-
-	var _libAuthUnauth = __webpack_require__(23);
-
-	var _libAuthUnauth2 = _interopRequireDefault(_libAuthUnauth);
-
-	var _libAuthGetAuth = __webpack_require__(24);
-
-	var _libAuthGetAuth2 = _interopRequireDefault(_libAuthGetAuth);
-
-	module.exports = (function () {
+	//helpers
+	module.exports = function () {
 
 	  var apps = {};
 
 	  function init(app) {
-	    return (function () {
+	    return function () {
 	      var firebaseRefs = new Map();
 	      var firebaseListeners = new Map();
 	      var syncs = new WeakMap();
@@ -175,9 +169,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        database: app.database,
 	        auth: app.auth,
 	        app: app,
-	        timestamp: _firebase2['default'].database.ServerValue.TIMESTAMP,
+	        timestamp: _firebase2.default.database.ServerValue.TIMESTAMP,
 	        listenTo: function listenTo(endpoint, options) {
-	          return _libDatabaseBind2['default'].call(this, endpoint, options, 'listenTo', {
+	          return _bind3.default.call(this, endpoint, options, 'listenTo', {
 	            db: this.database,
 	            refs: firebaseRefs,
 	            listeners: firebaseListeners,
@@ -185,14 +179,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	          });
 	        },
 	        bindToState: function bindToState(endpoint, options) {
-	          return _libDatabaseBind2['default'].call(this, endpoint, options, 'bindToState', {
+	          return _bind3.default.call(this, endpoint, options, 'bindToState', {
 	            db: this.database,
 	            refs: firebaseRefs,
 	            listeners: firebaseListeners
 	          });
 	        },
 	        syncState: function syncState(endpoint, options) {
-	          return _libDatabaseSync2['default'].call(this, endpoint, options, {
+	          return _sync3.default.call(this, endpoint, options, {
 	            db: this.database,
 	            refs: firebaseRefs,
 	            listeners: firebaseListeners,
@@ -200,101 +194,106 @@ return /******/ (function(modules) { // webpackBootstrap
 	          });
 	        },
 	        fetch: function fetch(endpoint, options) {
-	          return (0, _libDatabaseFetch2['default'])(endpoint, options, this.database);
+	          return (0, _fetch3.default)(endpoint, options, this.database);
 	        },
 	        post: function post(endpoint, options) {
-	          return (0, _libDatabasePost2['default'])(endpoint, options, this.database);
+	          return (0, _post3.default)(endpoint, options, this.database);
 	        },
 	        update: function update(endpoint, options) {
-	          return (0, _libDatabaseUpdate2['default'])(endpoint, options, {
+	          return (0, _update3.default)(endpoint, options, {
 	            db: this.database
 	          });
 	        },
 	        push: function push(endpoint, options) {
-	          return (0, _libDatabasePush2['default'])(endpoint, options, this.database);
+	          return (0, _push3.default)(endpoint, options, this.database);
 	        },
 	        removeBinding: function removeBinding(endpoint) {
-	          (0, _libDatabaseRemoveBinding2['default'])(endpoint, {
+	          (0, _removeBinding3.default)(endpoint, {
 	            refs: firebaseRefs,
 	            listeners: firebaseListeners,
 	            syncs: syncs
 	          });
 	        },
 	        remove: function remove(endpoint, fn) {
-	          return (0, _libDatabaseRemove2['default'])(endpoint, this.database, fn);
+	          return (0, _remove3.default)(endpoint, this.database, fn);
 	        },
 	        reset: function reset() {
-	          return (0, _libDatabaseReset2['default'])({
+	          return (0, _reset3.default)({
 	            refs: firebaseRefs,
 	            listeners: firebaseListeners,
 	            syncs: syncs
 	          });
 	        },
 	        authWithPassword: function authWithPassword(credentials, fn) {
-	          return (0, _libAuthAuthWithPassword2['default'])(credentials, fn, this.auth);
+	          return (0, _authWithPassword3.default)(credentials, fn, this.auth);
 	        },
 	        authWithCustomToken: function authWithCustomToken(token, fn) {
-	          return (0, _libAuthAuthWithCustomToken2['default'])(token, fn, this.auth);
+	          return (0, _authWithCustomToken3.default)(token, fn, this.auth);
 	        },
 	        authWithOAuthPopup: function authWithOAuthPopup(provider, fn, settings) {
-	          return (0, _libAuthAuthWithOAuthPopup2['default'])(provider, fn, settings, this.auth);
+	          return (0, _authWithOAuthPopup3.default)(provider, fn, settings, this.auth);
 	        },
 	        authWithOAuthRedirect: function authWithOAuthRedirect(provider, fn, settings) {
-	          return (0, _libAuthAuthWithOAuthToken3['default'])(provider, fn, settings, this.auth);
+	          return (0, _authWithOAuthToken3.default)(provider, fn, settings, this.auth);
 	        },
 	        authWithOAuthToken: function authWithOAuthToken(provider, token, fn, settings) {
-	          return (0, _libAuthAuthWithOAuthToken2['default'])(provider, token, fn, settings, this.auth);
+	          return (0, _authWithOAuthToken3.default)(provider, token, fn, settings, this.auth);
 	        },
 	        authGetOAuthRedirectResult: function authGetOAuthRedirectResult(fn) {
-	          return (0, _libAuthGetOAuthRedirectResult2['default'])(fn, this.auth);
+	          return (0, _getOAuthRedirectResult3.default)(fn, this.auth);
 	        },
 	        onAuth: function onAuth(fn) {
-	          return (0, _libAuthOnAuth2['default'])(fn, this.auth);
+	          return (0, _onAuth3.default)(fn, this.auth);
 	        },
 	        unauth: function unauth(fn) {
-	          return (0, _libAuthUnauth2['default'])(this.auth);
+	          return (0, _unauth3.default)(this.auth);
 	        },
 	        getAuth: function getAuth() {
-	          return (0, _libAuthGetAuth2['default'])(this.auth);
+	          return (0, _getAuth3.default)(this.auth);
 	        },
 	        createUser: function createUser(credentials, fn) {
-	          return (0, _libUserCreateUser2['default'])(credentials, fn, this.auth);
+	          return (0, _createUser3.default)(credentials, fn, this.auth);
 	        },
 	        resetPassword: function resetPassword(credentials, fn) {
-	          return (0, _libUserResetPassword2['default'])(credentials, fn, this.auth);
+	          return (0, _resetPassword3.default)(credentials, fn, this.auth);
 	        },
-	        'delete': function _delete(fn) {
+	        delete: function _delete(fn) {
 	          var _this = this;
 
 	          delete apps[this.name];
-	          return this.app['delete']().then(function () {
+	          return this.app.delete().then(function () {
 	            _this.reset();
 	            if (typeof fn === 'function') {
 	              fn.call(null, true);
 	            } else {
-	              return _firebase2['default'].Promise.resolve(true);
+	              return _firebase2.default.Promise.resolve(true);
 	            }
 	          });
 	        }
 	      };
-	    })();
+	    }();
 	  };
 
 	  return {
 	    createClass: function createClass(config) {
-	      var name = arguments.length <= 1 || arguments[1] === undefined ? '[DEFAULT]' : arguments[1];
+	      var name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '[DEFAULT]';
 
 	      if (typeof apps[name] !== 'undefined') {
 	        return apps[name];
 	      } else {
-	        (0, _libValidators._validateConfig)(config);
-	        var app = _firebase2['default'].initializeApp(config, name);
+	        (0, _validators._validateConfig)(config);
+	        var app = _firebase2.default.initializeApp(config, name);
 	      }
 	      apps[name] = init(app);
 	      return apps[name];
 	    }
 	  };
-	})();
+	}();
+
+	//auth
+
+
+	//user
 
 /***/ },
 /* 2 */
@@ -308,7 +307,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
@@ -458,9 +457,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports._validateEndpoint = exports._validateConfig = exports.optionValidators = undefined;
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	var _utils = __webpack_require__(3);
 
@@ -530,7 +532,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _validateConfig = function _validateConfig(config) {
 	  var defaultError = 'Rebase.createClass failed.';
 	  var errorMsg;
-	  if (typeof config !== 'object') {
+	  if ((typeof config === 'undefined' ? 'undefined' : _typeof(config)) !== 'object') {
 	    errorMsg = defaultError + ' to migrate from 2.x.x to 3.x.x, the config must be an object. See: https://firebase.google.com/docs/web/setup#add_firebase_to_your_app';
 	  } else if (!config || arguments.length > 1) {
 	    errorMsg = defaultError + ' expects 1 argument.';
@@ -551,18 +553,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports['default'] = _push;
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	exports.default = _push;
 
 	var _firebase = __webpack_require__(2);
 
 	var _firebase2 = _interopRequireDefault(_firebase);
 
 	var _validators = __webpack_require__(4);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _push(endpoint, options, db) {
 	  (0, _validators._validateEndpoint)(endpoint);
@@ -575,10 +577,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    returnEndpoint = ref.push(options.data);
 	  }
 	  return returnEndpoint;
-	}
-
-	;
-	module.exports = exports['default'];
+	};
 
 /***/ },
 /* 6 */
@@ -586,10 +585,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports['default'] = _fetch;
+	exports.default = _fetch;
 
 	var _validators = __webpack_require__(4);
 
@@ -615,10 +614,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return firebase.Promise.reject(err);
 	    }
 	  });
-	}
-
-	;
-	module.exports = exports['default'];
+	};
 
 /***/ },
 /* 7 */
@@ -626,10 +622,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports['default'] = _post;
+	exports.default = _post;
 
 	var _firebase = __webpack_require__(2);
 
@@ -644,10 +640,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  } else {
 	    return ref.set(options.data);
 	  }
-	}
-
-	;
-	module.exports = exports['default'];
+	};
 
 /***/ },
 /* 8 */
@@ -655,10 +648,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports['default'] = _sync;
+	exports.default = _sync;
 
 	var _validators = __webpack_require__(4);
 
@@ -707,10 +700,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	  };
 	  return (0, _utils._returnRef)(endpoint, 'syncState', id, options.context);
-	}
-
-	;
-	module.exports = exports['default'];
+	};
 
 /***/ },
 /* 9 */
@@ -718,10 +708,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports['default'] = _bind;
+	exports.default = _bind;
 
 	var _validators = __webpack_require__(4);
 
@@ -740,10 +730,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  (0, _utils._firebaseRefsMixin)(id, ref, state.refs);
 	  (0, _utils._addListener)(id, invoker, options, ref, state.listeners);
 	  return (0, _utils._returnRef)(endpoint, invoker, id, options.context);
-	}
-
-	;
-	module.exports = exports['default'];
+	};
 
 /***/ },
 /* 10 */
@@ -751,10 +738,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports['default'] = _update;
+	exports.default = _update;
 
 	var _validators = __webpack_require__(4);
 
@@ -767,10 +754,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  } else {
 	    return ref.update(options.data);
 	  }
-	}
-
-	;
-	module.exports = exports['default'];
+	};
 
 /***/ },
 /* 11 */
@@ -778,14 +762,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
-	var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-	exports['default'] = _reset;
-
+	exports.default = _reset;
 	function _reset(state) {
 	  var _iteratorNormalCompletion = true;
 	  var _didIteratorError = false;
@@ -793,10 +776,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  try {
 	    for (var _iterator = state.refs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	      var _step$value = _slicedToArray(_step.value, 2);
-
-	      var id = _step$value[0];
-	      var ref = _step$value[1];
+	      var _step$value = _slicedToArray(_step.value, 2),
+	          id = _step$value[0],
+	          ref = _step$value[1];
 
 	      ref.off('value', state.listeners.get(id));
 	    }
@@ -805,8 +787,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _iteratorError = err;
 	  } finally {
 	    try {
-	      if (!_iteratorNormalCompletion && _iterator['return']) {
-	        _iterator['return']();
+	      if (!_iteratorNormalCompletion && _iterator.return) {
+	        _iterator.return();
 	      }
 	    } finally {
 	      if (_didIteratorError) {
@@ -819,10 +801,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  state.refs = new Map();
 	  state.syncs = new WeakMap();
 	  return null;
-	}
-
-	;
-	module.exports = exports['default'];
+	};
 
 /***/ },
 /* 12 */
@@ -833,18 +812,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports["default"] = _removeBinding;
+	exports.default = _removeBinding;
 
 	var _utils = __webpack_require__(3);
 
 	function _removeBinding(_ref, _ref2) {
-	  var endpoint = _ref.endpoint;
-	  var method = _ref.method;
-	  var id = _ref.id;
-	  var context = _ref.context;
-	  var refs = _ref2.refs;
-	  var listeners = _ref2.listeners;
-	  var syncs = _ref2.syncs;
+	  var endpoint = _ref.endpoint,
+	      method = _ref.method,
+	      id = _ref.id,
+	      context = _ref.context;
+	  var refs = _ref2.refs,
+	      listeners = _ref2.listeners,
+	      syncs = _ref2.syncs;
 
 	  var ref = refs.get(id);
 	  var listener = listeners.get(id);
@@ -853,8 +832,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    (0, _utils._throwError)(errorMsg, "UNBOUND_ENDPOINT_VARIABLE");
 	  }
 	  ref.off('value', listener);
-	  refs["delete"](id);
-	  listeners["delete"](id);
+	  refs.delete(id);
+	  listeners.delete(id);
 	  var currentSyncs = syncs.get(context);
 	  if (currentSyncs && currentSyncs.length > 0) {
 	    var idx = currentSyncs.findIndex(function (item, index) {
@@ -865,10 +844,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      syncs.set(context, currentSyncs);
 	    }
 	  }
-	}
-
-	;
-	module.exports = exports["default"];
+	};
 
 /***/ },
 /* 13 */
@@ -880,11 +856,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
-	exports["default"] = function (endpoint, db, fn) {
+	exports.default = function (endpoint, db, fn) {
 	  return db().ref().child(endpoint).remove(fn);
 	};
-
-	module.exports = exports["default"];
 
 /***/ },
 /* 14 */
@@ -895,20 +869,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	   value: true
 	});
-	exports["default"] = _resetPassword;
-
+	exports.default = _resetPassword;
 	function _resetPassword(credentials, fn, auth) {
 	   var email = credentials.email;
 
 	   return auth().sendPasswordResetEmail(email).then(function () {
 	      return fn(null);
-	   })["catch"](function (error) {
+	   }).catch(function (error) {
 	      return fn(error);
 	   });
-	}
-
-	;
-	module.exports = exports["default"];
+	};
 
 /***/ },
 /* 15 */
@@ -919,21 +889,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports["default"] = _createUser;
-
+	exports.default = _createUser;
 	function _createUser(credentials, fn, auth) {
-	  var email = credentials.email;
-	  var password = credentials.password;
+	  var email = credentials.email,
+	      password = credentials.password;
 
 	  return auth().createUserWithEmailAndPassword(email, password).then(function (authData) {
 	    return fn(null, authData);
-	  })["catch"](function (err) {
+	  }).catch(function (err) {
 	    return fn(err);
 	  });
-	}
-
-	;
-	module.exports = exports["default"];
+	};
 
 /***/ },
 /* 16 */
@@ -944,20 +910,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports["default"] = _authWithPassword;
-
+	exports.default = _authWithPassword;
 	function _authWithPassword(credentials, fn, auth) {
-	  var email = credentials.email;
-	  var password = credentials.password;
+	  var email = credentials.email,
+	      password = credentials.password;
 
 	  return auth().signInWithEmailAndPassword(email, password).then(function (authData) {
 	    return fn(null, authData);
-	  })["catch"](function (err) {
+	  }).catch(function (err) {
 	    return fn(err);
 	  });
 	}
-
-	module.exports = exports["default"];
 
 /***/ },
 /* 17 */
@@ -968,17 +931,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports["default"] = _authWithCustomToken;
-
+	exports.default = _authWithCustomToken;
 	function _authWithCustomToken(token, fn, auth) {
 	  return auth().signInWithCustomToken(token).then(function (user) {
 	    return fn(null, user);
-	  })["catch"](function (error) {
+	  }).catch(function (error) {
 	    return fn(error);
 	  });
 	}
-
-	module.exports = exports["default"];
 
 /***/ },
 /* 18 */
@@ -986,28 +946,26 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports['default'] = _authWithOAuthPopup;
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	exports.default = _authWithOAuthPopup;
 
 	var _getAuthProvider2 = __webpack_require__(19);
 
 	var _getAuthProvider3 = _interopRequireDefault(_getAuthProvider2);
 
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 	function _authWithOAuthPopup(provider, fn, settings, auth) {
 	    settings = settings || {};
-	    var authProvider = (0, _getAuthProvider3['default'])(provider, settings);
+	    var authProvider = (0, _getAuthProvider3.default)(provider, settings);
 	    return auth().signInWithPopup(authProvider).then(function (authData) {
 	        return fn(null, authData);
-	    })['catch'](function (error) {
+	    }).catch(function (error) {
 	        return fn(error);
 	    });
 	}
-
-	module.exports = exports['default'];
 
 /***/ },
 /* 19 */
@@ -1015,10 +973,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports['default'] = _getAuthProvider;
+	exports.default = _getAuthProvider;
 
 	var _utils = __webpack_require__(3);
 
@@ -1070,10 +1028,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      (0, _utils._throwError)('Expected auth provider requested. Available auth providers: facebook,twitter,github, google', 'UNKNOWN AUTH PROVIDER');
 	      break;
 	  }
-	}
-
-	;
-	module.exports = exports['default'];
+	};
 
 /***/ },
 /* 20 */
@@ -1084,17 +1039,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports["default"] = _getOAuthRedirectResult;
-
+	exports.default = _getOAuthRedirectResult;
 	function _getOAuthRedirectResult(fn, auth) {
 	    return auth().getRedirectResult().then(function (user) {
 	        return fn(null, user);
-	    })["catch"](function (error) {
+	    }).catch(function (error) {
 	        return fn(error);
 	    });
 	}
-
-	module.exports = exports["default"];
 
 /***/ },
 /* 21 */
@@ -1105,9 +1057,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports["default"] = _authWithOAuthToken;
+	exports.default = _authWithOAuthToken;
 
-	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 	function _authWithOAuthToken(provider, token, fn, settings, auth) {
 	    settings = settings || {};
@@ -1115,12 +1067,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var credential = authProvider.credential.apply(authProvider, [token].concat(_toConsumableArray(settings.providerOptions)));
 	    return auth().signInWithCredential(credential).then(function (authData) {
 	        return fn(null, authData);
-	    })["catch"](function (error) {
+	    }).catch(function (error) {
 	        return fn(error);
 	    });
 	}
-
-	module.exports = exports["default"];
 
 /***/ },
 /* 22 */
@@ -1131,13 +1081,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports["default"] = _onAuth;
-
+	exports.default = _onAuth;
 	function _onAuth(fn, auth) {
 	  return auth().onAuthStateChanged(fn);
 	}
-
-	module.exports = exports["default"];
 
 /***/ },
 /* 23 */
@@ -1148,13 +1095,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports["default"] = _unauth;
-
+	exports.default = _unauth;
 	function _unauth(auth) {
 	  return auth().signOut();
 	}
-
-	module.exports = exports["default"];
 
 /***/ },
 /* 24 */
@@ -1165,13 +1109,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports["default"] = _getAuth;
-
+	exports.default = _getAuth;
 	function _getAuth(auth) {
 	  return auth().currentUser;
 	}
-
-	module.exports = exports["default"];
 
 /***/ }
 /******/ ])

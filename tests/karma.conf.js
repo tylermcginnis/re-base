@@ -9,7 +9,7 @@ module.exports = function(config) {
       { pattern: 'specs/*.spec.js', watched: false }
     ],
     reporters: ["spec", "failed", "coverage"],
-    browsers: [travis ? 'Firefox' : 'Chrome'],
+    browsers: [travis ? 'Firefox' : 'Firefox'],
     preprocessors: {
     'specs/*.spec.js': ['webpack'],
     },
@@ -19,7 +19,10 @@ module.exports = function(config) {
           {
             test: /\.js$/,
             loader: 'babel',
-            exclude: /node_modules/
+            exclude: /node_modules/,
+            query: {
+              presets: ['es2015', 'react']
+            }
           }
         ]
       }
