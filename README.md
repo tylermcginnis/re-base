@@ -40,7 +40,7 @@ $ npm install re-base
 ## createClass(firebaseConfig, name)
 
 ##### Purpose
-Accepts a firebase configuration object as the first parameter and an optional 'name' for the app
+Accepts a firebase configuration object as the first argument and an optional 'name' for the app as the second
 
 ##### Arguments
   1. configuration
@@ -50,6 +50,7 @@ Accepts a firebase configuration object as the first parameter and an optional '
       - authDomain (string - required) your firebase auth domain
       - databaseURL (string - required) your firebase database root URL
       - storageBucket (string - optional) your firebase storage bucket
+      - messagingSenderId: (string - optional) your firebase messaging sender id
   2. app name
     - type: string (optional, defaults to '[DEFAULT]')
 
@@ -61,10 +62,11 @@ Accepts a firebase configuration object as the first parameter and an optional '
 ```javascript
 var Rebase = require('re-base');
 var base = Rebase.createClass({
-  	  apiKey: "apiKey",
+      apiKey: "apiKey",
       authDomain: "projectId.firebaseapp.com",
       databaseURL: "https://databaseName.firebaseio.com",
       storageBucket: "bucket.appspot.com",
+      messagingSenderId: "xxxxxxxxxxxxxx"
 }, 'myApp');
 ```
 
@@ -890,6 +892,10 @@ Firebase Storage [Docs](https://firebase.google.com/docs/reference/js/firebase.a
 Firebase Auth [Docs](https://firebase.google.com/docs/reference/js/firebase.app.App#auth)
 
 `base.auth`
+
+Firebase Messaging [Docs](https://firebase.google.com/docs/reference/js/firebase.messaging)
+
+`base.messaging`
 
 ## <a name='upgrading'>Upgrading to re-base 2.x from 1.x</a>
 

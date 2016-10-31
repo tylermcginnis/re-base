@@ -47,4 +47,10 @@ describe('Exposed firebase services', function(){
     });
   });
 
+  describe('messaging', function(){
+    it('messaging service should be exposed', function(){
+      expect(base.messaging().onMessage).toEqual(jasmine.any(Function));
+    });
+  });
+
 });

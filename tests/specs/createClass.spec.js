@@ -33,6 +33,7 @@ describe('createClass()', function(){
     expect(base.app).toEqual(jasmine.any(Object));
     expect(base.database).toEqual(jasmine.any(Function));
     expect(base.auth).toEqual(jasmine.any(Function));
+    expect(base.messaging).toEqual(jasmine.any(Function));
   });
 
   it('createClass() returns the default app if it\'s already been initialized', function(){

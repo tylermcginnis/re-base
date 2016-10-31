@@ -45,6 +45,7 @@ module.exports = (function(){
         storage : app.storage,
         database: app.database,
         auth: app.auth,
+        messaging: app.messaging,
         app: app,
         timestamp: firebase.database.ServerValue.TIMESTAMP,
         listenTo(endpoint, options) {

@@ -168,6 +168,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        storage: app.storage,
 	        database: app.database,
 	        auth: app.auth,
+	        messaging: app.messaging,
 	        app: app,
 	        timestamp: _firebase2.default.database.ServerValue.TIMESTAMP,
 	        listenTo: function listenTo(endpoint, options) {
