@@ -35,5 +35,6 @@
     "build": "webpack",
     "test": "karma start tests/karma.conf.js",
     "travis": "./node_modules/karma/bin/karma start tests/karma.conf.js"
-  }
+  },
+  "license": "MIT"
 }
