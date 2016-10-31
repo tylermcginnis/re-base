@@ -109,49 +109,53 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _libDatabaseRemoveBinding2 = _interopRequireDefault(_libDatabaseRemoveBinding);
 
+	var _libDatabaseRemove = __webpack_require__(13);
+
+	var _libDatabaseRemove2 = _interopRequireDefault(_libDatabaseRemove);
+
 	//user
 
-	var _libUserResetPassword = __webpack_require__(13);
+	var _libUserResetPassword = __webpack_require__(14);
 
 	var _libUserResetPassword2 = _interopRequireDefault(_libUserResetPassword);
 
-	var _libUserCreateUser = __webpack_require__(14);
+	var _libUserCreateUser = __webpack_require__(15);
 
 	var _libUserCreateUser2 = _interopRequireDefault(_libUserCreateUser);
 
 	//auth
 
-	var _libAuthAuthWithPassword = __webpack_require__(15);
+	var _libAuthAuthWithPassword = __webpack_require__(16);
 
 	var _libAuthAuthWithPassword2 = _interopRequireDefault(_libAuthAuthWithPassword);
 
-	var _libAuthAuthWithCustomToken = __webpack_require__(16);
+	var _libAuthAuthWithCustomToken = __webpack_require__(17);
 
 	var _libAuthAuthWithCustomToken2 = _interopRequireDefault(_libAuthAuthWithCustomToken);
 
-	var _libAuthAuthWithOAuthPopup = __webpack_require__(17);
+	var _libAuthAuthWithOAuthPopup = __webpack_require__(18);
 
 	var _libAuthAuthWithOAuthPopup2 = _interopRequireDefault(_libAuthAuthWithOAuthPopup);
 
-	var _libAuthGetOAuthRedirectResult = __webpack_require__(19);
+	var _libAuthGetOAuthRedirectResult = __webpack_require__(20);
 
 	var _libAuthGetOAuthRedirectResult2 = _interopRequireDefault(_libAuthGetOAuthRedirectResult);
 
-	var _libAuthAuthWithOAuthToken = __webpack_require__(20);
+	var _libAuthAuthWithOAuthToken = __webpack_require__(21);
 
 	var _libAuthAuthWithOAuthToken2 = _interopRequireDefault(_libAuthAuthWithOAuthToken);
 
 	var _libAuthAuthWithOAuthToken3 = _interopRequireDefault(_libAuthAuthWithOAuthToken);
 
-	var _libAuthOnAuth = __webpack_require__(21);
+	var _libAuthOnAuth = __webpack_require__(22);
 
 	var _libAuthOnAuth2 = _interopRequireDefault(_libAuthOnAuth);
 
-	var _libAuthUnauth = __webpack_require__(22);
+	var _libAuthUnauth = __webpack_require__(23);
 
 	var _libAuthUnauth2 = _interopRequireDefault(_libAuthUnauth);
 
-	var _libAuthGetAuth = __webpack_require__(23);
+	var _libAuthGetAuth = __webpack_require__(24);
 
 	var _libAuthGetAuth2 = _interopRequireDefault(_libAuthGetAuth);
 
@@ -215,6 +219,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            listeners: firebaseListeners,
 	            syncs: syncs
 	          });
+	        },
+	        remove: function remove(endpoint, fn) {
+	          return (0, _libDatabaseRemove2['default'])(endpoint, this.database, fn);
 	        },
 	        reset: function reset() {
 	          return (0, _libDatabaseReset2['default'])({
@@ -870,6 +877,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	exports["default"] = function (endpoint, db, fn) {
+	  return db().ref().child(endpoint).remove(fn);
+	};
+
+	module.exports = exports["default"];
+
+/***/ },
+/* 14 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
 	   value: true
 	});
 	exports["default"] = _resetPassword;
@@ -888,7 +911,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -913,7 +936,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -937,7 +960,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -958,7 +981,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -970,7 +993,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _getAuthProvider2 = __webpack_require__(18);
+	var _getAuthProvider2 = __webpack_require__(19);
 
 	var _getAuthProvider3 = _interopRequireDefault(_getAuthProvider2);
 
@@ -987,7 +1010,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1053,7 +1076,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1074,7 +1097,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1100,7 +1123,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1117,7 +1140,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1134,7 +1157,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports) {
 
 	"use strict";

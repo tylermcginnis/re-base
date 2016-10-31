@@ -13,6 +13,7 @@ import _bind from './lib/database/bind';
 import _update from './lib/database/update';
 import _reset from './lib/database/reset';
 import _removeBinding from './lib/database/removeBinding';
+import _remove from './lib/database/remove';
 
 //user
 import _resetPassword from './lib/user/resetPassword';
@@ -89,6 +90,9 @@ module.exports = (function(){
             listeners: firebaseListeners,
             syncs: syncs
           });
+        },
+        remove(endpoint, fn){
+          return _remove(endpoint, this.database, fn);
         },
         reset() {
           return _reset({

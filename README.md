@@ -430,6 +430,49 @@ addBear(){
 
 <br />
 
+## remove(endpoint, callback)
+
+#### Purpose
+  Allows you to delete all data at the endpoint location
+
+#### Arguments
+  1. endpoint
+    - type: string
+    - The relative Firebase endpoint that you'd like to delete data from
+  2. callback
+    - type: (function - optional)
+    - A callback that will get invoked once the data is successfully removed Firebase. If there is an error, it will be the only argument to this function.
+
+#### Return Value
+  A Firebase [Promise](https://firebase.google.com/docs/reference/js/firebase.Promise) which resolves when the deletion is complete and rejects if there is an error
+
+#### Example
+
+*Using callback*
+
+```javascript
+
+  base.remove('bears', function(err){
+    if(!err){
+      Router.transitionTo('dashboard');
+    }
+  });
+
+```
+
+*Using Promise*
+
+```javascript
+  base.remove('bears').then(() => {
+    Router.transitionTo('dashboard');
+  }).catch(error => {
+    //handle error
+  });
+
+```
+
+<br />
+
 ## removeBinding(ref)
 
 #### Purpose
