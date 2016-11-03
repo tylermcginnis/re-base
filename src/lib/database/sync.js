@@ -23,7 +23,7 @@ export default function _sync(endpoint, options, state){
   }
   options.reactSetState = _sync.reactSetState;
 
-  var ref = state.db().ref(endpoint);
+  var ref = state.db.ref(endpoint);
   var id = _createHash(endpoint, 'syncState');
   _firebaseRefsMixin(id, ref, state.refs);
   _addListener(id, 'syncState', options, ref, state.listeners);

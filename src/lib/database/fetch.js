@@ -5,7 +5,7 @@ export default function _fetch(endpoint, options, db){
   _validateEndpoint(endpoint);
   optionValidators.context(options);
   options.queries && optionValidators.query(options);
-  var ref = db().ref(endpoint);
+  var ref = db.ref(endpoint);
   ref = _addQueries(ref, options.queries);
   return ref.once('value').then(snapshot => {
     var data = options.asArray === true ? _toArray(snapshot) : snapshot.val();

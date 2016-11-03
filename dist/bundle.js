@@ -165,15 +165,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      return {
 	        name: app.name,
-	        storage: app.storage,
-	        database: app.database,
-	        auth: app.auth,
-	        messaging: app.messaging,
-	        app: app,
-	        timestamp: _firebase2.default.database.ServerValue.TIMESTAMP,
+	        storage: _firebase2.default.storage,
+	        database: _firebase2.default.database,
+	        auth: _firebase2.default.auth,
+	        messaging: _firebase2.default.messaging,
+	        app: _firebase2.default.app,
+	        initializedApp: app,
 	        listenTo: function listenTo(endpoint, options) {
 	          return _bind3.default.call(this, endpoint, options, 'listenTo', {
-	            db: this.database,
+	            db: this.database(this.initializedApp),
 	            refs: firebaseRefs,
 	            listeners: firebaseListeners,
 	            syncs: syncs
@@ -181,32 +181,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	        },
 	        bindToState: function bindToState(endpoint, options) {
 	          return _bind3.default.call(this, endpoint, options, 'bindToState', {
-	            db: this.database,
+	            db: this.database(this.initializedApp),
 	            refs: firebaseRefs,
 	            listeners: firebaseListeners
 	          });
 	        },
 	        syncState: function syncState(endpoint, options) {
 	          return _sync3.default.call(this, endpoint, options, {
-	            db: this.database,
+	            db: this.database(this.initializedApp),
 	            refs: firebaseRefs,
 	            listeners: firebaseListeners,
 	            syncs: syncs
 	          });
 	        },
 	        fetch: function fetch(endpoint, options) {
-	          return (0, _fetch3.default)(endpoint, options, this.database);
+	          return (0, _fetch3.default)(endpoint, options, this.database(this.initializedApp));
 	        },
 	        post: function post(endpoint, options) {
-	          return (0, _post3.default)(endpoint, options, this.database);
+	          return (0, _post3.default)(endpoint, options, this.database(this.initializedApp));
 	        },
 	        update: function update(endpoint, options) {
 	          return (0, _update3.default)(endpoint, options, {
-	            db: this.database
+	            db: this.database(this.initializedApp)
 	          });
 	        },
 	        push: function push(endpoint, options) {
-	          return (0, _push3.default)(endpoint, options, this.database);
+	          return (0, _push3.default)(endpoint, options, this.database(this.initializedApp));
 	        },
 	        removeBinding: function removeBinding(endpoint) {
 	          (0, _removeBinding3.default)(endpoint, {
@@ -216,7 +216,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          });
 	        },
 	        remove: function remove(endpoint, fn) {
-	          return (0, _remove3.default)(endpoint, this.database, fn);
+	          return (0, _remove3.default)(endpoint, this.database(this.initializedApp), fn);
 	        },
 	        reset: function reset() {
 	          return (0, _reset3.default)({
@@ -226,43 +226,43 @@ return /******/ (function(modules) { // webpackBootstrap
 	          });
 	        },
 	        authWithPassword: function authWithPassword(credentials, fn) {
-	          return (0, _authWithPassword3.default)(credentials, fn, this.auth);
+	          return (0, _authWithPassword3.default)(credentials, fn, this.auth(this.initializedApp));
 	        },
 	        authWithCustomToken: function authWithCustomToken(token, fn) {
-	          return (0, _authWithCustomToken3.default)(token, fn, this.auth);
+	          return (0, _authWithCustomToken3.default)(token, fn, this.auth(this.initializedApp));
 	        },
 	        authWithOAuthPopup: function authWithOAuthPopup(provider, fn, settings) {
-	          return (0, _authWithOAuthPopup3.default)(provider, fn, settings, this.auth);
+	          return (0, _authWithOAuthPopup3.default)(provider, fn, settings, this.auth(this.initializedApp));
 	        },
 	        authWithOAuthRedirect: function authWithOAuthRedirect(provider, fn, settings) {
-	          return (0, _authWithOAuthToken3.default)(provider, fn, settings, this.auth);
+	          return (0, _authWithOAuthToken3.default)(provider, fn, settings, this.auth(this.initializedApp));
 	        },
 	        authWithOAuthToken: function authWithOAuthToken(provider, token, fn, settings) {
-	          return (0, _authWithOAuthToken3.default)(provider, token, fn, settings, this.auth);
+	          return (0, _authWithOAuthToken3.default)(provider, token, fn, settings, this.auth(this.initializedApp));
 	        },
 	        authGetOAuthRedirectResult: function authGetOAuthRedirectResult(fn) {
-	          return (0, _getOAuthRedirectResult3.default)(fn, this.auth);
+	          return (0, _getOAuthRedirectResult3.default)(fn, this.auth(this.initializedApp));
 	        },
 	        onAuth: function onAuth(fn) {
-	          return (0, _onAuth3.default)(fn, this.auth);
+	          return (0, _onAuth3.default)(fn, this.auth(this.initializedApp));
 	        },
 	        unauth: function unauth(fn) {
-	          return (0, _unauth3.default)(this.auth);
+	          return (0, _unauth3.default)(this.auth(this.initializedApp));
 	        },
 	        getAuth: function getAuth() {
-	          return (0, _getAuth3.default)(this.auth);
+	          return (0, _getAuth3.default)(this.auth(this.initializedApp));
 	        },
 	        createUser: function createUser(credentials, fn) {
-	          return (0, _createUser3.default)(credentials, fn, this.auth);
+	          return (0, _createUser3.default)(credentials, fn, this.auth(this.initializedApp));
 	        },
 	        resetPassword: function resetPassword(credentials, fn) {
-	          return (0, _resetPassword3.default)(credentials, fn, this.auth);
+	          return (0, _resetPassword3.default)(credentials, fn, this.auth(this.initializedApp));
 	        },
 	        delete: function _delete(fn) {
 	          var _this = this;
 
 	          delete apps[this.name];
-	          return this.app.delete().then(function () {
+	          return this.initializedApp.delete().then(function () {
 	            _this.reset();
 	            if (typeof fn === 'function') {
 	              fn.call(null, true);
@@ -570,7 +570,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _push(endpoint, options, db) {
 	  (0, _validators._validateEndpoint)(endpoint);
 	  _validators.optionValidators.data(options);
-	  var ref = db().ref(endpoint);
+	  var ref = db.ref(endpoint);
 	  var returnEndpoint;
 	  if (options.then) {
 	    returnEndpoint = ref.push(options.data, options.then);
@@ -599,7 +599,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  (0, _validators._validateEndpoint)(endpoint);
 	  _validators.optionValidators.context(options);
 	  options.queries && _validators.optionValidators.query(options);
-	  var ref = db().ref(endpoint);
+	  var ref = db.ref(endpoint);
 	  ref = (0, _utils._addQueries)(ref, options.queries);
 	  return ref.once('value').then(function (snapshot) {
 	    var data = options.asArray === true ? (0, _utils._toArray)(snapshot) : snapshot.val();
@@ -635,7 +635,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _post(endpoint, options, db) {
 	  (0, _validators._validateEndpoint)(endpoint);
 	  _validators.optionValidators.data(options);
-	  var ref = db().ref(endpoint);
+	  var ref = db.ref(endpoint);
 	  if (options.then) {
 	    return ref.set(options.data, options.then);
 	  } else {
@@ -672,7 +672,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	  options.reactSetState = _sync.reactSetState;
 
-	  var ref = state.db().ref(endpoint);
+	  var ref = state.db.ref(endpoint);
 	  var id = (0, _utils._createHash)(endpoint, 'syncState');
 	  (0, _utils._firebaseRefsMixin)(id, ref, state.refs);
 	  (0, _utils._addListener)(id, 'syncState', options, ref, state.listeners);
@@ -731,7 +731,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  options.then && (options.then.called = false);
 
 	  var id = (0, _utils._createHash)(endpoint, invoker);
-	  var ref = state.db().ref(endpoint);
+	  var ref = state.db.ref(endpoint);
 	  (0, _utils._firebaseRefsMixin)(id, ref, state.refs);
 	  (0, _utils._addListener)(id, invoker, options, ref, state.listeners);
 	  return (0, _utils._returnRef)(endpoint, invoker, id, options.context);
@@ -753,7 +753,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _update(endpoint, options, state) {
 	  (0, _validators._validateEndpoint)(endpoint);
 	  _validators.optionValidators.data(options);
-	  var ref = state.db().ref(endpoint);
+	  var ref = state.db.ref(endpoint);
 	  if (options.then) {
 	    return ref.update(options.data, options.then);
 	  } else {
@@ -835,7 +835,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 	exports.default = function (endpoint, db, fn) {
-	  return db().ref().child(endpoint).remove(fn);
+	  return db.ref().child(endpoint).remove(fn);
 	};
 
 /***/ },
@@ -851,7 +851,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _resetPassword(credentials, fn, auth) {
 	   var email = credentials.email;
 
-	   return auth().sendPasswordResetEmail(email).then(function () {
+	   return auth.sendPasswordResetEmail(email).then(function () {
 	      return fn(null);
 	   }).catch(function (error) {
 	      return fn(error);
@@ -872,7 +872,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var email = credentials.email,
 	      password = credentials.password;
 
-	  return auth().createUserWithEmailAndPassword(email, password).then(function (authData) {
+	  return auth.createUserWithEmailAndPassword(email, password).then(function (authData) {
 	    return fn(null, authData);
 	  }).catch(function (err) {
 	    return fn(err);
@@ -893,7 +893,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var email = credentials.email,
 	      password = credentials.password;
 
-	  return auth().signInWithEmailAndPassword(email, password).then(function (authData) {
+	  return auth.signInWithEmailAndPassword(email, password).then(function (authData) {
 	    return fn(null, authData);
 	  }).catch(function (err) {
 	    return fn(err);
@@ -911,7 +911,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _authWithCustomToken;
 	function _authWithCustomToken(token, fn, auth) {
-	  return auth().signInWithCustomToken(token).then(function (user) {
+	  return auth.signInWithCustomToken(token).then(function (user) {
 	    return fn(null, user);
 	  }).catch(function (error) {
 	    return fn(error);
@@ -938,7 +938,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _authWithOAuthPopup(provider, fn, settings, auth) {
 	    settings = settings || {};
 	    var authProvider = (0, _getAuthProvider3.default)(provider, settings);
-	    return auth().signInWithPopup(authProvider).then(function (authData) {
+	    return auth.signInWithPopup(authProvider).then(function (authData) {
 	        return fn(null, authData);
 	    }).catch(function (error) {
 	        return fn(error);
@@ -1019,7 +1019,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _getOAuthRedirectResult;
 	function _getOAuthRedirectResult(fn, auth) {
-	    return auth().getRedirectResult().then(function (user) {
+	    return auth.getRedirectResult().then(function (user) {
 	        return fn(null, user);
 	    }).catch(function (error) {
 	        return fn(error);
@@ -1043,7 +1043,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    settings = settings || {};
 	    var authProvider = _getAuthProvider(provider, settings);
 	    var credential = authProvider.credential.apply(authProvider, [token].concat(_toConsumableArray(settings.providerOptions)));
-	    return auth().signInWithCredential(credential).then(function (authData) {
+	    return auth.signInWithCredential(credential).then(function (authData) {
 	        return fn(null, authData);
 	    }).catch(function (error) {
 	        return fn(error);
@@ -1061,7 +1061,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _onAuth;
 	function _onAuth(fn, auth) {
-	  return auth().onAuthStateChanged(fn);
+	  return auth.onAuthStateChanged(fn);
 	}
 
 /***/ },
@@ -1075,7 +1075,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _unauth;
 	function _unauth(auth) {
-	  return auth().signOut();
+	  return auth.signOut();
 	}
 
 /***/ },
@@ -1089,7 +1089,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _getAuth;
 	function _getAuth(auth) {
-	  return auth().currentUser;
+	  return auth.currentUser;
 	}
 
 /***/ }

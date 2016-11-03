@@ -1,3 +1,3 @@
 export default function _onAuth(fn, auth){
-  return auth().onAuthStateChanged(fn);
+  return auth.onAuthStateChanged(fn);
 }

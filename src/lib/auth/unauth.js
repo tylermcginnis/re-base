@@ -1,3 +1,3 @@
 export default function _unauth(auth){
-  return auth().signOut();
+  return auth.signOut();
 }

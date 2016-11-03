@@ -25,7 +25,8 @@ I spent a few weeks trying to figure out the cleanest way to implement Firebase 
 - [*update*](#updateendpoint-options): Update child data using only the referenced properties
 - [*remove*](#removeendpoint-callback): Remove data from Firebase
 - [*removeBinding*](#removebindingref): Remove all of the Firebase listeners when your component unmounts.
-- [*reset*](#reset): Removes all of the Firebase listeners and resets the singleton (for testing purposes).
+- [*reset*](#reset): Removes all of the Firebase listeners and resets the re-base instance (for testing purposes).
+- [*Firebase Services*](#firebase-services) Exposes the firebase services directly if you want to use anything that re-base does not provide a helper function for
 
 # Installing
 
@@ -36,6 +37,7 @@ $ npm install re-base
 # API
 
 #### For more in depth examples of the API, see the [`examples`](examples) folder.
+
 
 ## createClass(firebaseConfig, name)
 
@@ -836,8 +838,6 @@ unsubscribe();
 
 ```
 
-
-
 ## <a name='users'>User Management</a>
 
 re-base exposes a few helper methods for user methods for user management.
@@ -858,44 +858,52 @@ base.resetPassword({
 
 ```
 
-## <a name='firebase-services'>Firebase Server Timestamp</a>
-
-re-base exposes the `firebase.database.ServerValue.TIMESTAMP` which placeholder value for auto-populating the current timestamp
-
-```javascript
-
-base.update('/people/-KVMgJvxoVHw141-HL5H', {
-  data: {
-    name: 'Chris',
-    registered: base.timestamp
-  }
-});
-
-```
-
 ## <a name='firebase-services'>Firebase Services</a>
 
-re-base also exposes the firebase services for the current app
+re-base also exposes the firebase services directly if you need them.
 
-Firebase App [Docs](https://firebase.google.com/docs/reference/js/firebase.app.App)
+Firebase App  [Docs](https://firebase.google.com/docs/reference/js/firebase.app)
 
 `base.app`
 
-Firebase Database [Docs](https://firebase.google.com/docs/reference/js/firebase.app.App#database)
+Firebase Database [Docs](https://firebase.google.com/docs/reference/js/firebase.database)
 
 `base.database`
 
-Firebase Storage [Docs](https://firebase.google.com/docs/reference/js/firebase.app.App#storage)
+Firebase Storage [Docs](https://firebase.google.com/docs/reference/js/firebase.storage)
 
 `base.storage`
 
-Firebase Auth [Docs](https://firebase.google.com/docs/reference/js/firebase.app.App#auth)
+Firebase Auth [Docs](https://firebase.google.com/docs/reference/js/firebase.auth)
 
 `base.auth`
 
 Firebase Messaging [Docs](https://firebase.google.com/docs/reference/js/firebase.messaging)
 
 `base.messaging`
+
+The initialized Firebase app for the re-base instance
+
+`base.initializedApp`
+
+#### Example ####
+
+_Using the default app_
+
+```javascript
+var base = Rebase.createClass(configObject);
+
+var databaseService = base.database();
+
+```
+_Using another 'named' app_
+
+```javascript
+var base = Rebase.createClass(configObject, 'myApp');
+
+var databaseService = base.database(base.initializedApp);
+
+```
 
 ## <a name='upgrading'>Upgrading to re-base 2.x from 1.x</a>
 

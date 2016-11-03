@@ -30,7 +30,7 @@ describe('createClass()', function(){
     expect(base.post).toEqual(jasmine.any(Function));
     expect(base.removeBinding).toEqual(jasmine.any(Function));
     expect(base.storage).toEqual(jasmine.any(Function));
-    expect(base.app).toEqual(jasmine.any(Object));
+    expect(base.app).toEqual(jasmine.any(Function));
     expect(base.database).toEqual(jasmine.any(Function));
     expect(base.auth).toEqual(jasmine.any(Function));
     expect(base.messaging).toEqual(jasmine.any(Function));

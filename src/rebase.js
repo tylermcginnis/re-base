@@ -42,15 +42,15 @@ module.exports = (function(){
 
       return {
         name: app.name,
-        storage : app.storage,
-        database: app.database,
-        auth: app.auth,
-        messaging: app.messaging,
-        app: app,
-        timestamp: firebase.database.ServerValue.TIMESTAMP,
+        storage : firebase.storage,
+        database: firebase.database,
+        auth: firebase.auth,
+        messaging: firebase.messaging,
+        app: firebase.app,
+        initializedApp: app,
         listenTo(endpoint, options) {
           return _bind.call(this, endpoint, options, 'listenTo', {
-            db: this.database,
+            db: this.database(this.initializedApp),
             refs: firebaseRefs,
             listeners: firebaseListeners,
             syncs: syncs
@@ -58,32 +58,32 @@ module.exports = (function(){
         },
         bindToState(endpoint, options) {
           return _bind.call(this, endpoint, options, 'bindToState', {
-            db: this.database,
+            db: this.database(this.initializedApp),
             refs: firebaseRefs,
             listeners: firebaseListeners
           });
         },
         syncState(endpoint, options) {
           return _sync.call(this, endpoint, options, {
-            db: this.database,
+            db: this.database(this.initializedApp),
             refs: firebaseRefs,
             listeners: firebaseListeners,
             syncs: syncs
           });
         },
         fetch(endpoint, options) {
-          return _fetch(endpoint, options, this.database);
+          return _fetch(endpoint, options, this.database(this.initializedApp));
         },
         post(endpoint, options) {
-          return _post(endpoint, options, this.database);
+          return _post(endpoint, options, this.database(this.initializedApp));
         },
         update(endpoint, options) {
           return _update(endpoint, options, {
-            db: this.database
+            db: this.database(this.initializedApp)
           });
         },
         push(endpoint, options) {
-          return _push(endpoint, options, this.database);
+          return _push(endpoint, options, this.database(this.initializedApp));
         },
         removeBinding(endpoint) {
           _removeBinding(endpoint, {
@@ -93,7 +93,7 @@ module.exports = (function(){
           });
         },
         remove(endpoint, fn){
-          return _remove(endpoint, this.database, fn);
+          return _remove(endpoint, this.database(this.initializedApp), fn);
         },
         reset() {
           return _reset({
@@ -103,41 +103,41 @@ module.exports = (function(){
           });
         },
         authWithPassword(credentials, fn) {
-          return _authWithPassword(credentials, fn, this.auth);
+          return _authWithPassword(credentials, fn, this.auth(this.initializedApp));
         },
         authWithCustomToken(token, fn) {
-          return _authWithCustomToken(token, fn, this.auth);
+          return _authWithCustomToken(token, fn, this.auth(this.initializedApp));
         },
         authWithOAuthPopup(provider, fn, settings) {
-          return _authWithOAuthPopup(provider, fn, settings, this.auth);
+          return _authWithOAuthPopup(provider, fn, settings, this.auth(this.initializedApp));
         },
         authWithOAuthRedirect(provider, fn, settings) {
-          return _authWithOAuthRedirect(provider, fn, settings, this.auth);
+          return _authWithOAuthRedirect(provider, fn, settings, this.auth(this.initializedApp));
         },
         authWithOAuthToken(provider, token, fn, settings) {
-          return _authWithOAuthToken(provider, token, fn, settings, this.auth);
+          return _authWithOAuthToken(provider, token, fn, settings, this.auth(this.initializedApp));
         },
         authGetOAuthRedirectResult(fn) {
-          return _getOAuthRedirectResult(fn, this.auth);
+          return _getOAuthRedirectResult(fn, this.auth(this.initializedApp));
         },
         onAuth(fn) {
-          return _onAuth(fn, this.auth);
+          return _onAuth(fn, this.auth(this.initializedApp));
         },
         unauth(fn) {
-          return _unauth(this.auth);
+          return _unauth(this.auth(this.initializedApp));
         },
         getAuth() {
-          return _getAuth(this.auth);
+          return _getAuth(this.auth(this.initializedApp));
         },
         createUser(credentials,fn) {
-          return _createUser(credentials, fn, this.auth);
+          return _createUser(credentials, fn, this.auth(this.initializedApp));
         },
         resetPassword(credentials,fn) {
-          return _resetPassword(credentials, fn, this.auth);
+          return _resetPassword(credentials, fn, this.auth(this.initializedApp));
         },
         delete(fn) {
           delete apps[this.name];
-          return this.app.delete().then(() => {
+          return this.initializedApp.delete().then(() => {
             this.reset();
             if(typeof fn === 'function'){
               fn.call(null, true);

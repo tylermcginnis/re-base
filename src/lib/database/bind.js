@@ -15,7 +15,7 @@ export default function _bind(endpoint, options, invoker, state){
   options.then && (options.then.called = false);
 
   var id = _createHash(endpoint, invoker);
-  var ref = state.db().ref(endpoint);
+  var ref = state.db.ref(endpoint);
   _firebaseRefsMixin(id, ref, state.refs);
   _addListener(id, invoker, options, ref, state.listeners);
   return _returnRef(endpoint, invoker, id, options.context);
