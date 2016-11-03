@@ -37,6 +37,10 @@ export default function _sync(endpoint, options, state){
 
   options.context.setState = function(data,cb){
     var syncsToCall = state.syncs.get(this);
+    //if sync does not exist, call original Component.setState
+    if(!syncsToCall || syncsToCall.length === 0){
+      return _sync.reactSetState.call(this, data, cb);
+    }
     syncsToCall.forEach(sync => {
       for (var key in data) {
         if (data.hasOwnProperty(key)){

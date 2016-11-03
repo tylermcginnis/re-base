@@ -688,6 +688,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var _this = this;
 
 	    var syncsToCall = state.syncs.get(this);
+	    //if sync does not exist, call original Component.setState
+	    if (!syncsToCall || syncsToCall.length === 0) {
+	      return _sync.reactSetState.call(this, data, cb);
+	    }
 	    syncsToCall.forEach(function (sync) {
 	      for (var key in data) {
 	        if (data.hasOwnProperty(key)) {
