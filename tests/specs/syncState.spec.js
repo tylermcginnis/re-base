@@ -730,5 +730,42 @@ describe('syncState()', function(){
         }
         ReactDOM.render(<TestComponent />, document.getElementById('mount'));
       });
+
+      it('syncState should reset setState after all listeners are unbound', function(done){
+
+          class TestComponent extends React.Component{
+            constructor(props){
+              super(props);
+              this.state = {
+                friends: []
+              }
+            }
+            componentDidMount(){
+              this.ref = base.syncState(`${testEndpoint}/myFriends`, {
+                context: this,
+                state: 'friends',
+                asArray: true
+              });
+              base.removeBinding(this.ref);
+              this.setState({
+                friends: ['Chris']
+              });
+
+            }
+            componentDidUpdate(){
+              expect(this.state.friends).toEqual(['Chris']);
+              done();
+            }
+            render(){
+              return (
+                <div>
+                  Name: {this.state.name} <br />
+                  Age: {this.state.age}
+                </div>
+              )
+            }
+          }
+          ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+        });
   });
 });
