@@ -522,7 +522,7 @@ componentWillUnmount(){
 
 ## <a name='queries'>Queries</a>
 
-Use the query option to utilize the [Firebase Query](https://www.firebase.com/docs/web/guide/retrieving-data.html#section-queries) API.  For a list of available queries and how they work, see the Firebase docs.
+Use the query option to utilize the [Firebase Query](https://firebase.google.com/docs/reference/js/firebase.database.Query) API.  For a list of available queries and how they work, see the Firebase docs.
 
 Queries are accepted in the `options` object of each read method (`syncState`, `bindToState`, `listenTo`, and `fetch`).  The object should have one or more keys of the type of query you wish to run, with the value being the value for the query.  For example:
 
