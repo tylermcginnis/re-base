@@ -23,8 +23,10 @@ I spent a few weeks trying to figure out the cleanest way to implement Firebase 
 - [*post*](#postendpoint-options): Add new data to Firebase.
 - [*push*](#pushendpoint-options): Push new child data to Firebase.
 - [*update*](#updateendpoint-options): Update child data using only the referenced properties
+- [*remove*](#removeendpoint-callback): Remove data from Firebase
 - [*removeBinding*](#removebindingref): Remove all of the Firebase listeners when your component unmounts.
-- [*reset*](#reset): Removes all of the Firebase listeners and resets the singleton (for testing purposes).
+- [*reset*](#reset): Removes all of the Firebase listeners and resets the re-base instance (for testing purposes).
+- [*Firebase Services*](#firebase-services) Exposes the firebase services directly if you want to use anything that re-base does not provide a helper function for
 
 # Installing
 
@@ -36,10 +38,11 @@ $ npm install re-base
 
 #### For more in depth examples of the API, see the [`examples`](examples) folder.
 
-## createClass(firebaseConfig)
+
+## createClass(firebaseConfig, name)
 
 ##### Purpose
-Accepts a firebase configuration object as its only parameter and returns a singleton with the re-base API.
+Accepts a firebase configuration object as the first argument and an optional 'name' for the app as the second
 
 ##### Arguments
   1. configuration
@@ -49,23 +52,57 @@ Accepts a firebase configuration object as its only parameter and returns a sing
       - authDomain (string - required) your firebase auth domain
       - databaseURL (string - required) your firebase database root URL
       - storageBucket (string - optional) your firebase storage bucket
+      - messagingSenderId: (string - optional) your firebase messaging sender id
+  2. app name
+    - type: string (optional, defaults to '[DEFAULT]')
 
 ##### Return Value
-  An object with the re-base API.
+  An instance of re-base.
 
 ##### Example
 
 ```javascript
 var Rebase = require('re-base');
 var base = Rebase.createClass({
-  	  apiKey: "apiKey",
+      apiKey: "apiKey",
       authDomain: "projectId.firebaseapp.com",
       databaseURL: "https://databaseName.firebaseio.com",
       storageBucket: "bucket.appspot.com",
-});
+      messagingSenderId: "xxxxxxxxxxxxxx"
+}, 'myApp');
 ```
 
 <br />
+
+##delete(callback)
+
+##### Purpose
+  Deletes the instance of re-base returned from `Rebase.createClass`, removing all the listeners that were added by the instance, and the underlying firebase app that was created.
+  **Note**: _You cannot re-initialize an app of the same name after it has been deleted._
+
+
+#### Arguments
+  1. callback
+   - type: (function - optional)
+   - function that is called when the app has been deleted
+
+#### Example
+
+```javascript
+
+var Rebase = require('re-base');
+var myApp = Rebase.createClass({
+      apiKey: "apiKey",
+      authDomain: "projectId.firebaseapp.com",
+      databaseURL: "https://databaseName.firebaseio.com",
+      storageBucket: "bucket.appspot.com",
+}, 'myApp');
+
+myApp.delete(() => {
+	//app has been deleted
+});
+
+```
 
 ## syncState(endpoint, options)
 
@@ -394,6 +431,49 @@ addBear(){
   }).catch(err => {
     //handle error
   });
+```
+
+<br />
+
+## remove(endpoint, callback)
+
+#### Purpose
+  Allows you to delete all data at the endpoint location
+
+#### Arguments
+  1. endpoint
+    - type: string
+    - The relative Firebase endpoint that you'd like to delete data from
+  2. callback
+    - type: (function - optional)
+    - A callback that will get invoked once the data is successfully removed Firebase. If there is an error, it will be the only argument to this function.
+
+#### Return Value
+  A Firebase [Promise](https://firebase.google.com/docs/reference/js/firebase.Promise) which resolves when the deletion is complete and rejects if there is an error
+
+#### Example
+
+*Using callback*
+
+```javascript
+
+  base.remove('bears', function(err){
+    if(!err){
+      Router.transitionTo('dashboard');
+    }
+  });
+
+```
+
+*Using Promise*
+
+```javascript
+  base.remove('bears').then(() => {
+    Router.transitionTo('dashboard');
+  }).catch(error => {
+    //handle error
+  });
+
 ```
 
 <br />
@@ -758,8 +838,6 @@ unsubscribe();
 
 ```
 
-
-
 ## <a name='users'>User Management</a>
 
 re-base exposes a few helper methods for user methods for user management.
@@ -782,7 +860,7 @@ base.resetPassword({
 
 ## <a name='firebase-services'>Firebase Services</a>
 
-re-base also exposes the underlying firebase services directly if you need them
+re-base also exposes the firebase services directly if you need them.
 
 Firebase App  [Docs](https://firebase.google.com/docs/reference/js/firebase.app)
 
@@ -799,6 +877,33 @@ Firebase Storage [Docs](https://firebase.google.com/docs/reference/js/firebase.s
 Firebase Auth [Docs](https://firebase.google.com/docs/reference/js/firebase.auth)
 
 `base.auth`
+
+Firebase Messaging [Docs](https://firebase.google.com/docs/reference/js/firebase.messaging)
+
+`base.messaging`
+
+The initialized Firebase app for the re-base instance
+
+`base.initializedApp`
+
+#### Example ####
+
+_Using the default app_
+
+```javascript
+var base = Rebase.createClass(configObject);
+
+var databaseService = base.database();
+
+```
+_Using another 'named' app_
+
+```javascript
+var base = Rebase.createClass(configObject, 'myApp');
+
+var databaseService = base.database(base.initializedApp);
+
+```
 
 ## <a name='upgrading'>Upgrading to re-base 2.x from 1.x</a>
 

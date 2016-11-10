@@ -6,12 +6,12 @@ module.exports = function(config) {
     autowatch: true,
     singleRun: !!travis,
     files: [
-      { pattern: 'specs/re-base.spec.js', watched: false }
+      { pattern: 'specs/*.spec.js', watched: false }
     ],
     reporters: ["spec", "failed", "coverage"],
     browsers: [travis ? 'Firefox' : 'Chrome'],
     preprocessors: {
-    'specs/re-base.spec.js': ['webpack'],
+    'specs/*.spec.js': ['webpack'],
     },
     webpack: {
       module: {
@@ -19,7 +19,10 @@ module.exports = function(config) {
           {
             test: /\.js$/,
             loader: 'babel',
-            exclude: /node_modules/
+            exclude: /node_modules/,
+            query: {
+              presets: ['es2015', 'react']
+            }
           }
         ]
       }
