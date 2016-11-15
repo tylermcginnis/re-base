@@ -1,3 +1,5 @@
+import _getAuthProvider from './getAuthProvider';
+
 export default function _authWithOAuthToken(provider, token, fn, settings, auth){
   settings = settings || {};
   var authProvider = _getAuthProvider(provider, settings);
