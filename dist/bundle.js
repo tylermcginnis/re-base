@@ -135,15 +135,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _authWithOAuthToken3 = _interopRequireDefault(_authWithOAuthToken2);
 
-	var _onAuth2 = __webpack_require__(22);
+	var _authWithOAuthRedirect2 = __webpack_require__(22);
+
+	var _authWithOAuthRedirect3 = _interopRequireDefault(_authWithOAuthRedirect2);
+
+	var _onAuth2 = __webpack_require__(23);
 
 	var _onAuth3 = _interopRequireDefault(_onAuth2);
 
-	var _unauth2 = __webpack_require__(23);
+	var _unauth2 = __webpack_require__(24);
 
 	var _unauth3 = _interopRequireDefault(_unauth2);
 
-	var _getAuth2 = __webpack_require__(24);
+	var _getAuth2 = __webpack_require__(25);
 
 	var _getAuth3 = _interopRequireDefault(_getAuth2);
 
@@ -235,7 +239,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          return (0, _authWithOAuthPopup3.default)(provider, fn, settings, this.auth(this.initializedApp));
 	        },
 	        authWithOAuthRedirect: function authWithOAuthRedirect(provider, fn, settings) {
-	          return (0, _authWithOAuthToken3.default)(provider, fn, settings, this.auth(this.initializedApp));
+	          return (0, _authWithOAuthRedirect3.default)(provider, fn, settings, this.auth(this.initializedApp));
 	        },
 	        authWithOAuthToken: function authWithOAuthToken(provider, token, fn, settings) {
 	          return (0, _authWithOAuthToken3.default)(provider, token, fn, settings, this.auth(this.initializedApp));
@@ -1028,20 +1032,26 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 21 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
 	exports.default = _authWithOAuthToken;
 
+	var _getAuthProvider2 = __webpack_require__(19);
+
+	var _getAuthProvider3 = _interopRequireDefault(_getAuthProvider2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 	function _authWithOAuthToken(provider, token, fn, settings, auth) {
 	    settings = settings || {};
-	    var authProvider = _getAuthProvider(provider, settings);
+	    var authProvider = (0, _getAuthProvider3.default)(provider, settings);
 	    var credential = authProvider.credential.apply(authProvider, [token].concat(_toConsumableArray(settings.providerOptions)));
 	    return auth.signInWithCredential(credential).then(function (authData) {
 	        return fn(null, authData);
@@ -1052,6 +1062,33 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 22 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.default = _authWithOAuthRedirect;
+
+	var _getAuthProvider2 = __webpack_require__(19);
+
+	var _getAuthProvider3 = _interopRequireDefault(_getAuthProvider2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _authWithOAuthRedirect(provider, fn, settings, auth) {
+	    settings = settings || {};
+	    var authProvider = (0, _getAuthProvider3.default)(provider, settings);
+	    return auth.signInWithRedirect(authProvider).then(function () {
+	        return fn(null);
+	    }).catch(function (error) {
+	        return fn(error);
+	    });
+	}
+
+/***/ },
+/* 23 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1065,7 +1102,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1079,7 +1116,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports) {
 
 	"use strict";

@@ -25,7 +25,7 @@ import _authWithCustomToken from './lib/auth/authWithCustomToken';
 import _authWithOAuthPopup from './lib/auth/authWithOAuthPopup';
 import _getOAuthRedirectResult from './lib/auth/getOAuthRedirectResult';
 import _authWithOAuthToken from './lib/auth/authWithOAuthToken';
-import _authWithOAuthRedirect from './lib/auth/authWithOAuthToken';
+import _authWithOAuthRedirect from './lib/auth/authWithOAuthRedirect';
 import _onAuth from './lib/auth/onAuth';
 import _unauth from './lib/auth/unauth';
 import _getAuth from './lib/auth/getAuth';
