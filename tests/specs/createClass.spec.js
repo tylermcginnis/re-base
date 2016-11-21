@@ -17,18 +17,30 @@ describe('createClass()', function(){
   });
 
   it('createClass() returns an object with the correct API', function(){
-    expect(base.listenTo).toBeDefined();
-    expect(base.bindToState).toBeDefined();
-    expect(base.syncState).toBeDefined();
-    expect(base.fetch).toBeDefined();
-    expect(base.post).toBeDefined();
-    expect(base.removeBinding).toBeDefined();
+    expect(base.delete).toEqual(jasmine.any(Function));
     expect(base.listenTo).toEqual(jasmine.any(Function));
     expect(base.bindToState).toEqual(jasmine.any(Function));
     expect(base.syncState).toEqual(jasmine.any(Function));
     expect(base.fetch).toEqual(jasmine.any(Function));
+    expect(base.update).toEqual(jasmine.any(Function));
     expect(base.post).toEqual(jasmine.any(Function));
     expect(base.removeBinding).toEqual(jasmine.any(Function));
+    expect(base.listenTo).toEqual(jasmine.any(Function));
+    expect(base.bindToState).toEqual(jasmine.any(Function));
+    expect(base.fetch).toEqual(jasmine.any(Function));
+    expect(base.post).toEqual(jasmine.any(Function));
+    expect(base.removeBinding).toEqual(jasmine.any(Function));
+    expect(base.remove).toEqual(jasmine.any(Function));
+    expect(base.authWithPassword).toEqual(jasmine.any(Function));
+    expect(base.authWithOAuthPopup).toEqual(jasmine.any(Function));
+    expect(base.authWithOAuthRedirect).toEqual(jasmine.any(Function));
+    expect(base.authGetOAuthRedirectResult).toEqual(jasmine.any(Function));
+    expect(base.authWithOAuthToken).toEqual(jasmine.any(Function));
+    expect(base.authWithCustomToken).toEqual(jasmine.any(Function));
+    expect(base.unauth).toEqual(jasmine.any(Function));
+    expect(base.onAuth).toEqual(jasmine.any(Function));
+    expect(base.createUser).toEqual(jasmine.any(Function));
+    expect(base.resetPassword).toEqual(jasmine.any(Function));
     expect(base.storage).toEqual(jasmine.any(Function));
     expect(base.app).toEqual(jasmine.any(Function));
     expect(base.database).toEqual(jasmine.any(Function));
