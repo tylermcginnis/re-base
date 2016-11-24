@@ -20,7 +20,7 @@ describe('push()', function(){
   afterEach(done => {
     var testApp = firebase.initializeApp(firebaseConfig, 'CLEAN_UP');
     base.delete();
-    testApp.database().ref().set(null).then(() => {
+    testApp.database().ref(testEndpoint).set(null).then(() => {
       testApp.delete().then(done);
     });
   });

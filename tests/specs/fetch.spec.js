@@ -35,7 +35,7 @@ describe('fetch()', function(){
     ReactDOM.unmountComponentAtNode(document.body);
     var testApp = firebase.initializeApp(firebaseConfig, 'CLEAN_UP');
     base.delete();
-    testApp.database().ref().set(null).then(() => {
+    testApp.database().ref(testEndpoint).set(null).then(() => {
       testApp.delete().then(done);
     });
   });
@@ -113,7 +113,7 @@ describe('fetch()', function(){
         expect(data.indexOf(25)).not.toBe(-1);
         done();
       }).catch(err => {
-        done.fail(err) 
+        done.fail(err)
       });
     });
 
@@ -121,7 +121,7 @@ describe('fetch()', function(){
       var testApp = firebase.initializeApp(firebaseConfig, 'DB_CHECK');
       var ref = testApp.database().ref();
       ref.child(testEndpoint).set(dummyNestedObjData, () => {
-        
+
         base.fetch(testEndpoint, {
           asArray: true,
           context: {},
