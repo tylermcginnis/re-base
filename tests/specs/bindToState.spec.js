@@ -77,7 +77,7 @@ describe('bindToState()', function(){
           }
         }
         componentDidMount(){
-          this.ref = base.bindToState('userData', {
+          this.ref = base.bindToState(`${testEndpoint}/userData`, {
             context: this,
             state: 'user',
             then(){
@@ -112,12 +112,12 @@ describe('bindToState()', function(){
           }
         }
         componentDidMount(){
-          this.firstRef = base.bindToState('abcdefg', {
+          this.firstRef = base.bindToState(`${testEndpoint}/abcdefg`, {
             context: this,
             state: 'emptyObj',
           });
 
-          this.secondRef = base.bindToState('hijklmnop', {
+          this.secondRef = base.bindToState(`${testEndpoint}/hijklmnop`, {
             context: this,
             state: 'emptyArr',
             asArray: true
@@ -183,14 +183,14 @@ describe('bindToState()', function(){
           }
         }
         componentWillMount(){
-          this.ref = base.bindToState('myFriends', {
+          this.ref = base.bindToState(`${testEndpoint}/myFriends`, {
             context: this,
             state: 'friends',
             asArray: true
           });
         }
         componentDidMount(){
-          ref.child('myFriends').set(dummyArrData);
+          ref.child(`${testEndpoint}/myFriends`).set(dummyArrData);
         }
         componentDidUpdate(){
           expect(this.state.friends).toEqual(dummyArrData);

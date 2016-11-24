@@ -311,7 +311,7 @@ describe('syncState()', function(){
           }
         }
         componentDidMount(){
-          this.ref = base.syncState('userData', {
+          this.ref = base.syncState(`${testEndpoint}/userData`, {
             context: this,
             state: 'user',
             then(){

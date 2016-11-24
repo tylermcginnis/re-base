@@ -23,7 +23,7 @@ class Profile extends React.Component{
     };
   }
   init(){
-    this.ref = base.syncState(this.props.routeParams.username, {
+    this.ref = base.syncState(`/github/${this.props.routeParams.username}`, {
       context: this,
       asArray: true,
       state: 'notes'
