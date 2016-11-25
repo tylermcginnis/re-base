@@ -83,18 +83,7 @@ const _firebaseRefsMixin = function (id, ref, refs){
 };
 
 const _updateSyncState = function (ref, data){
-  if(_isObject(data)) {
-    for(var prop in data){
-      //allow timestamps to be set
-        if(prop !== '.sv'){
-            _updateSyncState(ref.child(prop), data[prop]);
-        } else {
-          ref.set(data);
-        }
-      }
-  } else {
-    ref.set(data);
-  }
+  ref.set(data);
 };
 
 const _addListener = function _addListener(id, invoker, options, ref, listeners){
