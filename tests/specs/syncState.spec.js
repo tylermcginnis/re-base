@@ -111,6 +111,8 @@ describe('syncState()', function(){
           this.listener1 = ref.child(`${testEndpoint}/one`).on('value', snapshot => {
             var data = snapshot.val();
             if(data){
+              expect(data).toEqual(1);
+              expect(this.state.one).toEqual(1);
               counter++;
               this.checkDone();
             }
@@ -120,6 +122,7 @@ describe('syncState()', function(){
             var data = snapshot.val();
             if(data){
               expect(data).toEqual(2);
+              expect(this.state.two).toEqual(2);
               counter++;
               this.checkDone();
             }
@@ -129,6 +132,7 @@ describe('syncState()', function(){
             var data = snapshot.val();
             if(data){
               expect(data).toEqual(3);
+              expect(this.state.three).toEqual(3);
               counter++;
               this.checkDone();
             }
@@ -141,6 +145,59 @@ describe('syncState()', function(){
             ReactDOM.unmountComponentAtNode(document.getElementById('mount'));
             done();
           }
+        }
+
+        componentDidUpdate() {
+          this.checkDone();
+        }
+
+        render(){
+          return (
+            <div>
+              No Data
+            </div>
+          )
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
+
+    it('syncState() should only run synced keys through their respective update function', function(done) {
+      var counter = 0;
+      class TestComponent extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            one: 0,
+            two: 0,
+            three: 0
+          }
+        }
+
+        componentDidMount() {
+          this.refOne = base.syncState(`${testEndpoint}/one`, {
+            context: this,
+            state: 'one',
+            then(){
+            }
+          });
+
+          this.refTwo = base.syncState(`${testEndpoint}/two`, {
+            context: this,
+            state: 'two',
+            then(){
+            }
+          });
+          this.setState({ one: 1, two: { key1: null, key2: 'value'}, three: { key1: null, key2: 'value'}});
+          setTimeout(() => {
+            this.checkDone();
+          }, 500);
+        }
+        checkDone() {
+            expect(this.state.one).toEqual(1);
+            expect(this.state.two.key1).toBeUndefined();
+            expect(this.state.three.key1).toBeNull();
+            done();
         }
 
         componentDidUpdate() {
@@ -308,6 +365,7 @@ describe('syncState()', function(){
           super(props);
           this.state = {
             loading: true,
+            user: {}
           }
         }
         componentDidMount(){
