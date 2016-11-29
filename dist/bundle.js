@@ -402,18 +402,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	  refs.set(id, ref);
 	};
 
-	var _updateSyncState = function _updateSyncState(ref, data) {
+	var _handleError = function _handleError(onError, err) {
+	  if (err && typeof onError === 'function') {
+	    onError(err);
+	  }
+	};
+
+	var _updateSyncState = function _updateSyncState(ref, onError, data) {
 	  if (_isObject(data)) {
 	    for (var prop in data) {
 	      //allow timestamps to be set
 	      if (prop !== '.sv') {
-	        _updateSyncState(ref.child(prop), data[prop]);
+	        _updateSyncState(ref.child(prop), onError, data[prop]);
 	      } else {
-	        ref.set(data);
+	        ref.set(data, _handleError.bind(null, onError));
 	      }
 	    }
 	  } else {
-	    ref.set(data);
+	    ref.set(data, _handleError.bind(null, onError));
 	  }
 	};
 
@@ -681,9 +687,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  (0, _utils._firebaseRefsMixin)(id, ref, state.refs);
 	  (0, _utils._addListener)(id, 'syncState', options, ref, state.listeners);
 
+	  options.onError = options.onError ? options.onError : function () {};
 	  var sync = {
 	    id: id,
-	    updateFirebase: _utils._updateSyncState.bind(this, ref),
+	    updateFirebase: _utils._updateSyncState.bind(null, ref, options.onError),
 	    stateKey: options.state
 	  };
 	  (0, _utils._addSync)(options.context, sync, state.syncs);

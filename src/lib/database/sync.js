@@ -28,9 +28,10 @@ export default function _sync(endpoint, options, state){
   _firebaseRefsMixin(id, ref, state.refs);
   _addListener(id, 'syncState', options, ref, state.listeners);
 
+  options.onError = options.onError ? options.onError : () => {};
   var sync = {
     id: id,
-    updateFirebase: _updateSyncState.bind(this, ref),
+    updateFirebase: _updateSyncState.bind(null, ref, options.onError),
     stateKey: options.state
   }
   _addSync(options.context, sync, state.syncs);

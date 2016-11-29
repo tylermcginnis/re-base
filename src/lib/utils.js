@@ -82,18 +82,24 @@ const _firebaseRefsMixin = function (id, ref, refs){
   refs.set(id, ref);
 };
 
-const _updateSyncState = function (ref, data){
+const _handleError = function(onError, err){
+  if(err && typeof onError === 'function'){
+    onError(err);
+  }
+}
+
+const _updateSyncState = function (ref, onError, data){
   if(_isObject(data)) {
     for(var prop in data){
       //allow timestamps to be set
         if(prop !== '.sv'){
-            _updateSyncState(ref.child(prop), data[prop]);
+            _updateSyncState(ref.child(prop), onError, data[prop]);
         } else {
-          ref.set(data);
+          ref.set(data, _handleError.bind(null, onError));
         }
       }
   } else {
-    ref.set(data);
+    ref.set(data, _handleError.bind(null, onError));
   }
 };
 
