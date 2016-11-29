@@ -101,6 +101,36 @@ describe('bindToState()', function(){
       ReactDOM.render(<TestComponent />, document.getElementById("mount"));
     });
 
+    it('bindToState() invokes .onFailure with error if permissions do not allow read', function(done){
+      class TestComponent extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = {
+            loading: true,
+            user: {}
+          }
+        }
+        componentDidMount(){
+          this.ref = base.bindToState(`/readFail`, {
+            context: this,
+            state: 'user',
+            onFailure(err){
+              expect(err).not.toBeUndefined();
+              done();
+            }
+          });
+        }
+        render(){
+          return (
+            <div>
+              No Data
+            </div>
+          );
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById("mount"));
+    });
+
     it('bindToState() updates its local state with an empty array and object when the Firebase endpoint is null', function(done){
       class TestComponent extends React.Component{
         constructor(props){

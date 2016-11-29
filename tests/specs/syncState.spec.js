@@ -394,6 +394,64 @@ describe('syncState()', function(){
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
+    it('syncState\'s .onFailure method gets invoked with error if permissions do not allow read', function(done){
+      class TestComponent extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = {
+            loading: true,
+          }
+        }
+        componentDidMount(){
+          this.ref = base.syncState(`/readFail`, {
+            context: this,
+            state: 'user',
+            onFailure(err){
+              expect(err).not.toBeUndefined();
+              done();
+            }
+          });
+        }
+        render(){
+          return (
+            <div>
+              No Data
+            </div>
+          )
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
+
+    it('syncState\'s .onFailure method gets invoked with error if permissions do not allow write', function(done){
+      class TestComponent extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = {
+            user: {}
+          }
+        }
+        componentDidMount(){
+          this.ref = base.syncState(`/writeFail`, {
+            context: this,
+            state: 'user',
+            onFailure(err){
+              expect(err).not.toBeUndefined();
+              done();
+            }
+          });
+          this.setState({user: {name: 'Chris'}});
+        }
+        render(){
+          return (
+            <div>
+              No Data
+            </div>
+          )
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
 
     it('syncState() syncs its local state with Firebase as an Array', function(done){
       var setStateCalled = false;
