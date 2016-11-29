@@ -42,15 +42,23 @@ export default function _sync(endpoint, options, state){
     if(!syncsToCall || syncsToCall.length === 0){
       return _sync.reactSetState.call(this, data, cb);
     }
-    syncsToCall.forEach(sync => {
-      for (var key in data) {
-        if (data.hasOwnProperty(key)){
-          if (key === sync.stateKey) {
-            sync.updateFirebase(data[key]);
-          } else {
-            _sync.reactSetState.call(this, data, cb);
-          }
-        }
+    var syncedKeys = syncsToCall.map(sync => {
+      return {
+        key : sync.stateKey,
+        update: sync.updateFirebase
+      }
+    });
+    syncedKeys.forEach( syncedKey => {
+      if(data.hasOwnProperty(syncedKey.key)){
+        syncedKey.update(data[syncedKey.key]);
+      }
+    });
+    var allKeys = Object.keys(data);
+    allKeys.forEach(key => {
+      if(!syncedKeys.find(syncedKey => syncedKey.key === key)){
+        var update = {};
+        update[key] = data[key];
+        _sync.reactSetState.call(options.context, update, cb);
       }
     });
   }

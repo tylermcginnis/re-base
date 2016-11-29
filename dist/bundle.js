@@ -696,22 +696,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	  (0, _utils._addSync)(options.context, sync, state.syncs);
 
 	  options.context.setState = function (data, cb) {
-	    var _this = this;
-
 	    var syncsToCall = state.syncs.get(this);
 	    //if sync does not exist, call original Component.setState
 	    if (!syncsToCall || syncsToCall.length === 0) {
 	      return _sync.reactSetState.call(this, data, cb);
 	    }
-	    syncsToCall.forEach(function (sync) {
-	      for (var key in data) {
-	        if (data.hasOwnProperty(key)) {
-	          if (key === sync.stateKey) {
-	            sync.updateFirebase(data[key]);
-	          } else {
-	            _sync.reactSetState.call(_this, data, cb);
-	          }
-	        }
+	    var syncedKeys = syncsToCall.map(function (sync) {
+	      return {
+	        key: sync.stateKey,
+	        update: sync.updateFirebase
+	      };
+	    });
+	    syncedKeys.forEach(function (syncedKey) {
+	      if (data.hasOwnProperty(syncedKey.key)) {
+	        syncedKey.update(data[syncedKey.key]);
+	      }
+	    });
+	    var allKeys = Object.keys(data);
+	    allKeys.forEach(function (key) {
+	      if (!syncedKeys.find(function (syncedKey) {
+	        return syncedKey.key === key;
+	      })) {
+	        var update = {};
+	        update[key] = data[key];
+	        _sync.reactSetState.call(options.context, update, cb);
 	      }
 	    });
 	  };
