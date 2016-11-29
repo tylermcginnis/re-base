@@ -40,7 +40,7 @@ describe('syncState()', function(){
     ]).then(done);
   });
 
-  it('syncState() throws an error given a invalid endpoint', function(done){
+  it('syncState() throws an error given a invalid endpoint', function(){
     invalidEndpoints.forEach((endpoint) => {
       try {
         base.syncState(endpoint, {
@@ -50,7 +50,6 @@ describe('syncState()', function(){
         })
       } catch(err) {
         expect(err.code).toEqual('INVALID_ENDPOINT');
-        done();
       }
     });
   });
@@ -336,16 +335,20 @@ describe('syncState()', function(){
         }
         componentDidMount(){
           this.setState({
-            user: {name: 'Tyler'}
+            user: {name: 'Tyler', updated: true}
           });
         }
         componentDidUpdate(){
-          ref.child(`${testEndpoint}/userData`).once('value', (snapshot) => {
+          this.check = ref.child(`${testEndpoint}/userData`).on('value', (snapshot) => {
             var data = snapshot.val();
-            expect(data).toEqual(this.state.user);
-            expect(data).toEqual({name: 'Tyler'});
-            ReactDOM.unmountComponentAtNode(document.body);
-            done();
+            if(data !== null && data.updated === true){
+              expect(data).toEqual(this.state.user);
+              expect(data).toEqual({name: 'Tyler', updated: true});
+              ReactDOM.unmountComponentAtNode(document.body);
+              ref.child(`${testEndpoint}/userData`).off('value', this.check);
+              delete this.check;
+              done();
+            }
           });
         };
         render(){
@@ -486,6 +489,62 @@ describe('syncState()', function(){
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
+
+    it('syncState() correctly removes deleted child keys from nested object data structure', function(done){
+      var initialData = {
+          name: 'Tyler',
+          age: 25,
+          friends: ['Joey', 'Mikenzi', 'Jacob'],
+          foo: {
+            bar: 'bar',
+            foobar: 'barfoo'
+          }
+      };
+
+        class TestComponent extends React.Component{
+          constructor(props){
+            super(props);
+          }
+          componentWillMount(){
+          }
+          componentDidMount(){
+            //populate initial data
+            ref.child(`${testEndpoint}/userData`).set(initialData).then(() => {
+              this.ref = base.syncState(`${testEndpoint}/userData`, {
+                context: this,
+                state: 'user',
+              });
+              this.setState({
+                  user: {
+                    name: 'Tyler',
+                    age: 26,
+                    friends: ['Joey', 'Mikenzi', 'Jacob'],
+                    foo: {
+                      bar: 'bar'
+                    },
+                    updated: true
+                  }
+              });
+            });
+          }
+          componentDidUpdate(){
+              if(this.state.user.updated === true){
+                expect(this.state.user.foo.foobar).toBeUndefined();
+                expect(this.state.user.age).toEqual(26);
+                ReactDOM.unmountComponentAtNode(document.body);
+                done();
+              }
+          }
+          render(){
+            return (
+              <div>
+                No Data
+              </div>
+            )
+          }
+        }
+        ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
     it('syncState() correctly retrieves Firebase data when given query options', function(done){

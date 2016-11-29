@@ -403,18 +403,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	var _updateSyncState = function _updateSyncState(ref, data) {
-	  if (_isObject(data)) {
-	    for (var prop in data) {
-	      //allow timestamps to be set
-	      if (prop !== '.sv') {
-	        _updateSyncState(ref.child(prop), data[prop]);
-	      } else {
-	        ref.set(data);
-	      }
-	    }
-	  } else {
-	    ref.set(data);
-	  }
+	  ref.set(data);
 	};
 
 	var _addListener = function _addListener(id, invoker, options, ref, listeners) {
