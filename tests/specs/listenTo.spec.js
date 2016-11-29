@@ -127,6 +127,38 @@ describe('listenTo()', function(){
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
+    it('listenTo\'s .onError method gets invoked with error if permissions do not allow read', function(done){
+      var didUpdate = false;
+      class TestComponent extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = {
+            data: {}
+          }
+        }
+        componentWillMount(){
+          this.ref = base.listenTo('/readFail', {
+            context: this,
+            onError(err){
+              expect(err).not.toBeUndefined();
+              done();
+            },
+            then(data){
+              done.fail('Database permissions should not allow read from this location');
+            }
+          });
+        }
+        render(){
+          return (
+            <div>
+              Name: {this.state.name} <br />
+              Age: {this.state.age}
+            </div>
+          )
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
 
     it('listenTo should return the data as an array if the asArray property of options is set to true', function(done){
       var didUpdate = false;
@@ -189,7 +221,7 @@ describe('listenTo()', function(){
 
       var component1Updated = false;
       var component2Updated = false;
-      
+
       class TestComponent1 extends React.Component{
         constructor(props){
           super(props);

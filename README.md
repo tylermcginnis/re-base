@@ -195,6 +195,7 @@ componentDidMount(){
       - context: (object - required) The context of your component
       - asArray: (boolean - optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
       - then: (function - required) The callback function that will be invoked with the data from the specified endpoint when the endpoint changes
+      - onError: (function - optional) The callback function that will be invoked if the current user does not have read permissions at the location.
       - queries: (object - optional) Queries to be used with your read operations.  See [Query Options](#queries) for more details.
 
 #### Return Value
