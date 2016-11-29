@@ -336,7 +336,7 @@ describe('syncState()', function(){
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
-    it('syncState\'s .onError method gets invoked with error if permissions do not allow read', function(done){
+    it('syncState\'s .onFailure method gets invoked with error if permissions do not allow read', function(done){
       class TestComponent extends React.Component{
         constructor(props){
           super(props);
@@ -348,7 +348,7 @@ describe('syncState()', function(){
           this.ref = base.syncState(`/readFail`, {
             context: this,
             state: 'user',
-            onError(err){
+            onFailure(err){
               expect(err).not.toBeUndefined();
               done();
             }
@@ -365,7 +365,7 @@ describe('syncState()', function(){
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
-    it('syncState\'s .onError method gets invoked with error if permissions do not allow write', function(done){
+    it('syncState\'s .onFailure method gets invoked with error if permissions do not allow write', function(done){
       class TestComponent extends React.Component{
         constructor(props){
           super(props);
@@ -377,7 +377,7 @@ describe('syncState()', function(){
           this.ref = base.syncState(`/writeFail`, {
             context: this,
             state: 'user',
-            onError(err){
+            onFailure(err){
               expect(err).not.toBeUndefined();
               done();
             }

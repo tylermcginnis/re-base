@@ -402,24 +402,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	  refs.set(id, ref);
 	};
 
-	var _handleError = function _handleError(onError, err) {
-	  if (err && typeof onError === 'function') {
-	    onError(err);
+	var _handleError = function _handleError(onFailure, err) {
+	  if (err && typeof onFailure === 'function') {
+	    onFailure(err);
 	  }
 	};
 
-	var _updateSyncState = function _updateSyncState(ref, onError, data) {
+	var _updateSyncState = function _updateSyncState(ref, onFailure, data) {
 	  if (_isObject(data)) {
 	    for (var prop in data) {
 	      //allow timestamps to be set
 	      if (prop !== '.sv') {
-	        _updateSyncState(ref.child(prop), onError, data[prop]);
+	        _updateSyncState(ref.child(prop), onFailure, data[prop]);
 	      } else {
-	        ref.set(data, _handleError.bind(null, onError));
+	        ref.set(data, _handleError.bind(null, onFailure));
 	      }
 	    }
 	  } else {
-	    ref.set(data, _handleError.bind(null, onError));
+	    ref.set(data, _handleError.bind(null, onFailure));
 	  }
 	};
 
@@ -446,7 +446,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        options.then.called = true;
 	      }
 	    }
-	  }, options.onError));
+	  }, options.onFailure));
 	};
 
 	exports._addScope = _addScope;
@@ -687,10 +687,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  (0, _utils._firebaseRefsMixin)(id, ref, state.refs);
 	  (0, _utils._addListener)(id, 'syncState', options, ref, state.listeners);
 
-	  options.onError = options.onError ? options.onError : function () {};
+	  options.onFailure = options.onFailure ? options.onFailure : function () {};
 	  var sync = {
 	    id: id,
-	    updateFirebase: _utils._updateSyncState.bind(null, ref, options.onError),
+	    updateFirebase: _utils._updateSyncState.bind(null, ref, options.onFailure),
 	    stateKey: options.state
 	  };
 	  (0, _utils._addSync)(options.context, sync, state.syncs);

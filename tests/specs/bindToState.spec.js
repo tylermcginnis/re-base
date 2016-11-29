@@ -101,7 +101,7 @@ describe('bindToState()', function(){
       ReactDOM.render(<TestComponent />, document.getElementById("mount"));
     });
 
-    it('bindToState() invokes .onError with error if permissions do not allow read', function(done){
+    it('bindToState() invokes .onFailure with error if permissions do not allow read', function(done){
       class TestComponent extends React.Component{
         constructor(props){
           super(props);
@@ -114,7 +114,7 @@ describe('bindToState()', function(){
           this.ref = base.bindToState(`/readFail`, {
             context: this,
             state: 'user',
-            onError(err){
+            onFailure(err){
               expect(err).not.toBeUndefined();
               done();
             }

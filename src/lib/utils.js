@@ -82,24 +82,24 @@ const _firebaseRefsMixin = function (id, ref, refs){
   refs.set(id, ref);
 };
 
-const _handleError = function(onError, err){
-  if(err && typeof onError === 'function'){
-    onError(err);
+const _handleError = function(onFailure, err){
+  if(err && typeof onFailure === 'function'){
+    onFailure(err);
   }
 }
 
-const _updateSyncState = function (ref, onError, data){
+const _updateSyncState = function (ref, onFailure, data){
   if(_isObject(data)) {
     for(var prop in data){
       //allow timestamps to be set
         if(prop !== '.sv'){
-            _updateSyncState(ref.child(prop), onError, data[prop]);
+            _updateSyncState(ref.child(prop), onFailure, data[prop]);
         } else {
-          ref.set(data, _handleError.bind(null, onError));
+          ref.set(data, _handleError.bind(null, onFailure));
         }
       }
   } else {
-    ref.set(data, _handleError.bind(null, onError));
+    ref.set(data, _handleError.bind(null, onFailure));
   }
 };
 
@@ -126,7 +126,7 @@ const _addListener = function _addListener(id, invoker, options, ref, listeners)
           options.then.called = true;
         }
     }
-  }, options.onError));
+  }, options.onFailure));
 };
 
 export {
