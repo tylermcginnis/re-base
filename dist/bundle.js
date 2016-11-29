@@ -440,7 +440,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        options.then.called = true;
 	      }
 	    }
-	  }));
+	  }, options.onError));
 	};
 
 	exports._addScope = _addScope;

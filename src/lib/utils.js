@@ -120,7 +120,7 @@ const _addListener = function _addListener(id, invoker, options, ref, listeners)
           options.then.called = true;
         }
     }
-  }));
+  }, options.onError));
 };
 
 export {
