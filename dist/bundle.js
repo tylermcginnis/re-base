@@ -408,18 +408,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	var _updateSyncState = function _updateSyncState(ref, onFailure, data) {
+	var _setData = function _setData(ref, data, handleError, keepKeys) {
+	  if (Array.isArray(data) && keepKeys) {
+	    var shouldConvertToObject = data.reduce(function (acc, curr) {
+	      return acc ? acc : _isObject(curr) && curr.hasOwnProperty('key');
+	    }, false);
+	    if (shouldConvertToObject) {
+	      data = data.reduce(function (acc, item) {
+	        acc[item.key] = item;
+	        return acc;
+	      }, {});
+	    }
+	  }
+	  ref.set(data, handleError);
+	};
+
+	var _updateSyncState = function _updateSyncState(ref, onFailure, keepKeys, data) {
 	  if (_isObject(data)) {
 	    for (var prop in data) {
 	      //allow timestamps to be set
 	      if (prop !== '.sv') {
-	        _updateSyncState(ref.child(prop), onFailure, data[prop]);
+	        _updateSyncState(ref.child(prop), onFailure, keepKeys, data[prop]);
 	      } else {
-	        ref.set(data, _handleError.bind(null, onFailure));
+	        _setData(ref, data, _handleError.bind(null, onFailure), keepKeys);
 	      }
 	    }
 	  } else {
-	    ref.set(data, _handleError.bind(null, onFailure));
+	    _setData(ref, data, _handleError.bind(null, onFailure), keepKeys);
 	  }
 	};
 
@@ -674,6 +689,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _validators.optionValidators.state(options);
 	  options.queries && _validators.optionValidators.query(options);
 	  options.then && (options.then.called = false);
+	  options.onFailure = options.onFailure ? options.onFailure : function () {};
+	  options.keepKeys = options.keepKeys && options.asArray;
 
 	  //store reference to react's setState
 	  if (_sync.called !== true) {
@@ -687,10 +704,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  (0, _utils._firebaseRefsMixin)(id, ref, state.refs);
 	  (0, _utils._addListener)(id, 'syncState', options, ref, state.listeners);
 
-	  options.onFailure = options.onFailure ? options.onFailure : function () {};
 	  var sync = {
 	    id: id,
-	    updateFirebase: _utils._updateSyncState.bind(null, ref, options.onFailure),
+	    updateFirebase: _utils._updateSyncState.bind(null, ref, options.onFailure, options.keepKeys),
 	    stateKey: options.state
 	  };
 	  (0, _utils._addSync)(options.context, sync, state.syncs);

@@ -15,6 +15,8 @@ export default function _sync(endpoint, options, state){
   optionValidators.state(options);
   options.queries && optionValidators.query(options);
   options.then && (options.then.called = false);
+  options.onFailure = options.onFailure ? options.onFailure : () => {};
+  options.keepKeys = options.keepKeys && options.asArray;
 
   //store reference to react's setState
   if(_sync.called !== true){
@@ -28,10 +30,9 @@ export default function _sync(endpoint, options, state){
   _firebaseRefsMixin(id, ref, state.refs);
   _addListener(id, 'syncState', options, ref, state.listeners);
 
-  options.onFailure = options.onFailure ? options.onFailure : () => {};
   var sync = {
     id: id,
-    updateFirebase: _updateSyncState.bind(null, ref, options.onFailure),
+    updateFirebase: _updateSyncState.bind(null, ref, options.onFailure, options.keepKeys),
     stateKey: options.state
   }
   _addSync(options.context, sync, state.syncs);
