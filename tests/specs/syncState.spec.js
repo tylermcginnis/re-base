@@ -5,6 +5,7 @@ var firebase = require('firebase');
 
 var invalidEndpoints = require('../fixtures/invalidEndpoints');
 var dummyObjData = require('../fixtures/dummyObjData');
+var dummyArrayOfObjects = require('../fixtures/dummyArrayOfObjects');
 var invalidOptions = require('../fixtures/invalidOptions');
 var dummyArrData = require('../fixtures/dummyArrData');
 var firebaseConfig = require('../fixtures/config');
@@ -466,7 +467,8 @@ describe('syncState()', function(){
           this.ref = base.syncState(`${testEndpoint}/myFriends`, {
             context: this,
             state: 'friends',
-            asArray: true
+            asArray: true,
+            keepKeys: true
           });
         }
         componentDidMount(){
@@ -618,6 +620,93 @@ describe('syncState()', function(){
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
+    it('syncState() keeps generated keys when asArray and keepKeys options are true', function(done){
+      //set up
+      firebase.Promise.all(dummyArrayOfObjects.map(item => {
+        return ref.child(`${testEndpoint}/users`).push(Object.assign(item, {timestamp: base.database.ServerValue.TIMESTAMP}));
+      })).then(() => {
+        class TestComponent extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              users: [],
+              hasUpdated: false
+            }
+          }
+          componentWillMount(){
+            this.ref = base.syncState(`${testEndpoint}/users`, {
+              context: this,
+              state: 'users',
+              asArray: true,
+              keepKeys: true
+            })
+          }
+          componentDidUpdate(){
+
+            if(!this.state.hasUpdated){
+              var newArr = [].concat(this.state.users.slice(0,1));
+              this.setState({
+                users: newArr,
+                hasUpdated: true,
+                keyToVerify: newArr[0].key
+              });
+            } else {
+              expect(this.state.users[0].key).toEqual(this.state.keyToVerify);
+              expect(this.state.users[0].timestamp).toEqual(jasmine.any(Number));
+              ReactDOM.unmountComponentAtNode(document.body);
+              done();
+            }
+          }
+          render(){
+            return <div>IQ</div>
+          }
+        }
+        ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+      }).catch(err => {
+        done.fail(err);
+      });
+    });
+
+    it('syncState() will not attempt to keep keys if the objects in the array do not have a key property when asArray and keepKeys options are true', function(done){
+      //set up
+      ref.child(`${testEndpoint}/users`).set(dummyArrData).then(() => {
+        class TestComponent extends React.Component{
+          constructor(props){
+            super(props);
+            this.state = {
+              users: [],
+              hasUpdated: false
+            }
+          }
+          componentWillMount(){
+            this.ref = base.syncState(`${testEndpoint}/users`, {
+              context: this,
+              state: 'users',
+              asArray: true
+            })
+          }
+          componentDidUpdate(){
+            if(!this.state.hasUpdated){
+              var newArr = [].concat(this.state.users.slice(0,1));
+              this.setState({
+                users: newArr,
+                hasUpdated: true
+              });
+            } else {
+              expect(this.state.users[0].key).toBeUndefined();
+              ReactDOM.unmountComponentAtNode(document.body);
+              done();
+            }
+          }
+          render(){
+            return <div>IQ</div>
+          }
+        }
+        ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+      }).catch(err => {
+        done.fail(err);
+      });
+    });
 
   it('syncState() syncs and converts server timestamps in an array', function(done){
     class TestComponent extends React.Component{

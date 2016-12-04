@@ -119,6 +119,7 @@ myApp.delete(() => {
       - context: (object - required) The context of your component
       - state: (string - required) The state property you want to sync with Firebase
       - asArray: (boolean - optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
+      - keepKeys: (boolean - optional) will keep any firebase generated keys intact when manipulating data using the asArray option.
       - queries: (object - optional) Queries to be used with your read operations.  See [Query Options](#queries) for more details.
       - then: (function - optional) The callback function that will be invoked when the initial listener is established with Firebase. Typically used (with syncState) to change `this.state.loading` to false.
       - onFailure: (function - optional) A callback function that will be invoked if the current user does not have read  or write permissions at the location.

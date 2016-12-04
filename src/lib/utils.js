@@ -88,18 +88,33 @@ const _handleError = function(onFailure, err){
   }
 }
 
-const _updateSyncState = function (ref, onFailure, data){
+const _setData = function(ref, data, handleError, keepKeys){
+    if(Array.isArray(data) && keepKeys){
+      var shouldConvertToObject = data.reduce((acc, curr) => {
+        return acc ? acc : _isObject(curr) && curr.hasOwnProperty('key');
+      }, false);
+      if(shouldConvertToObject){
+        data = data.reduce((acc, item ) => {
+          acc[item.key] = item;
+          return acc;
+        }, {});
+      }
+    }
+    ref.set(data, handleError);
+}
+
+const _updateSyncState = function (ref, onFailure, keepKeys, data){
   if(_isObject(data)) {
     for(var prop in data){
       //allow timestamps to be set
         if(prop !== '.sv'){
-            _updateSyncState(ref.child(prop), onFailure, data[prop]);
+            _updateSyncState(ref.child(prop), onFailure, keepKeys, data[prop]);
         } else {
-          ref.set(data, _handleError.bind(null, onFailure));
+          _setData(ref, data, _handleError.bind(null, onFailure), keepKeys);
         }
       }
   } else {
-    ref.set(data, _handleError.bind(null, onFailure));
+    _setData(ref, data, _handleError.bind(null, onFailure), keepKeys);
   }
 };
 
