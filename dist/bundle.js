@@ -689,7 +689,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _validators.optionValidators.state(options);
 	  options.queries && _validators.optionValidators.query(options);
 	  options.then && (options.then.called = false);
-	  options.onFailure = options.onFailure ? options.onFailure : function () {};
+	  options.onFailure = options.onFailure ? options.onFailure.bind(options.context) : function () {};
 	  options.keepKeys = options.keepKeys && options.asArray;
 
 	  //store reference to react's setState

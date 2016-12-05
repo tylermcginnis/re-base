@@ -15,7 +15,7 @@ export default function _sync(endpoint, options, state){
   optionValidators.state(options);
   options.queries && optionValidators.query(options);
   options.then && (options.then.called = false);
-  options.onFailure = options.onFailure ? options.onFailure : () => {};
+  options.onFailure = options.onFailure ? options.onFailure.bind(options.context) : () => {};
   options.keepKeys = options.keepKeys && options.asArray;
 
   //store reference to react's setState
