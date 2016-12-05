@@ -360,7 +360,7 @@ describe('syncState()', function(){
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
-    it('syncState() invokes .then when the initial listener is set', function(done){
+    it('syncState() invokes .then with correct context when the initial listener is set', function(done){
       class TestComponent extends React.Component{
         constructor(props){
           super(props);
@@ -370,6 +370,7 @@ describe('syncState()', function(){
           }
         }
         componentDidMount(){
+          var context = this;
           this.ref = base.syncState(`${testEndpoint}/userData`, {
             context: this,
             state: 'user',
@@ -378,6 +379,7 @@ describe('syncState()', function(){
                 loading: false
               }, () => {
                 expect(this.state.loading).toEqual(false);
+                expect(this).toEqual(context);
                 ReactDOM.unmountComponentAtNode(document.body);
                 done();
               })
@@ -395,7 +397,7 @@ describe('syncState()', function(){
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
-    it('syncState\'s .onFailure method gets invoked with error if permissions do not allow read', function(done){
+    it('syncState\'s .onFailure method gets invoked with error and correct context if permissions do not allow read', function(done){
       class TestComponent extends React.Component{
         constructor(props){
           super(props);
@@ -404,11 +406,13 @@ describe('syncState()', function(){
           }
         }
         componentDidMount(){
+          var context = this;
           this.ref = base.syncState(`/readFail`, {
             context: this,
             state: 'user',
             onFailure(err){
               expect(err).not.toBeUndefined();
+              expect(this).toEqual(context);
               done();
             }
           });
@@ -424,7 +428,7 @@ describe('syncState()', function(){
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
-    it('syncState\'s .onFailure method gets invoked with error if permissions do not allow write', function(done){
+    it('syncState\'s .onFailure method gets invoked with error and correct context if permissions do not allow write', function(done){
       class TestComponent extends React.Component{
         constructor(props){
           super(props);
@@ -433,11 +437,13 @@ describe('syncState()', function(){
           }
         }
         componentDidMount(){
+          var context = this;
           this.ref = base.syncState(`/writeFail`, {
             context: this,
             state: 'user',
             onFailure(err){
               expect(err).not.toBeUndefined();
+              expect(this).toEqual(context);
               done();
             }
           });
