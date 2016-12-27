@@ -1,5 +1,6 @@
 import { _validateEndpoint, optionValidators } from '../validators';
 import { _addQueries, _toArray } from '../utils';
+import { Promise as FirebasePromise } from 'firebase';
 
 export default function _fetch(endpoint, options, db){
   _validateEndpoint(endpoint);
@@ -18,7 +19,7 @@ export default function _fetch(endpoint, options, db){
     if(options.onFailure && typeof options.onFailure === 'function'){
       options.onFailure.call(options.context, err);
     } else {
-      return firebase.Promise.reject(err);
+      return FirebasePromise.reject(err);
     }
   });
 };

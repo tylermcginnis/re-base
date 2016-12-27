@@ -620,6 +620,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils = __webpack_require__(3);
 
+	var _firebase = __webpack_require__(2);
+
 	function _fetch(endpoint, options, db) {
 	  (0, _validators._validateEndpoint)(endpoint);
 	  _validators.optionValidators.context(options);
@@ -637,7 +639,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (options.onFailure && typeof options.onFailure === 'function') {
 	      options.onFailure.call(options.context, err);
 	    } else {
-	      return firebase.Promise.reject(err);
+	      return _firebase.Promise.reject(err);
 	    }
 	  });
 	};

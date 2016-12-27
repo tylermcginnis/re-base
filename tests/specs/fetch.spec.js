@@ -133,6 +133,15 @@ describe('fetch()', function(){
       });
     });
 
+    it('fetch() returns rejected Promise when read fails or is denied', (done) => {
+      base.fetch('/readFail', {context:{}}).then(() => {
+        done.fail('Promise should reject')
+      }).catch(err => {
+        expect(err.message).toContain('permission_denied');
+        done();
+      })
+    });
+
     it('fetch() correctly updates the state of the component with data from fetch', function(done){
       var testApp = firebase.initializeApp(firebaseConfig, 'DB_CHECK');
       var ref = testApp.database().ref();
