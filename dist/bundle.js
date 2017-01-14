@@ -4,7 +4,7 @@
 	else if(typeof define === 'function' && define.amd)
 		define(["firebase"], factory);
 	else {
-		var a = typeof exports === 'object' ? factory(require("firebase")) : factory(root["Firebase"]);
+		var a = typeof exports === 'object' ? factory(require("firebase")) : factory(root["firebase"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
 })(this, function(__WEBPACK_EXTERNAL_MODULE_2__) {
