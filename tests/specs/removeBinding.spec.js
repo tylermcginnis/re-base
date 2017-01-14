@@ -2,7 +2,7 @@ var Rebase = require('../../src/rebase.js');
 var firebase = require('firebase');
 var React = require('react');
 var ReactDOM = require('react-dom');
-var config = require('../fixtures/config');
+var firebaseConfig = require('../fixtures/config');
 var dummyObjData = require('../fixtures/dummyObjData');
 var database = require('firebase/database');
 
@@ -17,7 +17,7 @@ describe('removeBinding()', function(){
     var mountNode = document.createElement('div');
     mountNode.setAttribute("id", "mount");
     document.body.appendChild(mountNode);
-    testApp = firebase.initializeApp(config, 'DB_CHECK');
+    testApp = firebase.initializeApp(firebaseConfig, 'DB_CHECK');
     ref = testApp.database().ref();
   });
 
