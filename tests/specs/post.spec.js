@@ -2,7 +2,7 @@ var Rebase = require('../../src/rebase.js');
 var React = require('react');
 var ReactDOM = require('react-dom');
 var firebase = require('firebase');
-var database = require('database');
+var database = require('firebase/database');
 
 var invalidEndpoints = require('../fixtures/invalidEndpoints');
 var dummyObjData = require('../fixtures/dummyObjData');
