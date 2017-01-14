@@ -30,7 +30,6 @@ describe('update()', function(){
     app = firebase.initializeApp(firebaseConfig);
     var db = database(app);
     base = Rebase.createClass(db);
-    done();
   });
 
   afterEach(done => {
