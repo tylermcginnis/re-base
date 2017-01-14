@@ -1,7 +1,8 @@
 var Rebase = require('../../src/rebase.js');
 var React = require('react');
 var ReactDOM = require('react-dom');
-var firebase = require('firebase');
+var firebase = require('firebase/app');
+var database = require('firebase/database');
 
 var invalidEndpoints = require('../fixtures/invalidEndpoints');
 var dummyObjData = require('../fixtures/dummyObjData');
@@ -15,6 +16,7 @@ describe('bindToState()', function(){
   var testEndpoint = 'test/bindToState';
   var testApp;
   var ref;
+  var app;
 
   beforeAll(() => {
     testApp = firebase.initializeApp(firebaseConfig, 'DB_CHECK');
@@ -31,13 +33,15 @@ describe('bindToState()', function(){
   });
 
   beforeEach(() => {
-    base = Rebase.createClass(firebaseConfig);
+    app = firebase.initializeApp(firebaseConfig);
+    var db = database(app);
+    base = Rebase.createClass(db);
   });
 
   afterEach(done => {
     ReactDOM.unmountComponentAtNode(document.getElementById("mount"));
     firebase.Promise.all([
-      base.delete(),
+      app.delete(),
       ref.child(testEndpoint).set(null)
     ]).then(done);
   });
