@@ -7,7 +7,7 @@
 		var a = typeof exports === 'object' ? factory(require("firebase")) : factory(root["firebase"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(this, function(__WEBPACK_EXTERNAL_MODULE_2__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_5__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -63,15 +63,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var _firebase = __webpack_require__(2);
+	var _utils = __webpack_require__(2);
 
-	var _firebase2 = _interopRequireDefault(_firebase);
+	var _validators = __webpack_require__(3);
 
-	var _utils = __webpack_require__(3);
-
-	var _validators = __webpack_require__(4);
-
-	var _push2 = __webpack_require__(5);
+	var _push2 = __webpack_require__(4);
 
 	var _push3 = _interopRequireDefault(_push2);
 
@@ -107,77 +103,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _remove3 = _interopRequireDefault(_remove2);
 
-	var _resetPassword2 = __webpack_require__(14);
-
-	var _resetPassword3 = _interopRequireDefault(_resetPassword2);
-
-	var _createUser2 = __webpack_require__(15);
-
-	var _createUser3 = _interopRequireDefault(_createUser2);
-
-	var _authWithPassword2 = __webpack_require__(16);
-
-	var _authWithPassword3 = _interopRequireDefault(_authWithPassword2);
-
-	var _authWithCustomToken2 = __webpack_require__(17);
-
-	var _authWithCustomToken3 = _interopRequireDefault(_authWithCustomToken2);
-
-	var _authWithOAuthPopup2 = __webpack_require__(18);
-
-	var _authWithOAuthPopup3 = _interopRequireDefault(_authWithOAuthPopup2);
-
-	var _getOAuthRedirectResult2 = __webpack_require__(20);
-
-	var _getOAuthRedirectResult3 = _interopRequireDefault(_getOAuthRedirectResult2);
-
-	var _authWithOAuthToken2 = __webpack_require__(21);
-
-	var _authWithOAuthToken3 = _interopRequireDefault(_authWithOAuthToken2);
-
-	var _authWithOAuthRedirect2 = __webpack_require__(22);
-
-	var _authWithOAuthRedirect3 = _interopRequireDefault(_authWithOAuthRedirect2);
-
-	var _onAuth2 = __webpack_require__(23);
-
-	var _onAuth3 = _interopRequireDefault(_onAuth2);
-
-	var _unauth2 = __webpack_require__(24);
-
-	var _unauth3 = _interopRequireDefault(_unauth2);
-
-	var _getAuth2 = __webpack_require__(25);
-
-	var _getAuth3 = _interopRequireDefault(_getAuth2);
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	//database
-
-
-	//helpers
 	module.exports = function () {
 
-	  var apps = {};
-
-	  function init(app) {
+	  function init(db) {
 	    return function () {
 	      var firebaseRefs = new Map();
 	      var firebaseListeners = new Map();
 	      var syncs = new WeakMap();
 
 	      return {
-	        name: app.name,
-	        storage: _firebase2.default.storage,
-	        database: _firebase2.default.database,
-	        auth: _firebase2.default.auth,
-	        messaging: _firebase2.default.messaging,
-	        app: _firebase2.default.app,
-	        initializedApp: app,
+	        initializedApp: db.app,
 	        listenTo: function listenTo(endpoint, options) {
 	          return _bind3.default.call(this, endpoint, options, 'listenTo', {
-	            db: this.database(this.initializedApp),
+	            db: db,
 	            refs: firebaseRefs,
 	            listeners: firebaseListeners,
 	            syncs: syncs
@@ -185,32 +125,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	        },
 	        bindToState: function bindToState(endpoint, options) {
 	          return _bind3.default.call(this, endpoint, options, 'bindToState', {
-	            db: this.database(this.initializedApp),
+	            db: db,
 	            refs: firebaseRefs,
 	            listeners: firebaseListeners
 	          });
 	        },
 	        syncState: function syncState(endpoint, options) {
 	          return _sync3.default.call(this, endpoint, options, {
-	            db: this.database(this.initializedApp),
+	            db: db,
 	            refs: firebaseRefs,
 	            listeners: firebaseListeners,
 	            syncs: syncs
 	          });
 	        },
 	        fetch: function fetch(endpoint, options) {
-	          return (0, _fetch3.default)(endpoint, options, this.database(this.initializedApp));
+	          return (0, _fetch3.default)(endpoint, options, db);
 	        },
 	        post: function post(endpoint, options) {
-	          return (0, _post3.default)(endpoint, options, this.database(this.initializedApp));
+	          return (0, _post3.default)(endpoint, options, db);
 	        },
 	        update: function update(endpoint, options) {
 	          return (0, _update3.default)(endpoint, options, {
-	            db: this.database(this.initializedApp)
+	            db: db
 	          });
 	        },
 	        push: function push(endpoint, options) {
-	          return (0, _push3.default)(endpoint, options, this.database(this.initializedApp));
+	          return (0, _push3.default)(endpoint, options, db);
 	        },
 	        removeBinding: function removeBinding(endpoint) {
 	          (0, _removeBinding3.default)(endpoint, {
@@ -220,7 +160,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          });
 	        },
 	        remove: function remove(endpoint, fn) {
-	          return (0, _remove3.default)(endpoint, this.database(this.initializedApp), fn);
+	          return (0, _remove3.default)(endpoint, db, fn);
 	        },
 	        reset: function reset() {
 	          return (0, _reset3.default)({
@@ -228,86 +168,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	            listeners: firebaseListeners,
 	            syncs: syncs
 	          });
-	        },
-	        authWithPassword: function authWithPassword(credentials, fn) {
-	          return (0, _authWithPassword3.default)(credentials, fn, this.auth(this.initializedApp));
-	        },
-	        authWithCustomToken: function authWithCustomToken(token, fn) {
-	          return (0, _authWithCustomToken3.default)(token, fn, this.auth(this.initializedApp));
-	        },
-	        authWithOAuthPopup: function authWithOAuthPopup(provider, fn, settings) {
-	          return (0, _authWithOAuthPopup3.default)(provider, fn, settings, this.auth(this.initializedApp));
-	        },
-	        authWithOAuthRedirect: function authWithOAuthRedirect(provider, fn, settings) {
-	          return (0, _authWithOAuthRedirect3.default)(provider, fn, settings, this.auth(this.initializedApp));
-	        },
-	        authWithOAuthToken: function authWithOAuthToken(provider, token, fn, settings) {
-	          return (0, _authWithOAuthToken3.default)(provider, token, fn, settings, this.auth(this.initializedApp));
-	        },
-	        authGetOAuthRedirectResult: function authGetOAuthRedirectResult(fn) {
-	          return (0, _getOAuthRedirectResult3.default)(fn, this.auth(this.initializedApp));
-	        },
-	        onAuth: function onAuth(fn) {
-	          return (0, _onAuth3.default)(fn, this.auth(this.initializedApp));
-	        },
-	        unauth: function unauth(fn) {
-	          return (0, _unauth3.default)(this.auth(this.initializedApp));
-	        },
-	        getAuth: function getAuth() {
-	          return (0, _getAuth3.default)(this.auth(this.initializedApp));
-	        },
-	        createUser: function createUser(credentials, fn) {
-	          return (0, _createUser3.default)(credentials, fn, this.auth(this.initializedApp));
-	        },
-	        resetPassword: function resetPassword(credentials, fn) {
-	          return (0, _resetPassword3.default)(credentials, fn, this.auth(this.initializedApp));
-	        },
-	        delete: function _delete(fn) {
-	          var _this = this;
-
-	          delete apps[this.name];
-	          return this.initializedApp.delete().then(function () {
-	            _this.reset();
-	            if (typeof fn === 'function') {
-	              fn.call(null, true);
-	            } else {
-	              return _firebase2.default.Promise.resolve(true);
-	            }
-	          });
 	        }
 	      };
 	    }();
 	  };
 
 	  return {
-	    createClass: function createClass(config) {
-	      var name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '[DEFAULT]';
-
-	      if (typeof apps[name] !== 'undefined') {
-	        return apps[name];
-	      } else {
-	        (0, _validators._validateConfig)(config);
-	        var app = _firebase2.default.initializeApp(config, name);
-	      }
-	      apps[name] = init(app);
-	      return apps[name];
+	    createClass: function createClass(db) {
+	      (0, _validators._validateDatabase)(db);
+	      return init(db);
 	    }
 	  };
 	}();
 
-	//auth
-
-
-	//user
+	//database
+	//helpers
 
 /***/ },
 /* 2 */
-/***/ function(module, exports) {
-
-	module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
-
-/***/ },
-/* 3 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -489,7 +367,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports._addListener = _addListener;
 
 /***/ },
-/* 4 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -497,11 +375,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports._validateEndpoint = exports._validateConfig = exports.optionValidators = undefined;
+	exports._validateEndpoint = exports._validateDatabase = exports.optionValidators = undefined;
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-	var _utils = __webpack_require__(3);
+	var _utils = __webpack_require__(2);
 
 	var optionValidators = {
 	  notObject: function notObject(options) {
@@ -572,12 +450,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	var _validateConfig = function _validateConfig(config) {
+	var _validateDatabase = function _validateDatabase(db) {
 	  var defaultError = 'Rebase.createClass failed.';
 	  var errorMsg;
-	  if ((typeof config === 'undefined' ? 'undefined' : _typeof(config)) !== 'object') {
-	    errorMsg = defaultError + ' to migrate from 2.x.x to 3.x.x, the config must be an object. See: https://firebase.google.com/docs/web/setup#add_firebase_to_your_app';
-	  } else if (!config || arguments.length > 1) {
+	  if ((typeof db === 'undefined' ? 'undefined' : _typeof(db)) !== 'object' || !db.app) {
+	    errorMsg = defaultError + ' Expected an initialized firebase database object.';
+	  } else if (!db || arguments.length > 1) {
 	    errorMsg = defaultError + ' expects 1 argument.';
 	  }
 
@@ -587,11 +465,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	exports.optionValidators = optionValidators;
-	exports._validateConfig = _validateConfig;
+	exports._validateDatabase = _validateDatabase;
 	exports._validateEndpoint = _validateEndpoint;
 
 /***/ },
-/* 5 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -601,11 +479,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _push;
 
-	var _firebase = __webpack_require__(2);
+	var _firebase = __webpack_require__(5);
 
 	var _firebase2 = _interopRequireDefault(_firebase);
 
-	var _validators = __webpack_require__(4);
+	var _validators = __webpack_require__(3);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -623,6 +501,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	module.exports = __WEBPACK_EXTERNAL_MODULE_5__;
+
+/***/ },
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -633,11 +517,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _fetch;
 
-	var _validators = __webpack_require__(4);
+	var _validators = __webpack_require__(3);
 
-	var _utils = __webpack_require__(3);
+	var _utils = __webpack_require__(2);
 
-	var _firebase = __webpack_require__(2);
+	var _firebase = __webpack_require__(5);
 
 	function _fetch(endpoint, options, db) {
 	  (0, _validators._validateEndpoint)(endpoint);
@@ -673,9 +557,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _post;
 
-	var _firebase = __webpack_require__(2);
+	var _firebase = __webpack_require__(5);
 
-	var _validators = __webpack_require__(4);
+	var _validators = __webpack_require__(3);
 
 	function _post(endpoint, options, db) {
 	  (0, _validators._validateEndpoint)(endpoint);
@@ -699,9 +583,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _sync;
 
-	var _validators = __webpack_require__(4);
+	var _validators = __webpack_require__(3);
 
-	var _utils = __webpack_require__(3);
+	var _utils = __webpack_require__(2);
 
 	function _sync(endpoint, options, state) {
 	  (0, _validators._validateEndpoint)(endpoint);
@@ -774,9 +658,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _bind;
 
-	var _validators = __webpack_require__(4);
+	var _validators = __webpack_require__(3);
 
-	var _utils = __webpack_require__(3);
+	var _utils = __webpack_require__(2);
 
 	function _bind(endpoint, options, invoker, state) {
 	  (0, _validators._validateEndpoint)(endpoint);
@@ -805,7 +689,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _update;
 
-	var _validators = __webpack_require__(4);
+	var _validators = __webpack_require__(3);
 
 	function _update(endpoint, options, state) {
 	  (0, _validators._validateEndpoint)(endpoint);
@@ -849,7 +733,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _removeBinding;
 
-	var _utils = __webpack_require__(3);
+	var _utils = __webpack_require__(2);
 
 	function _removeBinding(_ref, _ref2) {
 	  var endpoint = _ref.endpoint,
@@ -894,293 +778,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = function (endpoint, db, fn) {
 	  return db.ref().child(endpoint).remove(fn);
 	};
-
-/***/ },
-/* 14 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	   value: true
-	});
-	exports.default = _resetPassword;
-	function _resetPassword(credentials, fn, auth) {
-	   var email = credentials.email;
-
-	   return auth.sendPasswordResetEmail(email).then(function () {
-	      return fn(null);
-	   }).catch(function (error) {
-	      return fn(error);
-	   });
-	};
-
-/***/ },
-/* 15 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = _createUser;
-	function _createUser(credentials, fn, auth) {
-	  var email = credentials.email,
-	      password = credentials.password;
-
-	  return auth.createUserWithEmailAndPassword(email, password).then(function (authData) {
-	    return fn(null, authData);
-	  }).catch(function (err) {
-	    return fn(err);
-	  });
-	};
-
-/***/ },
-/* 16 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = _authWithPassword;
-	function _authWithPassword(credentials, fn, auth) {
-	  var email = credentials.email,
-	      password = credentials.password;
-
-	  return auth.signInWithEmailAndPassword(email, password).then(function (authData) {
-	    return fn(null, authData);
-	  }).catch(function (err) {
-	    return fn(err);
-	  });
-	}
-
-/***/ },
-/* 17 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = _authWithCustomToken;
-	function _authWithCustomToken(token, fn, auth) {
-	  return auth.signInWithCustomToken(token).then(function (user) {
-	    return fn(null, user);
-	  }).catch(function (error) {
-	    return fn(error);
-	  });
-	}
-
-/***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	exports.default = _authWithOAuthPopup;
-
-	var _getAuthProvider2 = __webpack_require__(19);
-
-	var _getAuthProvider3 = _interopRequireDefault(_getAuthProvider2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _authWithOAuthPopup(provider, fn, settings, auth) {
-	    settings = settings || {};
-	    var authProvider = (0, _getAuthProvider3.default)(provider, settings);
-	    return auth.signInWithPopup(authProvider).then(function (authData) {
-	        return fn(null, authData);
-	    }).catch(function (error) {
-	        return fn(error);
-	    });
-	}
-
-/***/ },
-/* 19 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = _getAuthProvider;
-
-	var _utils = __webpack_require__(3);
-
-	var _firebase = __webpack_require__(2);
-
-	function _getFacebookProvider(settings) {
-	  var provider = new _firebase.auth.FacebookAuthProvider();
-	  if (settings.scope) {
-	    provider = (0, _utils._addScope)(settings.scope, provider);
-	  }
-	  return provider;
-	}
-
-	function _getTwitterProvider() {
-	  return new _firebase.auth.TwitterAuthProvider();
-	}
-
-	function _getGithubProvider(settings) {
-	  var provider = new _firebase.auth.GithubAuthProvider();
-	  if (settings.scope) {
-	    provider = (0, _utils._addScope)(settings.scope, provider);
-	  }
-	  return provider;
-	};
-
-	function _getGoogleProvider(settings) {
-	  var provider = new _firebase.auth.GoogleAuthProvider();
-	  if (settings.scope) {
-	    provider = (0, _utils._addScope)(settings.scope, provider);
-	  }
-	  return provider;
-	};
-
-	function _getAuthProvider(service, settings) {
-	  switch (service) {
-	    case 'twitter':
-	      return _getTwitterProvider();
-	      break;
-	    case 'google':
-	      return _getGoogleProvider(settings);
-	      break;
-	    case 'facebook':
-	      return _getFacebookProvider(settings);
-	      break;
-	    case 'github':
-	      return _getGithubProvider(settings);
-	      break;
-	    default:
-	      (0, _utils._throwError)('Expected auth provider requested. Available auth providers: facebook,twitter,github, google', 'UNKNOWN AUTH PROVIDER');
-	      break;
-	  }
-	};
-
-/***/ },
-/* 20 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	exports.default = _getOAuthRedirectResult;
-	function _getOAuthRedirectResult(fn, auth) {
-	    return auth.getRedirectResult().then(function (user) {
-	        return fn(null, user);
-	    }).catch(function (error) {
-	        return fn(error);
-	    });
-	}
-
-/***/ },
-/* 21 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	exports.default = _authWithOAuthToken;
-
-	var _getAuthProvider2 = __webpack_require__(19);
-
-	var _getAuthProvider3 = _interopRequireDefault(_getAuthProvider2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-	function _authWithOAuthToken(provider, token, fn, settings, auth) {
-	    settings = settings || {};
-	    var authProvider = (0, _getAuthProvider3.default)(provider, settings);
-	    var credential = authProvider.credential.apply(authProvider, [token].concat(_toConsumableArray(settings.providerOptions)));
-	    return auth.signInWithCredential(credential).then(function (authData) {
-	        return fn(null, authData);
-	    }).catch(function (error) {
-	        return fn(error);
-	    });
-	}
-
-/***/ },
-/* 22 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	exports.default = _authWithOAuthRedirect;
-
-	var _getAuthProvider2 = __webpack_require__(19);
-
-	var _getAuthProvider3 = _interopRequireDefault(_getAuthProvider2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _authWithOAuthRedirect(provider, fn, settings, auth) {
-	    settings = settings || {};
-	    var authProvider = (0, _getAuthProvider3.default)(provider, settings);
-	    return auth.signInWithRedirect(authProvider).then(function () {
-	        return fn(null);
-	    }).catch(function (error) {
-	        return fn(error);
-	    });
-	}
-
-/***/ },
-/* 23 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = _onAuth;
-	function _onAuth(fn, auth) {
-	  return auth.onAuthStateChanged(fn);
-	}
-
-/***/ },
-/* 24 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = _unauth;
-	function _unauth(auth) {
-	  return auth.signOut();
-	}
-
-/***/ },
-/* 25 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = _getAuth;
-	function _getAuth(auth) {
-	  return auth.currentUser;
-	}
 
 /***/ }
 /******/ ])
