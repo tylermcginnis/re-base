@@ -2,12 +2,14 @@ var Rebase = require('../../src/rebase.js');
 var firebase = require('firebase');
 var firebaseConfig = require('../fixtures/config');
 var dummyObjData = require('../fixtures/dummyObjData');
+var database = require('firebase/database');
 
 describe('remove()', function(){
   var base;
   var testEndpoint = 'test/remove';
   var testApp;
   var ref;
+  var app;
 
   beforeAll(() => {
     testApp = firebase.initializeApp(firebaseConfig, 'DB_CHECK');
@@ -19,12 +21,14 @@ describe('remove()', function(){
   });
 
   beforeEach(done => {
-    base = Rebase.createClass(firebaseConfig);
+    app = firebase.initializeApp(firebaseConfig);
+    var db = database(app);
+    base = Rebase.createClass(db);
     done();
   });
 
   afterEach(done => {
-    base.delete(() => {
+    app.delete(() => {
       ref.child(testEndpoint).set(null).then(done);
     });
   });
