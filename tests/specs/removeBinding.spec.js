@@ -4,12 +4,14 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var config = require('../fixtures/config');
 var dummyObjData = require('../fixtures/dummyObjData');
+var database = require('firebase/database');
 
 describe('removeBinding()', function(){
   var base;
   var ref;
   var testApp;
   var testEndpoint = 'test/removeBinding';
+  var app;
 
   beforeAll(() => {
     var mountNode = document.createElement('div');
@@ -26,12 +28,14 @@ describe('removeBinding()', function(){
   });
 
   beforeEach(() => {
-    base = Rebase.createClass(config);
+    app = firebase.initializeApp(firebaseConfig);
+    var db = database(db);
+    base = Rebase.createClass(db);
   });
 
   afterEach(done => {
     ref.child(testEndpoint).set(null).then(() => {
-      base.delete().then(done);
+      app.delete().then(done);
     });
   });
 
