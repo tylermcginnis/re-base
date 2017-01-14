@@ -28,9 +28,10 @@ describe('remove()', function(){
   });
 
   afterEach(done => {
-    app.delete(() => {
-      ref.child(testEndpoint).set(null).then(done);
-    });
+    firebase.Promise.all([
+      ref.child(testEndpoint).set(null),
+      app.delete()
+    ]).then(done).catch(done.fail);
   });
 
   it('should remove all data at the location', function(done){
