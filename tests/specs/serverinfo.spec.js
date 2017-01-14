@@ -1,17 +1,21 @@
 var Rebase = require('../../src/rebase.js');
 var firebase = require('firebase');
+var database = require('firebase/database');
 
 var config = require('../fixtures/config');
 
 describe('Firebase Server Info', function(){
   var base;
+  var app;
 
   beforeEach(() => {
-    base = Rebase.createClass(config);
+    app = firebase.initializeApp(firebaseConfig);
+    var db = database(app);
+    base = Rebase.createClass(db);
   });
 
   afterEach(done => {
-    base.delete().then(done);
+    app.delete().then(done);
   });
 
   it('correctly retrieves Server Time Offset', function(done){
