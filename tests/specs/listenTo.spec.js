@@ -2,17 +2,19 @@ var Rebase = require('../../src/rebase.js');
 var React = require('react');
 var ReactDOM = require('react-dom');
 var firebase = require('firebase');
+var database = require('firebase/database');
 
 var invalidEndpoints = require('../fixtures/invalidEndpoints');
 var dummyObjData = require('../fixtures/dummyObjData');
 var invalidOptions = require('../fixtures/invalidOptions');
 var firebaseConfig = require('../fixtures/config');
 
-describe('listenTo()', function(){
+fdescribe('listenTo()', function(){
   var base;
   var testEndpoint = 'test/listenTo';
   var testApp;
   var ref;
+  var app;
 
   beforeAll(() => {
     testApp = firebase.initializeApp(firebaseConfig, 'DB_CHECK');
@@ -27,13 +29,15 @@ describe('listenTo()', function(){
   });
 
   beforeEach(() => {
-    base = Rebase.createClass(firebaseConfig);
+    app = firebase.initializeApp(firebaseConfig);
+    var db = database(app);
+    base = Rebase.createClass(db);
   });
 
   afterEach(done => {
     ReactDOM.unmountComponentAtNode(document.body);
     firebase.Promise.all([
-      base.delete(),
+      app.delete(),
       ref.child(testEndpoint).set(null)
     ]).then(done);
   });
