@@ -9,7 +9,7 @@ var dummyObjData = require('../fixtures/dummyObjData');
 var invalidOptions = require('../fixtures/invalidOptions');
 var firebaseConfig = require('../fixtures/config');
 
-fdescribe('listenTo()', function(){
+describe('listenTo()', function(){
   var base;
   var testEndpoint = 'test/listenTo';
   var testApp;
