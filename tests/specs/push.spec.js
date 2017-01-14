@@ -16,7 +16,7 @@ describe('push()', function(){
 
   beforeEach(done => {
     app = firebase.initializeApp(firebaseConfig);
-    db = database(db);
+    var db = database(app);
     base = Rebase.createClass(db);
     done();
   });
