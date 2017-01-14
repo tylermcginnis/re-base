@@ -2,7 +2,7 @@ var Rebase = require('../../src/rebase.js');
 var firebase = require('firebase');
 var React = require('react');
 var ReactDOM = require('react-dom');
-var config = require('../fixtures/config');
+var firebaseConfig = require('../fixtures/config');
 var dummyObjData = require('../fixtures/dummyObjData');
 var database = require('firebase/database');
 
@@ -17,7 +17,7 @@ describe('reset()', function(){
     var mountNode = document.createElement('div');
     mountNode.setAttribute("id", "mount");
     document.body.appendChild(mountNode);
-    testApp = firebase.initializeApp(config, 'DB_CHECK');
+    testApp = firebase.initializeApp(firebaseConfig, 'DB_CHECK');
     ref = testApp.database().ref();
   });
 
@@ -27,16 +27,17 @@ describe('reset()', function(){
     testApp.delete().then(done);
   });
 
-  beforeEach(done => {
+  beforeEach(() => {
     app = firebase.initializeApp(firebaseConfig);
     var db = database(app);
     base = Rebase.createClass(db);
   });
 
   afterEach(done => {
-    ref.child(testEndpoint).set(null).then(() => {
-      app.delete().then(done);
-    });
+    firebase.Promise.all([
+      ref.child(testEndpoint).set(null),
+      app.delete()
+    ]).then(done).catch(done.fail);
   });
 
   it('should remove listeners set by the app', function(done){
@@ -53,7 +54,7 @@ describe('reset()', function(){
           state: 'user'
         });
         base.reset();
-        ref.child(`${testEndpoint}`).set({user: 'abcdef'}).then(() => {
+        ref.child(testEndpoint).set({user: 'abcdef'}).then(() => {
           setTimeout(done, 500);
         })
       }
@@ -85,7 +86,7 @@ describe('reset()', function(){
           state: 'user'
         });
         base.reset();
-        ref.child(`${testEndpoint}`).set({user: 'abcdef'}).then(() => {
+        ref.child(testEndpoint).set({user: 'abcdef'}).then(() => {
           setTimeout(done, 500);
         })
       }
