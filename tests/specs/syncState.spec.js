@@ -736,7 +736,7 @@ describe('syncState()', function(){
     it('syncState() keeps generated keys when asArray and keepKeys options are true', function(done){
       //set up
       firebase.Promise.all(dummyArrayOfObjects.map(item => {
-        return ref.child(`${testEndpoint}/users`).push(Object.assign(item, {timestamp: base.database.ServerValue.TIMESTAMP}));
+        return ref.child(`${testEndpoint}/users`).push(Object.assign(item, {timestamp: database.ServerValue.TIMESTAMP}));
       })).then(() => {
         class TestComponent extends React.Component{
           constructor(props){
@@ -840,7 +840,7 @@ describe('syncState()', function(){
         this.setState({
           users: [{
             name: 'Al',
-            timestamp: base.database.ServerValue.TIMESTAMP
+            timestamp: database.ServerValue.TIMESTAMP
           }]
         })
       }
@@ -878,7 +878,7 @@ describe('syncState()', function(){
         this.setState({
           user: {
             name: 'Al',
-            timestamp: base.database.ServerValue.TIMESTAMP
+            timestamp: database.ServerValue.TIMESTAMP
           }
         });
       }
