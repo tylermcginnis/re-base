@@ -2,7 +2,7 @@ import firebase from 'firebase';
 
 //helpers
 import { throwError } from './lib/utils';
-import { _validateConfig } from './lib/validators';
+import { _validateDatabase } from './lib/validators';
 
 //database
 import _push from './lib/database/push';
@@ -151,15 +151,9 @@ module.exports = (function(){
   };
 
   return {
-    createClass(config, name = '[DEFAULT]'){
-      if(typeof apps[name] !== 'undefined'){
-        return apps[name];
-      } else {
-        _validateConfig(config);
-        var app = firebase.initializeApp(config, name);
-      }
-      apps[name] = init(app);
-      return apps[name];
+    createClass(db){
+        _validateDatabase(db);
+        return init(db);
     }
   };
 })();
