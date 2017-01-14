@@ -3,15 +3,15 @@ import { throwError } from './lib/utils';
 import { _validateDatabase } from './lib/validators';
 
 //database
-import _push from './lib/database/push';
-import _fetch from './lib/database/fetch';
-import _post from './lib/database/post';
-import _sync from './lib/database/sync';
-import _bind from './lib/database/bind';
-import _update from './lib/database/update';
-import _reset from './lib/database/reset';
-import _removeBinding from './lib/database/removeBinding';
-import _remove from './lib/database/remove';
+import _push from './lib/push';
+import _fetch from './lib/fetch';
+import _post from './lib/post';
+import _sync from './lib/sync';
+import _bind from './lib/bind';
+import _update from './lib/update';
+import _reset from './lib/reset';
+import _removeBinding from './lib/removeBinding';
+import _remove from './lib/remove';
 
 module.exports = (function(){
 

@@ -1,10 +1,10 @@
-import { optionValidators, _validateEndpoint } from '../validators';
+import { optionValidators, _validateEndpoint } from './validators';
 import {
   _createHash,
   _returnRef,
   _firebaseRefsMixin,
   _addListener
-} from '../utils';
+} from './utils';
 
 export default function _bind(endpoint, options, invoker, state){
   _validateEndpoint(endpoint);

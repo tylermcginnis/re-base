@@ -1,4 +1,4 @@
-import { _validateEndpoint, optionValidators } from '../validators';
+import { _validateEndpoint, optionValidators } from './validators';
 
 export default function _update(endpoint, options, state){
   _validateEndpoint(endpoint);

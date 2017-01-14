@@ -1,4 +1,4 @@
-import { _validateEndpoint, optionValidators } from '../validators';
+import { _validateEndpoint, optionValidators } from './validators';
 
 import {
   _createHash,
@@ -7,7 +7,7 @@ import {
   _addSync,
   _returnRef,
   _addListener
-} from '../utils';
+} from './utils';
 
 export default function _sync(endpoint, options, state){
   _validateEndpoint(endpoint);
