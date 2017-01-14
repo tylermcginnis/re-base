@@ -2,7 +2,7 @@ var Rebase = require('../../src/rebase.js');
 var firebase = require('firebase');
 var database = require('firebase/database');
 
-var config = require('../fixtures/config');
+var firebaseConfig = require('../fixtures/config');
 
 describe('Firebase Server Info', function(){
   var base;
