@@ -14,7 +14,6 @@ describe('createClass()', function(){
     var db = database(app);
     var base = Rebase.createClass(db);
 
-    expect(base.delete).toEqual(jasmine.any(Function), 'Public API: delete() not exposed');
     expect(base.listenTo).toEqual(jasmine.any(Function), 'Public API: listenTo() not exposed');
     expect(base.bindToState).toEqual(jasmine.any(Function), 'Public API: bindToState() not exposed');
     expect(base.syncState).toEqual(jasmine.any(Function), 'Public API: syncState() not exposed');
@@ -25,7 +24,6 @@ describe('createClass()', function(){
     expect(base.remove).toEqual(jasmine.any(Function), 'Public API: remove() not exposed');
     expect(base.reset).toEqual(jasmine.any(Function), 'Public API: reset() not exposed');
     expect(base.initializedApp).toEqual(jasmine.any(Object), 'Public API: initializedApp not exposed');
-    expect(base.database).toEqual(jasmine.any(Function), 'Public API: database not exposed');
     done();
 
     //clean up
