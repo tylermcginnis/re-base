@@ -38,7 +38,7 @@ $ npm install re-base
 #### For more in depth examples of the API, see the [`examples`](examples) folder.
 
 
-## createClass(firebaseConfig, name)
+## createClass(firebaseDatabase)
 
 ##### Purpose
 Accepts an initialized firebase database object
