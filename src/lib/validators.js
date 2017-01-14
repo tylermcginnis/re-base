@@ -72,12 +72,12 @@ const _validateEndpoint = function(endpoint){
   }
 };
 
-const _validateConfig = function(config) {
+const _validateDatabase = function(db) {
   var defaultError = 'Rebase.createClass failed.';
   var errorMsg;
-  if(typeof config !== 'object'){
-    errorMsg = `${defaultError} to migrate from 2.x.x to 3.x.x, the config must be an object. See: https://firebase.google.com/docs/web/setup#add_firebase_to_your_app`;
-  } else if(!config || arguments.length > 1){
+  if(typeof db !== 'object' || !db.app){
+    errorMsg = `${defaultError} Expected an initialized firebase database object.`;
+  } else if(!db || arguments.length > 1){
     errorMsg = `${defaultError} expects 1 argument.`;
   }
 
@@ -88,6 +88,6 @@ const _validateConfig = function(config) {
 
 export {
   optionValidators,
-  _validateConfig,
+  _validateDatabase,
   _validateEndpoint
 }
