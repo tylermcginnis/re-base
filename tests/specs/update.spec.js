@@ -2,6 +2,7 @@ var Rebase = require('../../src/rebase.js');
 var React = require('react');
 var ReactDOM = require('react-dom');
 var firebase = require('firebase');
+var database = require('firebase/database');
 
 var invalidEndpoints = require('../fixtures/invalidEndpoints');
 var dummyObjData = require('../fixtures/dummyObjData');
@@ -14,6 +15,7 @@ describe('update()', function(){
   var testEndpoint = 'test/update';
   var testApp;
   var ref;
+  var app;
 
   beforeAll(() => {
     testApp = firebase.initializeApp(firebaseConfig, 'CLEAN_UP');
@@ -24,16 +26,18 @@ describe('update()', function(){
     testApp.delete().then(done);
   });
 
-  beforeEach(done => {
-    base = Rebase.createClass(firebaseConfig);
+  beforeEach(() => {
+    app = firebase.initializeApp(firebaseConfig);
+    var db = database(app);
+    base = Rebase.createClass(db);
     done();
   });
 
   afterEach(done => {
     firebase.Promise.all([
-      base.delete(),
+      app.delete(),
       ref.child(testEndpoint).set(null)
-    ]).then(done);
+    ]).then(done).catch(done.fail);
   });
 
   it('update() throws an error given a invalid endpoint', function(){
