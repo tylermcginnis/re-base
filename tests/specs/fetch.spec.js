@@ -1,7 +1,8 @@
 var Rebase = require('../../src/rebase.js');
 var React = require('react');
 var ReactDOM = require('react-dom');
-var firebase = require('firebase');
+var firebase = require('firebase/app');
+var database = require('firebase/database');
 
 var invalidEndpoints = require('../fixtures/invalidEndpoints');
 var dummyObjData = require('../fixtures/dummyObjData');
@@ -14,6 +15,7 @@ var dummyArrData = require('../fixtures/dummyArrData');
 describe('fetch()', function(){
   var base;
   var testEndpoint = 'test/fetch';
+  var app;
 
   beforeAll(() => {
     var mountNode = document.createElement('div');
@@ -27,17 +29,21 @@ describe('fetch()', function(){
   });
 
   beforeEach(done => {
-    base = Rebase.createClass(firebaseConfig);
+    app = firebase.initializeApp(firebaseConfig);
+    var db = database(app);
+    base = Rebase.createClass(db);
     done();
   });
 
   afterEach(done => {
     ReactDOM.unmountComponentAtNode(document.body);
     var testApp = firebase.initializeApp(firebaseConfig, 'CLEAN_UP');
-    base.delete();
     testApp.database().ref(testEndpoint).set(null).then(() => {
-      testApp.delete().then(done);
-    });
+        return firebase.Promise.all([
+          app.delete(),
+          testApp.delete()
+        ]);
+    }).then(done).catch(err => done.fail(err));
   });
 
   it('fetch() throws an error given a invalid endpoint', function(){
@@ -45,7 +51,6 @@ describe('fetch()', function(){
       try {
         base.fetch(endpoint, {
           then(data){
-            done();
           }
         })
       } catch(err) {
