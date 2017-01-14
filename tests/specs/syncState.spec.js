@@ -2,6 +2,7 @@ var Rebase = require('../../src/rebase.js');
 var React = require('react');
 var ReactDOM = require('react-dom');
 var firebase = require('firebase');
+var database = require('firebase/database');
 
 var invalidEndpoints = require('../fixtures/invalidEndpoints');
 var dummyObjData = require('../fixtures/dummyObjData');
@@ -15,6 +16,7 @@ describe('syncState()', function(){
   var testEndpoint = 'test/syncState';
   var testApp;
   var ref;
+  var app;
 
   beforeAll(() => {
     testApp = firebase.initializeApp(firebaseConfig, 'DB_CHECK');
@@ -31,14 +33,16 @@ describe('syncState()', function(){
   });
 
   beforeEach(() => {
-    base = Rebase.createClass(firebaseConfig);
+    app = firebase.initializeApp(firebaseConfig);
+    var db = database(app);
+    base = Rebase.createClass(db);
   });
 
   afterEach(done => {
     firebase.Promise.all([
       ref.child(testEndpoint).set(null),
-      base.delete()
-    ]).then(done);
+      app.delete()
+    ]).then(done).catch(err => done.fail(err));
   });
 
   it('syncState() throws an error given a invalid endpoint', function(done){
