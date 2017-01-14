@@ -4,12 +4,14 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var config = require('../fixtures/config');
 var dummyObjData = require('../fixtures/dummyObjData');
+var database = require('firebase/database');
 
 describe('reset()', function(){
   var base;
   var ref;
   var testApp;
   var testEndpoint = 'test/reset';
+  var app;
 
   beforeAll(() => {
     var mountNode = document.createElement('div');
@@ -25,13 +27,15 @@ describe('reset()', function(){
     testApp.delete().then(done);
   });
 
-  beforeEach(() => {
-    base = Rebase.createClass(config);
+  beforeEach(done => {
+    app = firebase.initializeApp(firebaseConfig);
+    var db = database(app);
+    base = Rebase.createClass(db);
   });
 
   afterEach(done => {
     ref.child(testEndpoint).set(null).then(() => {
-      base.delete().then(done);
+      app.delete().then(done);
     });
   });
 
