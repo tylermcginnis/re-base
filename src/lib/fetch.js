@@ -14,12 +14,12 @@ export default function _fetch(endpoint, options, db){
       options.then.call(options.context, data);
     }
     return data;
-  }, err => {
+  }).catch(err => {
     //call onFailure callback if it exists otherwise return a rejected promise
     if(options.onFailure && typeof options.onFailure === 'function'){
       options.onFailure.call(options.context, err);
     } else {
-      return FirebasePromise.reject(err);
+      throw err;
     }
   });
 };

@@ -1,13 +1,13 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("firebase"));
+		module.exports = factory();
 	else if(typeof define === 'function' && define.amd)
-		define(["firebase"], factory);
+		define([], factory);
 	else {
-		var a = typeof exports === 'object' ? factory(require("firebase")) : factory(root["firebase"]);
+		var a = factory();
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(this, function(__WEBPACK_EXTERNAL_MODULE_6__) {
+})(this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -75,31 +75,31 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _fetch3 = _interopRequireDefault(_fetch2);
 
-	var _post2 = __webpack_require__(7);
+	var _post2 = __webpack_require__(6);
 
 	var _post3 = _interopRequireDefault(_post2);
 
-	var _sync2 = __webpack_require__(8);
+	var _sync2 = __webpack_require__(7);
 
 	var _sync3 = _interopRequireDefault(_sync2);
 
-	var _bind2 = __webpack_require__(9);
+	var _bind2 = __webpack_require__(8);
 
 	var _bind3 = _interopRequireDefault(_bind2);
 
-	var _update2 = __webpack_require__(10);
+	var _update2 = __webpack_require__(9);
 
 	var _update3 = _interopRequireDefault(_update2);
 
-	var _reset2 = __webpack_require__(11);
+	var _reset2 = __webpack_require__(10);
 
 	var _reset3 = _interopRequireDefault(_reset2);
 
-	var _removeBinding2 = __webpack_require__(12);
+	var _removeBinding2 = __webpack_require__(11);
 
 	var _removeBinding3 = _interopRequireDefault(_removeBinding2);
 
-	var _remove2 = __webpack_require__(13);
+	var _remove2 = __webpack_require__(12);
 
 	var _remove3 = _interopRequireDefault(_remove2);
 
@@ -509,8 +509,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils = __webpack_require__(2);
 
-	var _firebase = __webpack_require__(6);
-
 	function _fetch(endpoint, options, db) {
 	  (0, _validators._validateEndpoint)(endpoint);
 	  _validators.optionValidators.context(options);
@@ -524,24 +522,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	      options.then.call(options.context, data);
 	    }
 	    return data;
-	  }, function (err) {
+	  }).catch(function (err) {
 	    //call onFailure callback if it exists otherwise return a rejected promise
 	    if (options.onFailure && typeof options.onFailure === 'function') {
 	      options.onFailure.call(options.context, err);
 	    } else {
-	      return _firebase.Promise.reject(err);
+	      throw err;
 	    }
 	  });
 	};
 
 /***/ },
 /* 6 */
-/***/ function(module, exports) {
-
-	module.exports = __WEBPACK_EXTERNAL_MODULE_6__;
-
-/***/ },
-/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -565,7 +557,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 8 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -640,7 +632,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 9 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -671,7 +663,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 10 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -695,7 +687,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 11 */
+/* 10 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -715,7 +707,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 12 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -758,7 +750,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 13 */
+/* 12 */
 /***/ function(module, exports) {
 
 	"use strict";
