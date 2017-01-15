@@ -1,4 +1,3 @@
-import firebase from 'firebase';
 import { _validateEndpoint, optionValidators } from './validators';
 
 export default function _push(endpoint, options, db){

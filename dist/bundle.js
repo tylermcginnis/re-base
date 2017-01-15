@@ -7,7 +7,7 @@
 		var a = typeof exports === 'object' ? factory(require("firebase")) : factory(root["firebase"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(this, function(__WEBPACK_EXTERNAL_MODULE_5__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_6__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -71,7 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _push3 = _interopRequireDefault(_push2);
 
-	var _fetch2 = __webpack_require__(6);
+	var _fetch2 = __webpack_require__(5);
 
 	var _fetch3 = _interopRequireDefault(_fetch2);
 
@@ -479,13 +479,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _push;
 
-	var _firebase = __webpack_require__(5);
-
-	var _firebase2 = _interopRequireDefault(_firebase);
-
 	var _validators = __webpack_require__(3);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _push(endpoint, options, db) {
 	  (0, _validators._validateEndpoint)(endpoint);
@@ -502,12 +496,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 5 */
-/***/ function(module, exports) {
-
-	module.exports = __WEBPACK_EXTERNAL_MODULE_5__;
-
-/***/ },
-/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -521,7 +509,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils = __webpack_require__(2);
 
-	var _firebase = __webpack_require__(5);
+	var _firebase = __webpack_require__(6);
 
 	function _fetch(endpoint, options, db) {
 	  (0, _validators._validateEndpoint)(endpoint);
@@ -547,6 +535,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	module.exports = __WEBPACK_EXTERNAL_MODULE_6__;
+
+/***/ },
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -556,8 +550,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	exports.default = _post;
-
-	var _firebase = __webpack_require__(5);
 
 	var _validators = __webpack_require__(3);
 

@@ -7,30 +7,6 @@ var externals = {
       amd: 'firebase/app'
     }
   },
-  auth: {
-    'firebase/auth': {
-      root: 'firebase/auth',
-      commonjs2: 'firebase/auth',
-      commonjs: 'firebase/auth',
-      amd: 'firebase/auth'
-    }
-  },
-  messaging: {
-    'firebase/messaging': {
-      root: 'firebase/messaging',
-      commonjs2: 'firebase/messaging',
-      commonjs: 'firebase/messaging',
-      amd: 'firebase/messaging'
-    }
-  },
-  storage: {
-    'firebase/storage': {
-      root: 'firebase/storage',
-      commonjs2: 'firebase/storage',
-      commonjs: 'firebase/storage',
-      amd: 'firebase/storage'
-    }
-  },
   database: {
     'firebase/database': {
       root: 'firebase/database',
@@ -67,8 +43,7 @@ module.exports = [{
     libraryTarget: 'umd'
   },
   externals: [
-    externals.app, externals.auth, externals.database,
-    externals.messaging, externals.storage, externals.firebase
+    externals.app, externals.database, externals.firebase
   ],
   module: {
     loaders: loaders
