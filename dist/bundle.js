@@ -316,6 +316,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 	var _isObject = function _isObject(obj) {
@@ -332,6 +334,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    arr.push(val);
 	  });
 	  return arr;
+	};
+
+	var _prepareData = function _prepareData(snapshot) {
+	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	  var isNullable = options.isNullable,
+	      asArray = options.asArray;
+
+	  var data = snapshot.val();
+	  if (~['number', 'boolean'].indexOf(typeof data === 'undefined' ? 'undefined' : _typeof(data))) return data;
+	  if (isNullable === true && data === null) return null;
+	  if (asArray === true) return _toArray(snapshot);
+	  return data === null ? asArray === true ? [] : {} : data;
 	};
 
 	var _addSync = function _addSync(context, sync, syncs) {
@@ -441,20 +455,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _addListener = function _addListener(id, invoker, options, ref, listeners) {
 	  ref = _addQueries(ref, options.queries);
 	  listeners.set(id, ref.on('value', function (snapshot) {
-	    var data = snapshot.val();
-	    data = data === null ? options.asArray === true ? [] : {} : data;
+	    var data = _prepareData(snapshot, options);
 	    if (invoker === 'listenTo') {
-	      options.asArray === true ? options.then.call(options.context, _toArray(snapshot)) : options.then.call(options.context, data);
+	      options.then.call(options.context, data);
 	    } else if (invoker === 'syncState') {
-	      data = options.asArray === true ? _toArray(snapshot) : data;
 	      options.reactSetState.call(options.context, _defineProperty({}, options.state, data));
 	      if (options.then && options.then.called === false) {
 	        options.then.call(options.context);
 	        options.then.called = true;
 	      }
 	    } else if (invoker === 'bindToState') {
-	      var newState = {};
-	      options.asArray === true ? newState[options.state] = _toArray(snapshot) : newState[options.state] = data;
+	      var newState = _defineProperty({}, options.state, data);
 	      _setState.call(options.context, newState);
 	      if (options.then && options.then.called === false) {
 	        options.then.call(options.context);
@@ -470,6 +481,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports._returnRef = _returnRef;
 	exports._setState = _setState;
 	exports._throwError = _throwError;
+	exports._prepareData = _prepareData;
 	exports._toArray = _toArray;
 	exports._isObject = _isObject;
 	exports._addSync = _addSync;
@@ -629,7 +641,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var ref = db.ref(endpoint);
 	  ref = (0, _utils._addQueries)(ref, options.queries);
 	  return ref.once('value').then(function (snapshot) {
-	    var data = options.asArray === true ? (0, _utils._toArray)(snapshot) : snapshot.val();
+	    var data = (0, _utils._prepareData)(snapshot, options);
 	    if (options.then) {
 	      options.then.call(options.context, data);
 	    }

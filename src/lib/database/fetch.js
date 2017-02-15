@@ -1,5 +1,5 @@
 import { _validateEndpoint, optionValidators } from '../validators';
-import { _addQueries, _toArray } from '../utils';
+import { _addQueries, _toArray, _prepareData } from '../utils';
 import { Promise as FirebasePromise } from 'firebase';
 
 export default function _fetch(endpoint, options, db){
@@ -9,7 +9,7 @@ export default function _fetch(endpoint, options, db){
   var ref = db.ref(endpoint);
   ref = _addQueries(ref, options.queries);
   return ref.once('value').then(snapshot => {
-    var data = options.asArray === true ? _toArray(snapshot) : snapshot.val();
+    const data = _prepareData(snapshot, options);
     if(options.then){
       options.then.call(options.context, data);
     }
