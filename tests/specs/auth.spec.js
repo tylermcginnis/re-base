@@ -1,4 +1,4 @@
-var Rebase = require('../../dist/bundle');
+var Rebase = require('../../src/rebase.js');
 var firebase = require('firebase');
 
 var dummyUsers = require('../fixtures/dummyUsers');
