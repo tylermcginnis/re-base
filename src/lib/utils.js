@@ -14,6 +14,15 @@ const _toArray = function (snapshot){
   return arr;
 };
 
+const _prepareData = function (snapshot, options = {}){
+  const {isNullable, asArray} = options;
+  const data = snapshot.val();
+  if(~['number', 'boolean'].indexOf(typeof data)) return data;
+  if(isNullable === true && data === null) return null;
+  if(asArray === true) return _toArray(snapshot);
+  return data === null ? (asArray === true ? [] : {}) : data;
+};
+
 const _addSync = function (context, sync, syncs){
   var existingSyncs = syncs.get(context) || [];
   existingSyncs.push(sync);
@@ -121,20 +130,17 @@ const _updateSyncState = function (ref, onFailure, keepKeys, data){
 const _addListener = function _addListener(id, invoker, options, ref, listeners){
   ref = _addQueries(ref, options.queries);
   listeners.set(id, ref.on('value', (snapshot) => {
-    var data = snapshot.val();
-    data = data === null ? (options.asArray === true ? [] : {}) : data;
+    const data = _prepareData(snapshot, options);
     if(invoker === 'listenTo'){
-      options.asArray === true ? options.then.call(options.context, _toArray(snapshot)) : options.then.call(options.context, data);
+      options.then.call(options.context, data);
     } else if(invoker === 'syncState'){
-        data = options.asArray === true ? _toArray(snapshot) : data;
         options.reactSetState.call(options.context, {[options.state]: data});
         if(options.then && options.then.called === false){
           options.then.call(options.context);
           options.then.called = true;
         }
     } else if(invoker === 'bindToState') {
-        var newState = {};
-        options.asArray === true ? newState[options.state] = _toArray(snapshot) : newState[options.state] = data;
+        var newState = {[options.state]: data};
         _setState.call(options.context, newState);
         if(options.then && options.then.called === false){
           options.then.call(options.context);
@@ -151,6 +157,7 @@ export {
   _returnRef,
   _setState,
   _throwError,
+  _prepareData,
   _toArray,
   _isObject,
   _addSync,

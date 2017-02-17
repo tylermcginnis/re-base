@@ -1,4 +1,4 @@
-var Rebase = require('../../dist/bundle');
+var Rebase = require('../../src/rebase.js');
 var React = require('react');
 var ReactDOM = require('react-dom');
 var firebase = require('firebase');
@@ -156,6 +156,36 @@ describe('bindToState()', function(){
         componentDidUpdate(){
           expect(this.state.emptyObj).toEqual({});
           expect(this.state.emptyArr).toEqual([]);
+          done();
+        }
+        render(){
+          return (
+            <div>
+              No Data
+            </div>
+          )
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById("mount"));
+    });
+
+    it('bindToState() updates its local state with null when the Firebase endpoint is null and isNullable is true', function(done){
+      class TestComponent extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = {
+            empty: 'someValue'
+          }
+        }
+        componentDidMount(){
+          this.firstRef = base.bindToState(`${testEndpoint}/abcdefg`, {
+            context: this,
+            state: 'empty',
+            isNullable: true
+          });
+        }
+        componentDidUpdate(){
+          expect(this.state.empty).toBeNull();
           done();
         }
         render(){

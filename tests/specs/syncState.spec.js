@@ -1,4 +1,4 @@
-var Rebase = require('../../dist/bundle');
+var Rebase = require('../../src/rebase.js');
 var React = require('react');
 var ReactDOM = require('react-dom');
 var firebase = require('firebase');
@@ -249,6 +249,41 @@ describe('syncState()', function(){
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
+    it('syncState() returns a null when there is no Firebase data and asArray is false, isNullable is true', function(done){
+      class TestComponent extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = {
+            data: {}
+          }
+        }
+        componentWillMount(){
+          this.ref = base.syncState(testEndpoint, {
+            context: this,
+            state: 'data',
+            isNullable: true
+          });
+        }
+        componentDidMount(){
+          ref.child(testEndpoint).set(null)
+        }
+        componentDidUpdate(){
+          expect(this.state.data).toBeNull();
+          ReactDOM.unmountComponentAtNode(document.body);
+          done();
+        }
+        render(){
+          return (
+            <div>
+              No Data
+            </div>
+          )
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
+
+
     it('syncState() returns an array when there is data that was previously bound to another endpoint', function(done){
       ref.child(`${testEndpoint}/child2`).set(dummyArrData).then(() => {
           class TestComponent extends React.Component{
@@ -308,6 +343,40 @@ describe('syncState()', function(){
         }
         componentDidUpdate(){
           expect(this.state.messages).toEqual([]);
+          done();
+        }
+        render(){
+          return (
+            <div>
+              No Data
+            </div>
+          )
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
+
+    it('syncState() returns a null when there is no Firebase data and asArray is true, isNullable is true', function(done){
+      class TestComponent extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = {
+            messages: []
+          }
+        }
+        componentWillMount(){
+          this.ref = base.syncState(testEndpoint, {
+            context: this,
+            state: 'messages',
+            asArray: true,
+            isNullable: true
+          });
+        }
+        componentDidMount(){
+          ref.child(testEndpoint).set(null);
+        }
+        componentDidUpdate(){
+          expect(this.state.messages).toBeNull();
           done();
         }
         render(){
