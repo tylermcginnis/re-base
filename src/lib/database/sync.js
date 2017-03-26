@@ -13,6 +13,7 @@ export default function _sync(endpoint, options, state){
   _validateEndpoint(endpoint);
   optionValidators.context(options);
   optionValidators.state(options);
+  optionValidators.asString(options);
   options.queries && optionValidators.query(options);
   options.then && (options.then.called = false);
   options.onFailure = options.onFailure ? options.onFailure.bind(options.context) : () => {};

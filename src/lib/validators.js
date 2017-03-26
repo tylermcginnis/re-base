@@ -43,6 +43,12 @@ const optionValidators = {
       }
     }
   },
+  asString(options){
+    this.notObject(options);
+    if(options.asString === true && (options.isNullable === true || options.asArray === true)) {
+      _throwError(`The asString option must not be used in conjuntion with the options isNullable or asArray`, 'INVALID_OPTIONS');
+    }
+  },
   makeError(prop, type, actual){
     _throwError(`The options argument must contain a ${prop} property of type ${type}. Instead, got ${actual}`, 'INVALID_OPTIONS');
   }
