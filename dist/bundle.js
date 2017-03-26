@@ -339,10 +339,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _prepareData = function _prepareData(snapshot) {
 	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	  var isNullable = options.isNullable,
+	      asString = options.asString,
 	      asArray = options.asArray;
 
 	  var data = snapshot.val();
 	  if (~['number', 'boolean'].indexOf(typeof data === 'undefined' ? 'undefined' : _typeof(data))) return data;
+	  if (asString === true && data === null) return '';
 	  if (isNullable === true && data === null) return null;
 	  if (asArray === true) return _toArray(snapshot);
 	  return data === null ? asArray === true ? [] : {} : data;
@@ -544,6 +546,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    }
 	  },
+	  asString: function asString(options) {
+	    this.notObject(options);
+	    if (options.asString === true && (options.isNullable === true || options.asArray === true)) {
+	      (0, _utils._throwError)('The asString option must not be used in conjuntion with the options isNullable or asArray.', 'INVALID_OPTIONS');
+	    }
+	  },
 	  makeError: function makeError(prop, type, actual) {
 	    (0, _utils._throwError)('The options argument must contain a ' + prop + ' property of type ' + type + '. Instead, got ' + actual, 'INVALID_OPTIONS');
 	  }
@@ -637,6 +645,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _fetch(endpoint, options, db) {
 	  (0, _validators._validateEndpoint)(endpoint);
 	  _validators.optionValidators.context(options);
+	  _validators.optionValidators.asString(options);
 	  options.queries && _validators.optionValidators.query(options);
 	  var ref = db.ref(endpoint);
 	  ref = (0, _utils._addQueries)(ref, options.queries);
@@ -701,6 +710,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  (0, _validators._validateEndpoint)(endpoint);
 	  _validators.optionValidators.context(options);
 	  _validators.optionValidators.state(options);
+	  _validators.optionValidators.asString(options);
 	  options.queries && _validators.optionValidators.query(options);
 	  options.then && (options.then.called = false);
 	  options.onFailure = options.onFailure ? options.onFailure.bind(options.context) : function () {};
@@ -774,6 +784,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _bind(endpoint, options, invoker, state) {
 	  (0, _validators._validateEndpoint)(endpoint);
 	  _validators.optionValidators.context(options);
+	  _validators.optionValidators.asString(options);
 	  invoker === 'listenTo' && _validators.optionValidators.then(options);
 	  invoker === 'bindToState' && _validators.optionValidators.state(options);
 	  options.queries && _validators.optionValidators.query(options);
