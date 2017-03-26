@@ -283,6 +283,40 @@ describe('syncState()', function(){
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
+    it('syncState() returns an empty string when there is no Firebase data and asString is true', function(done){
+      class TestComponent extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = {
+            data: {}
+          }
+        }
+        componentWillMount(){
+          this.ref = base.syncState(testEndpoint, {
+            context: this,
+            state: 'data',
+            asString: true
+          });
+        }
+        componentDidMount(){
+          ref.child(testEndpoint).set('')
+        }
+        componentDidUpdate(){
+          expect(this.state.data).toEqual('');
+          ReactDOM.unmountComponentAtNode(document.body);
+          done();
+        }
+        render(){
+          return (
+            <div>
+              No Data
+            </div>
+          )
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
+
 
     it('syncState() returns an array when there is data that was previously bound to another endpoint', function(done){
       ref.child(`${testEndpoint}/child2`).set(dummyArrData).then(() => {
