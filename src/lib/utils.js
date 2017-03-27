@@ -14,6 +14,10 @@ const _toArray = function (snapshot){
   return arr;
 };
 
+const _isNestedPath = function (path) {
+  return path.split('.').length > 1 ? true : false;
+}
+
 const _prepareData = function (snapshot, options = {}){
   const {isNullable, asString, asArray} = options;
   const data = snapshot.val();
