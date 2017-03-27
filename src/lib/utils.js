@@ -31,6 +31,18 @@ const _createNestedObject = function (path, value, obj = {}) {
   return root;
 }
 
+const _getNestedObject = function (obj, path) {
+  if (_isNestedPath(path) === false) return;
+
+  const keys = path.split('.');
+  for (let key of keys) {
+    if (!obj || typeof obj !== 'object') return;
+    obj = obj[key];
+  }
+
+  return obj;
+}
+
 const _prepareData = function (snapshot, options = {}){
   const {isNullable, asString, asArray} = options;
   const data = snapshot.val();
