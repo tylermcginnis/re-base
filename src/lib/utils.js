@@ -18,6 +18,19 @@ const _isNestedPath = function (path) {
   return path.split('.').length > 1 ? true : false;
 }
 
+const _createNestedObject = function (path, value, obj = {}) {
+  let keys = path.split('.');
+  const lastKey = value === undefined ? false : keys.pop();
+  const root = obj;
+
+  for (let key of keys) {
+    obj = obj[key] = obj[key] || {};
+  }
+  if (lastKey) obj[lastKey] = value;
+
+  return root;
+}
+
 const _prepareData = function (snapshot, options = {}){
   const {isNullable, asString, asArray} = options;
   const data = snapshot.val();
