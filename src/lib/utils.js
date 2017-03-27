@@ -166,19 +166,27 @@ const _addListener = function _addListener(id, invoker, options, ref, listeners)
     const data = _prepareData(snapshot, options);
     if(invoker === 'listenTo'){
       options.then.call(options.context, data);
-    } else if(invoker === 'syncState'){
-        options.reactSetState.call(options.context, {[options.state]: data});
+    } else {
+      let newState = {[options.state]: data};
+      if (_isNestedPath(options.state)) {
+        const root = options.state.split('.')[0];
+        // Merge the previous state with the new one
+        let prevState = {[root]: options.context.state[root]}
+        newState = _createNestedObject(options.state, data, prevState)
+      }
+      if(invoker === 'syncState'){
+        options.reactSetState.call(options.context, newState);
         if(options.then && options.then.called === false){
           options.then.call(options.context);
           options.then.called = true;
         }
-    } else if(invoker === 'bindToState') {
-        var newState = {[options.state]: data};
+      } else if(invoker === 'bindToState') {
         _setState.call(options.context, newState);
         if(options.then && options.then.called === false){
           options.then.call(options.context);
           options.then.called = true;
         }
+      }
     }
   }, options.onFailure));
 };
