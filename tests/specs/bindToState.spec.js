@@ -264,6 +264,86 @@ describe('bindToState()', function(){
       ReactDOM.render(<TestComponent />, document.getElementById("mount"));
     });
 
+    it('bindToState() properly updates the local state nested property when the Firebase endpoint changes', function(done){
+      class TestComponent extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = {
+            data: {
+              foo: {
+                bar: {}
+              }
+            }
+          }
+        }
+        componentWillMount(){
+          this.ref = base.bindToState(testEndpoint, {
+            context: this,
+            state: 'data.foo.bar',
+          });
+        }
+        componentDidMount(){
+          ref.child(testEndpoint).set(dummyObjData);
+        }
+        componentDidUpdate(){
+          expect(this.state.data.foo.bar).toEqual(dummyObjData);
+          done();
+        }
+        componentWillUnmount(){
+          base.removeBinding(this.ref);
+        }
+        render(){
+          return (
+            <div>
+              No Data
+            </div>
+          )
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById("mount"));
+    });
+
+    it('bindToState() properly updates the local state nested property (with sibling) when the Firebase endpoint changes', function(done){
+      class TestComponent extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = {
+            data: {
+              foo: {
+                a: {},
+                b: 'bar'
+              }
+            }
+          }
+        }
+        componentWillMount(){
+          this.ref = base.bindToState(testEndpoint, {
+            context: this,
+            state: 'data.foo.a',
+          });
+        }
+        componentDidMount(){
+          ref.child(testEndpoint).set(dummyObjData);
+        }
+        componentDidUpdate(){
+          expect(this.state.data.foo.a).toEqual(dummyObjData);
+          expect(this.state.data.foo.b).toEqual('bar');
+          done();
+        }
+        componentWillUnmount(){
+          base.removeBinding(this.ref);
+        }
+        render(){
+          return (
+            <div>
+              No Data
+            </div>
+          )
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById("mount"));
+    });
+
     it('bindToState() properly updates the local state property when the Firebase endpoint changes and asArray is true', function(done){
       class TestComponent extends React.Component{
         constructor(props){
