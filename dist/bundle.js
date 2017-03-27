@@ -316,8 +316,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 	var _isObject = function _isObject(obj) {
@@ -343,11 +341,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      asArray = options.asArray;
 
 	  var data = snapshot.val();
-	  if (~['number', 'boolean'].indexOf(typeof data === 'undefined' ? 'undefined' : _typeof(data))) return data;
 	  if (asString === true && data === null) return '';
 	  if (isNullable === true && data === null) return null;
 	  if (asArray === true) return _toArray(snapshot);
-	  return data === null ? asArray === true ? [] : {} : data;
+	  return data === null ? {} : data;
 	};
 
 	var _addSync = function _addSync(context, sync, syncs) {
@@ -549,7 +546,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  asString: function asString(options) {
 	    this.notObject(options);
 	    if (options.asString === true && (options.isNullable === true || options.asArray === true)) {
-	      (0, _utils._throwError)('The asString option must not be used in conjuntion with the options isNullable or asArray.', 'INVALID_OPTIONS');
+	      (0, _utils._throwError)('The asString option must not be used in conjuntion with the options isNullable or asArray', 'INVALID_OPTIONS');
 	    }
 	  },
 	  makeError: function makeError(prop, type, actual) {
