@@ -43,6 +43,10 @@ const _getNestedObject = function (obj, path) {
   return obj;
 }
 
+const _hasOwnNestedProperty = function (obj, path) {
+  return _getNestedObject(obj, path) === undefined ? false : true;
+}
+
 const _prepareData = function (snapshot, options = {}){
   const {isNullable, asString, asArray} = options;
   const data = snapshot.val();
