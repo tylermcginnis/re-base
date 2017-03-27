@@ -5,6 +5,7 @@ import { Promise as FirebasePromise } from 'firebase';
 export default function _fetch(endpoint, options, db){
   _validateEndpoint(endpoint);
   optionValidators.context(options);
+  optionValidators.asString(options);
   options.queries && optionValidators.query(options);
   var ref = db.ref(endpoint);
   ref = _addQueries(ref, options.queries);
