@@ -1,0 +1,32 @@
+{
+    "rules": {
+			"todoList": {
+        ".read": true,
+        ".write" : true
+      },
+      "github": {
+        ".read": true,
+        ".write": true
+      },
+      "chats" : {
+        ".read": true,
+        ".write" : true
+      },
+      "test": {
+        ".read": true,
+        ".write": true
+      },
+      "readFail" : {
+        ".read" : false,
+        ".write" : true
+      },
+      "writeFail": {
+        ".read": true,
+        ".write": false
+      },
+      "requireAuth": {
+        ".read": "auth != null",
+        ".write": "auth !== null"
+      }
+    }
+}
