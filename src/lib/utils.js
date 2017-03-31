@@ -15,10 +15,8 @@ const _toArray = function (snapshot){
 };
 
 const _prepareData = function (snapshot, options = {}){
-  const {isNullable, asString, asArray} = options;
+  const {asArray} = options;
   const data = snapshot.val();
-  if(asString === true && data === null) return '';
-  if(isNullable === true && data === null) return null;
   if(asArray === true) return _toArray(snapshot);
   return data === null ? {} : data;
 };

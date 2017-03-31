@@ -133,17 +133,6 @@ describe('fetch()', function(){
       });
     });
 
-    it('fetch()\'s asString property should return an empty string "" when there is no Firebase data', function(done){
-      base.fetch(`${testEndpoint}/abcdefg`, {
-        asString: true,
-        context: {},
-        then(data){
-          expect(data).toBe('');
-          done();
-        }
-      });
-    });
-
     it('fetch() returns rejected Promise when read fails or is denied', (done) => {
       base.fetch('/readFail', {context:{}}).then(() => {
         done.fail('Promise should reject')
