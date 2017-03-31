@@ -1,5 +1,6 @@
 import {
   _isObject,
+  _isValid,
   _throwError
 } from './utils';
 
@@ -40,6 +41,14 @@ const optionValidators = {
     for(var key in queries){
       if(queries.hasOwnProperty(key) && validQueries.indexOf(key) === -1){
         _throwError(`The query field must contain valid Firebase queries.  Expected one of [${validQueries.join(', ')}]. Instead, got ${key}`, 'INVALID_OPTIONS');
+      }
+    }
+  },
+  defaultValue(options){
+    this.notObject(options);
+    if (options.hasOwnProperty('defaultValue')) {
+      if (!_isValid(options.defaultValue)) {
+        _throwError(`The typeof defaultValue must be one of string, number, boolean, object.`, 'INVALID_OPTIONS');
       }
     }
   },
