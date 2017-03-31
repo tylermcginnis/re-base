@@ -249,6 +249,74 @@ describe('syncState()', function(){
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
+    it('syncState() returns defaultValue when there is no Firebase data and defaultValue is set', function(done){
+      class TestComponent extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = {
+            data: {}
+          }
+        }
+        componentWillMount(){
+          this.ref = base.syncState(testEndpoint, {
+            context: this,
+            state: 'data',
+            defaultValue: true
+          });
+        }
+        componentDidMount(){
+          ref.child(testEndpoint).set(true)
+        }
+        componentDidUpdate(){
+          expect(this.state.data).toEqual(true);
+          ReactDOM.unmountComponentAtNode(document.body);
+          done();
+        }
+        render(){
+          return (
+            <div>
+              No Data
+            </div>
+          )
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
+
+    it('syncState() returns defaultValue when there is no Firebase data, asArray is true and defaultValue is set', function(done){
+      class TestComponent extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = {
+            data: {}
+          }
+        }
+        componentWillMount(){
+          this.ref = base.syncState(testEndpoint, {
+            context: this,
+            state: 'data',
+            asArray: true,
+            defaultValue: null
+          });
+        }
+        componentDidMount(){
+          ref.child(testEndpoint).set(null)
+        }
+        componentDidUpdate(){
+          expect(this.state.data).toBeNull();
+          ReactDOM.unmountComponentAtNode(document.body);
+          done();
+        }
+        render(){
+          return (
+            <div>
+              No Data
+            </div>
+          )
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
 
     it('syncState() returns an array when there is data that was previously bound to another endpoint', function(done){
       ref.child(`${testEndpoint}/child2`).set(dummyArrData).then(() => {

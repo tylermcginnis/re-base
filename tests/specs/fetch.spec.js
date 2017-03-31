@@ -133,6 +133,17 @@ describe('fetch()', function(){
       });
     });
 
+    it('fetch()\'s defaultValue returns defaultValue when there is no Firebase data', function(done){
+      base.fetch(`${testEndpoint}/abcdefg`, {
+        defaultValue: 'test',
+        context: {},
+        then(data){
+          expect(data).toBe('test');
+          done();
+        }
+      });
+    });
+
     it('fetch() returns rejected Promise when read fails or is denied', (done) => {
       base.fetch('/readFail', {context:{}}).then(() => {
         done.fail('Promise should reject')

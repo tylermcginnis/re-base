@@ -169,6 +169,36 @@ describe('bindToState()', function(){
       ReactDOM.render(<TestComponent />, document.getElementById("mount"));
     });
 
+    it('bindToState() updates its local state with defaultValue when the Firebase endpoint is null and defaultValue is set', function(done){
+      class TestComponent extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = {
+            empty: 'someValue'
+          }
+        }
+        componentDidMount(){
+          this.firstRef = base.bindToState(`${testEndpoint}/abcdefg`, {
+            context: this,
+            state: 'empty',
+            defaultValue: 0
+          });
+        }
+        componentDidUpdate(){
+          expect(this.state.empty).toEqual(0);
+          done();
+        }
+        render(){
+          return (
+            <div>
+              No Data
+            </div>
+          )
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById("mount"));
+    });
+
     it('bindToState() properly updates the local state property when the Firebase endpoint changes', function(done){
       class TestComponent extends React.Component{
         constructor(props){
