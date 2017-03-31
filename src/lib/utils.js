@@ -19,8 +19,9 @@ const _isValid = function (value) {
 }
 
 const _prepareData = function (snapshot, options = {}){
-  const {asArray} = options;
+  const {defaultValue, asArray} = options;
   const data = snapshot.val();
+  if(data === null && _isValid(defaultValue)) return defaultValue;
   if(asArray === true) return _toArray(snapshot);
   return data === null ? {} : data;
 };
