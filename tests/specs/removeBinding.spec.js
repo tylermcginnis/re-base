@@ -103,4 +103,37 @@ describe('removeBinding()', function(){
     ReactDOM.render(<TestComponent />, document.getElementById("mount"));
   });
 
+  it('it should be a noop if listener is already removed', function(done){
+    class TestComponent extends React.Component{
+      constructor(props){
+        super(props);
+        this.state = {
+          user: {}
+        }
+      }
+      componentDidMount(){
+        this.ref = base.syncState(`${testEndpoint}`, {
+          context: this,
+          state: 'user'
+        });
+        base.removeBinding(this.ref);
+        base.removeBinding(this.ref);
+        ref.child(`${testEndpoint}`).set({user: 'abcdef'}).then(() => {
+          setTimeout(done, 500);
+        })
+      }
+      componentDidUpdate(){
+        done.fail('Sync should have been removed');
+      }
+      render(){
+        return (
+          <div>
+            No Data
+          </div>
+        );
+      }
+    }
+    ReactDOM.render(<TestComponent />, document.getElementById("mount"));
+  });
+
 });
