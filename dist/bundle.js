@@ -65,37 +65,37 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils = __webpack_require__(2);
 
-	var _validators = __webpack_require__(3);
+	var _validators = __webpack_require__(4);
 
-	var _push2 = __webpack_require__(4);
+	var _push2 = __webpack_require__(5);
 
 	var _push3 = _interopRequireDefault(_push2);
 
-	var _fetch2 = __webpack_require__(5);
+	var _fetch2 = __webpack_require__(6);
 
 	var _fetch3 = _interopRequireDefault(_fetch2);
 
-	var _post2 = __webpack_require__(6);
+	var _post2 = __webpack_require__(7);
 
 	var _post3 = _interopRequireDefault(_post2);
 
-	var _sync2 = __webpack_require__(7);
+	var _sync2 = __webpack_require__(8);
 
 	var _sync3 = _interopRequireDefault(_sync2);
 
-	var _bind2 = __webpack_require__(8);
+	var _bind2 = __webpack_require__(9);
 
 	var _bind3 = _interopRequireDefault(_bind2);
 
-	var _update2 = __webpack_require__(9);
+	var _update2 = __webpack_require__(10);
 
 	var _update3 = _interopRequireDefault(_update2);
 
-	var _reset2 = __webpack_require__(10);
+	var _reset2 = __webpack_require__(11);
 
 	var _reset3 = _interopRequireDefault(_reset2);
 
-	var _removeBinding2 = __webpack_require__(11);
+	var _removeBinding2 = __webpack_require__(3);
 
 	var _removeBinding3 = _interopRequireDefault(_removeBinding2);
 
@@ -152,8 +152,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        push: function push(endpoint, options) {
 	          return (0, _push3.default)(endpoint, options, db);
 	        },
-	        removeBinding: function removeBinding(endpoint) {
-	          (0, _removeBinding3.default)(endpoint, {
+	        removeBinding: function removeBinding(binding) {
+	          (0, _removeBinding3.default)(binding, {
 	            refs: firebaseRefs,
 	            listeners: firebaseListeners,
 	            syncs: syncs
@@ -186,13 +186,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 2 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports._setUnmountHandler = exports._addListener = exports._updateSyncState = exports._firebaseRefsMixin = exports._addSync = exports._isObject = exports._toArray = exports._throwError = exports._setState = exports._returnRef = exports._addQueries = exports._createHash = exports._addScope = undefined;
+
+	var _removeBinding2 = __webpack_require__(3);
+
+	var _removeBinding3 = _interopRequireDefault(_removeBinding2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -299,6 +306,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
+	var _setUnmountHandler = function _setUnmountHandler(context, id, refs, listeners, syncs) {
+	  var removeListeners = function removeListeners() {
+	    (0, _removeBinding3.default)({ context: context, id: id }, { refs: refs, listeners: listeners, syncs: syncs });
+	  };
+	  if (typeof context.componentWillUnmount === 'function') {
+	    var unmount = context.componentWillUnmount;
+	  }
+	  context.componentWillUnmount = function () {
+	    removeListeners();
+	    if (unmount) unmount.call(context);
+	  };
+	};
+
 	var _setData = function _setData(ref, data, handleError, keepKeys) {
 	  if (Array.isArray(data) && keepKeys) {
 	    var shouldConvertToObject = data.reduce(function (acc, curr) {
@@ -365,9 +385,53 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports._firebaseRefsMixin = _firebaseRefsMixin;
 	exports._updateSyncState = _updateSyncState;
 	exports._addListener = _addListener;
+	exports._setUnmountHandler = _setUnmountHandler;
 
 /***/ },
 /* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = _removeBinding;
+
+	var _utils = __webpack_require__(2);
+
+	function _removeBinding(_ref, _ref2) {
+	  var id = _ref.id,
+	      context = _ref.context;
+	  var refs = _ref2.refs,
+	      listeners = _ref2.listeners,
+	      syncs = _ref2.syncs;
+
+	  var ref = refs.get(id);
+	  var listener = listeners.get(id);
+	  if (typeof ref === "undefined") {
+	    var errorMsg = "Unexpected value. Ref was either never bound or has already been unbound.";
+	    (0, _utils._throwError)(errorMsg, "UNBOUND_ENDPOINT_VARIABLE");
+	  }
+	  ref.off('value', listener);
+	  refs.delete(id);
+	  listeners.delete(id);
+	  if (syncs) {
+	    var currentSyncs = syncs.get(context);
+	    if (currentSyncs && currentSyncs.length > 0) {
+	      var idx = currentSyncs.findIndex(function (item, index) {
+	        return item.id === id;
+	      });
+	      if (idx !== -1) {
+	        currentSyncs.splice(idx, 1);
+	        syncs.set(context, currentSyncs);
+	      }
+	    }
+	  }
+	};
+
+/***/ },
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -469,7 +533,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports._validateEndpoint = _validateEndpoint;
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -479,7 +543,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _push;
 
-	var _validators = __webpack_require__(3);
+	var _validators = __webpack_require__(4);
 
 	function _push(endpoint, options, db) {
 	  (0, _validators._validateEndpoint)(endpoint);
@@ -495,7 +559,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -505,7 +569,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _fetch;
 
-	var _validators = __webpack_require__(3);
+	var _validators = __webpack_require__(4);
 
 	var _utils = __webpack_require__(2);
 
@@ -533,7 +597,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -543,7 +607,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _post;
 
-	var _validators = __webpack_require__(3);
+	var _validators = __webpack_require__(4);
 
 	function _post(endpoint, options, db) {
 	  (0, _validators._validateEndpoint)(endpoint);
@@ -557,7 +621,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -567,7 +631,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _sync;
 
-	var _validators = __webpack_require__(3);
+	var _validators = __webpack_require__(4);
 
 	var _utils = __webpack_require__(2);
 
@@ -592,7 +656,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var id = (0, _utils._createHash)(endpoint, 'syncState');
 	  (0, _utils._firebaseRefsMixin)(id, ref, state.refs);
 	  (0, _utils._addListener)(id, 'syncState', options, ref, state.listeners);
-
+	  if (options.cleanUp) {
+	    (0, _utils._setUnmountHandler)(options.context, id, state.refs, state.listeners, state.syncs);
+	  }
 	  var sync = {
 	    id: id,
 	    updateFirebase: _utils._updateSyncState.bind(null, ref, options.onFailure, options.keepKeys),
@@ -632,7 +698,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -642,7 +708,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _bind;
 
-	var _validators = __webpack_require__(3);
+	var _validators = __webpack_require__(4);
 
 	var _utils = __webpack_require__(2);
 
@@ -659,11 +725,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var ref = state.db.ref(endpoint);
 	  (0, _utils._firebaseRefsMixin)(id, ref, state.refs);
 	  (0, _utils._addListener)(id, invoker, options, ref, state.listeners);
+	  if (options.cleanUp) {
+	    (0, _utils._setUnmountHandler)(options.context, id, state.refs, state.listeners, state.syncs);
+	  }
 	  return (0, _utils._returnRef)(endpoint, invoker, id, options.context);
 	};
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -673,7 +742,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _update;
 
-	var _validators = __webpack_require__(3);
+	var _validators = __webpack_require__(4);
 
 	function _update(endpoint, options, state) {
 	  (0, _validators._validateEndpoint)(endpoint);
@@ -687,7 +756,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -704,49 +773,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  state.refs = new Map();
 	  state.syncs = new WeakMap();
 	  return null;
-	};
-
-/***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = _removeBinding;
-
-	var _utils = __webpack_require__(2);
-
-	function _removeBinding(_ref, _ref2) {
-	  var endpoint = _ref.endpoint,
-	      method = _ref.method,
-	      id = _ref.id,
-	      context = _ref.context;
-	  var refs = _ref2.refs,
-	      listeners = _ref2.listeners,
-	      syncs = _ref2.syncs;
-
-	  var ref = refs.get(id);
-	  var listener = listeners.get(id);
-	  if (typeof ref === "undefined") {
-	    var errorMsg = "Unexpected value. Ref was either never bound or has already been unbound.";
-	    (0, _utils._throwError)(errorMsg, "UNBOUND_ENDPOINT_VARIABLE");
-	  }
-	  ref.off('value', listener);
-	  refs.delete(id);
-	  listeners.delete(id);
-	  var currentSyncs = syncs.get(context);
-	  if (currentSyncs && currentSyncs.length > 0) {
-	    var idx = currentSyncs.findIndex(function (item, index) {
-	      return item.id === id;
-	    });
-	    if (idx !== -1) {
-	      currentSyncs.splice(idx, 1);
-	      syncs.set(context, currentSyncs);
-	    }
-	  }
 	};
 
 /***/ },

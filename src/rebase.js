@@ -60,8 +60,8 @@ module.exports = (function(){
         push(endpoint, options) {
           return _push(endpoint, options, db);
         },
-        removeBinding(endpoint) {
-          _removeBinding(endpoint, {
+        removeBinding(binding) {
+          _removeBinding(binding, {
             refs: firebaseRefs,
             listeners: firebaseListeners,
             syncs: syncs

@@ -1,3 +1,5 @@
+import _removeBinding from './removeBinding';
+
 const _isObject = function (obj){
     return Object.prototype.toString.call(obj) === '[object Object]' ? true : false;
 };
@@ -97,6 +99,20 @@ const _handleError = function(onFailure, err){
   }
 }
 
+const _setUnmountHandler = function(context, id, refs, listeners, syncs){
+  var removeListeners = () => {
+    _removeBinding({context, id}, {refs, listeners, syncs});
+  }
+  if(typeof context.componentWillUnmount === 'function') {
+    var unmount = context.componentWillUnmount;
+  }
+  context.componentWillUnmount = function () {
+    removeListeners()
+    if(unmount) unmount.call(context);
+  }
+}
+
+
 const _setData = function(ref, data, handleError, keepKeys){
     if(Array.isArray(data) && keepKeys){
       var shouldConvertToObject = data.reduce((acc, curr) => {
@@ -163,5 +179,6 @@ export {
   _addSync,
   _firebaseRefsMixin,
   _updateSyncState,
-  _addListener
+  _addListener,
+  _setUnmountHandler
 }

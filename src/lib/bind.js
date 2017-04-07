@@ -3,7 +3,8 @@ import {
   _createHash,
   _returnRef,
   _firebaseRefsMixin,
-  _addListener
+  _addListener,
+  _setUnmountHandler
 } from './utils';
 
 export default function _bind(endpoint, options, invoker, state){
@@ -19,5 +20,8 @@ export default function _bind(endpoint, options, invoker, state){
   var ref = state.db.ref(endpoint);
   _firebaseRefsMixin(id, ref, state.refs);
   _addListener(id, invoker, options, ref, state.listeners);
+  if(options.cleanUp) {
+    _setUnmountHandler(options.context, id, state.refs, state.listeners, state.syncs);
+  }
   return _returnRef(endpoint, invoker, id, options.context);
 };

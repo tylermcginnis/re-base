@@ -300,4 +300,79 @@ describe('listenTo()', function(){
     });
   });
 
+  it('listeners are removed when component unmounts and cleanUp option is true', function(done){
+    spyOn(console, 'error');
+    var componentWillMountSpy = jasmine.createSpy('componentWillMountSpy');
+    class ChildComponent extends React.Component {
+
+      constructor(props){
+        super(props);
+        this.state = {
+          data: {}
+        }
+      }
+
+      componentWillMount(){
+        base.listenTo(testEndpoint, {
+          context: this,
+          cleanUp: true,
+          then(data){
+            this.setState({data});
+          },
+          asArray: true
+        });
+      }
+
+      componentWillUnmount() {
+        componentWillMountSpy('additional clean up performed');
+      }
+
+      render() {
+        return (
+          <div>
+            Name: {this.state.name} <br />
+            Age: {this.state.age}
+          </div>
+        )
+      }
+    }
+
+    class ParentComponent extends React.Component {
+      constructor(props){
+        super(props);
+        this.state = {
+          showChild: true
+        }
+      }
+
+      setData(cb) {
+        base.initializedApp.database().ref().child(testEndpoint).set(dummyObjData).then(() => {
+          setTimeout(cb, 50)
+        })
+      }
+
+      componentDidMount() {
+        this.setState({
+          showChild: false
+        }, () => {
+          this.setData(() => {
+            expect(console.error).not.toHaveBeenCalled();
+            expect(componentWillMountSpy).toHaveBeenCalledWith('additional clean up performed');
+            done();
+          });
+        });
+      }
+
+      render() {
+        return (
+          <div>
+            {this.state.showChild ?
+              <ChildComponent />
+            : null }
+          </div>
+        );
+      }
+    }
+    ReactDOM.render(<ParentComponent />, document.getElementById('mount'));
+  });
 });
