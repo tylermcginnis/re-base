@@ -193,7 +193,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports._setUnmountHandler = exports._addListener = exports._updateSyncState = exports._firebaseRefsMixin = exports._addSync = exports._isObject = exports._toArray = exports._throwError = exports._setState = exports._returnRef = exports._addQueries = exports._createHash = exports._addScope = undefined;
+	exports._setUnmountHandler = exports._addListener = exports._updateSyncState = exports._firebaseRefsMixin = exports._addSync = exports._isObject = exports._toArray = exports._prepareData = exports._throwError = exports._setState = exports._returnRef = exports._addQueries = exports._createHash = exports._addScope = undefined;
 
 	var _removeBinding2 = __webpack_require__(3);
 
@@ -569,9 +569,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _fetch;
 
-	var _validators = __webpack_require__(4);
+	var _validators = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"../validators\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 
-	var _utils = __webpack_require__(2);
+	var _utils = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"../utils\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 
 	function _fetch(endpoint, options, db) {
 	  (0, _validators._validateEndpoint)(endpoint);
