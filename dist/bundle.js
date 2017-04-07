@@ -569,9 +569,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _fetch;
 
-	var _validators = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"../validators\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+	var _validators = __webpack_require__(4);
 
-	var _utils = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"../utils\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+	var _utils = __webpack_require__(2);
 
 	function _fetch(endpoint, options, db) {
 	  (0, _validators._validateEndpoint)(endpoint);
