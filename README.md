@@ -74,7 +74,7 @@ var base = Rebase.createClass({
 
 <br />
 
-##delete(callback)
+## delete(callback)
 
 ##### Purpose
   Deletes the instance of re-base returned from `Rebase.createClass`, removing all the listeners that were added by the instance, and the underlying firebase app that was created.
