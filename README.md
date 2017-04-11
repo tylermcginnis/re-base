@@ -99,8 +99,8 @@ var base = Rebase.createClass(db);
     - type: object
     - properties:
       - context: (object - required) The context of your component
-      - state: (string - required) The state property you want to sync with Firebase
-			- defaultValue: (string|boolean|number|object - optional) A default value to set when the Firebase endpoint is null (i.e., on init) (instead of empty Object or Array)
+      - state: (string - required) The state property you want to sync with Firebase; can be an arbitrarily nested property a là `foo.bar` (no arrays)
+      - defaultValue: (string|boolean|number|object - optional) A default value to set when the Firebase endpoint is null (i.e., on init) (instead of empty Object or Array)
       - asArray: (boolean - optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
       - keepKeys: (boolean - optional) will keep any firebase generated keys intact when manipulating data using the asArray option.
       - queries: (object - optional) Queries to be used with your read operations.  See [Query Options](#queries) for more details.
@@ -143,7 +143,7 @@ addItem(newItem){
     - type: object
     - properties:
       - context: (object - required) The context of your component
-      - state: (string - required) The state property you want to sync with Firebase
+      - state: (string - required) The state property you want to sync with Firebase; can be an arbitrarily nested property a là `foo.bar` (no arrays)
       - asArray: (boolean - optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
       - queries: (object - optional) Queries to be used with your read operations.  See [Query Options](#queries) for more details.
       - then: (function - optional) The callback function that will be invoked when the initial listener is established with Firebase. Typically used (with bindToState) to change `this.state.loading` to false.

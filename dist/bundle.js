@@ -193,15 +193,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports._setUnmountHandler = exports._addListener = exports._updateSyncState = exports._firebaseRefsMixin = exports._addSync = exports._isObject = exports._toArray = exports._prepareData = exports._throwError = exports._setState = exports._returnRef = exports._addQueries = exports._createHash = exports._addScope = undefined;
+	exports._setUnmountHandler = exports._addListener = exports._updateSyncState = exports._firebaseRefsMixin = exports._addSync = exports._hasOwnNestedProperty = exports._getNestedObject = exports._isNestedPath = exports._isObject = exports._isValid = exports._toArray = exports._prepareData = exports._throwError = exports._setState = exports._returnRef = exports._addQueries = exports._createHash = exports._addScope = undefined;
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	var _removeBinding2 = __webpack_require__(3);
 
 	var _removeBinding3 = _interopRequireDefault(_removeBinding2);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -223,6 +223,84 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _isValid = function _isValid(value) {
 	  return typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' || (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' ? true : false;
+	};
+
+	var _isNestedPath = function _isNestedPath(path) {
+	  return path.split('.').length > 1 ? true : false;
+	};
+
+	var _createNestedObject = function _createNestedObject(path, value) {
+	  var obj = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+	  var keys = path.split('.');
+	  var lastKey = value === undefined ? false : keys.pop();
+	  var root = obj;
+
+	  var _iteratorNormalCompletion = true;
+	  var _didIteratorError = false;
+	  var _iteratorError = undefined;
+
+	  try {
+	    for (var _iterator = keys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	      var key = _step.value;
+
+	      obj = obj[key] = obj[key] || {};
+	    }
+	  } catch (err) {
+	    _didIteratorError = true;
+	    _iteratorError = err;
+	  } finally {
+	    try {
+	      if (!_iteratorNormalCompletion && _iterator.return) {
+	        _iterator.return();
+	      }
+	    } finally {
+	      if (_didIteratorError) {
+	        throw _iteratorError;
+	      }
+	    }
+	  }
+
+	  if (lastKey) obj[lastKey] = value;
+
+	  return root;
+	};
+
+	var _getNestedObject = function _getNestedObject(obj, path) {
+	  if (_isNestedPath(path) === false) return;
+
+	  var keys = path.split('.');
+	  var _iteratorNormalCompletion2 = true;
+	  var _didIteratorError2 = false;
+	  var _iteratorError2 = undefined;
+
+	  try {
+	    for (var _iterator2 = keys[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	      var key = _step2.value;
+
+	      if (!obj || (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object') return;
+	      obj = obj[key];
+	    }
+	  } catch (err) {
+	    _didIteratorError2 = true;
+	    _iteratorError2 = err;
+	  } finally {
+	    try {
+	      if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	        _iterator2.return();
+	      }
+	    } finally {
+	      if (_didIteratorError2) {
+	        throw _iteratorError2;
+	      }
+	    }
+	  }
+
+	  return obj;
+	};
+
+	var _hasOwnNestedProperty = function _hasOwnNestedProperty(obj, path) {
+	  return _getNestedObject(obj, path) === undefined ? false : true;
 	};
 
 	var _prepareData = function _prepareData(snapshot) {
@@ -359,18 +437,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var data = _prepareData(snapshot, options);
 	    if (invoker === 'listenTo') {
 	      options.then.call(options.context, data);
-	    } else if (invoker === 'syncState') {
-	      options.reactSetState.call(options.context, _defineProperty({}, options.state, data));
-	      if (options.then && options.then.called === false) {
-	        options.then.call(options.context);
-	        options.then.called = true;
-	      }
-	    } else if (invoker === 'bindToState') {
+	    } else {
 	      var newState = _defineProperty({}, options.state, data);
-	      _setState.call(options.context, newState);
-	      if (options.then && options.then.called === false) {
-	        options.then.call(options.context);
-	        options.then.called = true;
+	      if (_isNestedPath(options.state)) {
+	        var root = options.state.split('.')[0];
+	        // Merge the previous state with the new one
+	        var prevState = _defineProperty({}, root, options.context.state[root]);
+	        newState = _createNestedObject(options.state, data, prevState);
+	      }
+	      if (invoker === 'syncState') {
+	        options.reactSetState.call(options.context, newState);
+	        if (options.then && options.then.called === false) {
+	          options.then.call(options.context);
+	          options.then.called = true;
+	        }
+	      } else if (invoker === 'bindToState') {
+	        _setState.call(options.context, newState);
+	        if (options.then && options.then.called === false) {
+	          options.then.call(options.context);
+	          options.then.called = true;
+	        }
 	      }
 	    }
 	  }, options.onFailure));
@@ -386,6 +472,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports._toArray = _toArray;
 	exports._isValid = _isValid;
 	exports._isObject = _isObject;
+	exports._isNestedPath = _isNestedPath;
+	exports._getNestedObject = _getNestedObject;
+	exports._hasOwnNestedProperty = _hasOwnNestedProperty;
 	exports._addSync = _addSync;
 	exports._firebaseRefsMixin = _firebaseRefsMixin;
 	exports._updateSyncState = _updateSyncState;
@@ -680,19 +769,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var syncedKeys = syncsToCall.map(function (sync) {
 	      return {
 	        key: sync.stateKey,
-	        update: sync.updateFirebase
+	        update: sync.updateFirebase,
+	        nested: (0, _utils._isNestedPath)(sync.stateKey)
 	      };
 	    });
 	    syncedKeys.forEach(function (syncedKey) {
-	      if (data.hasOwnProperty(syncedKey.key)) {
+	      if (syncedKey.nested === true) {
+	        if ((0, _utils._hasOwnNestedProperty)(data, syncedKey.key)) {
+	          var datum = (0, _utils._getNestedObject)(data, syncedKey.key);
+	          syncedKey.update(datum);
+	        }
+	      } else if (data.hasOwnProperty(syncedKey.key)) {
 	        syncedKey.update(data[syncedKey.key]);
 	      }
 	    });
 	    var allKeys = Object.keys(data);
 	    allKeys.forEach(function (key) {
-	      if (!syncedKeys.find(function (syncedKey) {
-	        return syncedKey.key === key;
-	      })) {
+	      var absent = !syncedKeys.find(function (syncedKey) {
+	        var k = syncedKey.key;
+	        if (syncedKey.nested === true) {
+	          // Check with the root
+	          k = syncedKey.key.split('.')[0];
+	        }
+	        return k === key;
+	      });
+
+	      if (absent) {
 	        var update = {};
 	        update[key] = data[key];
 	        _sync.reactSetState.call(options.context, update, cb);

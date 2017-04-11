@@ -433,6 +433,94 @@ describe('syncState()', function(){
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
+    it('syncState() syncs its local state with Firebase when the provided state string points to a nested object', function(done){
+      class TestComponent extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = {
+            users: {
+              foo: {
+                bar: {}
+              }
+            }
+          }
+        }
+        componentWillMount(){
+          this.ref = base.syncState(`${testEndpoint}/userData`, {
+            context: this,
+            state: 'users.foo.bar',
+          });
+        }
+        componentDidMount(){
+          this.setState({
+            users: { foo: { bar: {name: 'Tyler'}} }
+          });
+        }
+        componentDidUpdate(){
+          ref.child(`${testEndpoint}/userData`).once('value', (snapshot) => {
+            var data = snapshot.val();
+            expect(data).toEqual(this.state.users.foo.bar);
+            expect(data).toEqual({name: 'Tyler'});
+            ReactDOM.unmountComponentAtNode(document.body);
+            done();
+          });
+        };
+        render(){
+          return (
+            <div>
+              No Data
+            </div>
+          )
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
+
+    it('syncState() syncs its local state with Firebase when the provided state string points to a nested object with a sibling', function(done){
+      class TestComponent extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = {
+            users: {
+              foo: {
+                a: {},
+                b: 'bar'
+              }
+            }
+          }
+        }
+        componentWillMount(){
+          this.ref = base.syncState(`${testEndpoint}/userData`, {
+            context: this,
+            state: 'users.foo.a',
+          });
+        }
+        componentDidMount(){
+          this.setState({
+            users: { foo: { a: {name: 'Tyler'}} }
+          });
+        }
+        componentDidUpdate(){
+          ref.child(`${testEndpoint}/userData`).once('value', (snapshot) => {
+            var data = snapshot.val();
+            expect(data).toEqual({name: 'Tyler'});
+            expect(data).toEqual(this.state.users.foo.a);
+            expect('bar').toEqual(this.state.users.foo.b);
+            ReactDOM.unmountComponentAtNode(document.body);
+            done();
+          });
+        };
+        render(){
+          return (
+            <div>
+              No Data
+            </div>
+          )
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
+
     it('syncState() invokes .then with correct context when the initial listener is set', function(done){
       class TestComponent extends React.Component{
         constructor(props){
