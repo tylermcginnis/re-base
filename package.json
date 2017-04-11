@@ -14,9 +14,11 @@
   "devDependencies": {
     "babel-core": "^6.18.0",
     "babel-loader": "^6.2.7",
+    "babel-plugin-istanbul": "^4.1.1",
     "babel-preset-es2015": "^6.18.0",
     "babel-preset-react": "^6.16.0",
     "coveralls": "^2.11.14",
+    "cross-env": "^4.0.0",
     "jasmine-core": "^2.5.2",
     "karma": "^1.3.0",
     "karma-chrome-launcher": "^2.0.0",
@@ -33,7 +35,7 @@
   },
   "scripts": {
     "build": "webpack",
-    "test": "karma start tests/karma.conf.js",
+    "test": "cross-env NODE_ENV=test karma start tests/karma.conf.js",
     "travis": "./node_modules/karma/bin/karma start tests/karma.conf.js"
   },
   "license": "MIT"
