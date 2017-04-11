@@ -201,6 +201,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 	var _isObject = function _isObject(obj) {
@@ -219,15 +221,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return arr;
 	};
 
+	var _isValid = function _isValid(value) {
+	  return typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' || (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' ? true : false;
+	};
+
 	var _prepareData = function _prepareData(snapshot) {
 	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	  var isNullable = options.isNullable,
-	      asString = options.asString,
+	  var defaultValue = options.defaultValue,
 	      asArray = options.asArray;
 
 	  var data = snapshot.val();
-	  if (asString === true && data === null) return '';
-	  if (isNullable === true && data === null) return null;
+	  if (data === null && _isValid(defaultValue)) return defaultValue;
 	  if (asArray === true) return _toArray(snapshot);
 	  return data === null ? {} : data;
 	};
@@ -380,6 +384,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports._throwError = _throwError;
 	exports._prepareData = _prepareData;
 	exports._toArray = _toArray;
+	exports._isValid = _isValid;
 	exports._isObject = _isObject;
 	exports._addSync = _addSync;
 	exports._firebaseRefsMixin = _firebaseRefsMixin;
@@ -483,10 +488,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    }
 	  },
-	  asString: function asString(options) {
+	  defaultValue: function defaultValue(options) {
 	    this.notObject(options);
-	    if (options.asString === true && (options.isNullable === true || options.asArray === true)) {
-	      (0, _utils._throwError)('The asString option must not be used in conjuntion with the options isNullable or asArray', 'INVALID_OPTIONS');
+	    if (options.hasOwnProperty('defaultValue')) {
+	      if (!(0, _utils._isValid)(options.defaultValue)) {
+	        (0, _utils._throwError)('The typeof defaultValue must be one of string, number, boolean, object.', 'INVALID_OPTIONS');
+	      }
 	    }
 	  },
 	  makeError: function makeError(prop, type, actual) {
@@ -574,7 +581,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _fetch(endpoint, options, db) {
 	  (0, _validators._validateEndpoint)(endpoint);
 	  _validators.optionValidators.context(options);
-	  _validators.optionValidators.asString(options);
+	  _validators.optionValidators.defaultValue(options);
 	  options.queries && _validators.optionValidators.query(options);
 	  var ref = db.ref(endpoint);
 	  ref = (0, _utils._addQueries)(ref, options.queries);
@@ -637,7 +644,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  (0, _validators._validateEndpoint)(endpoint);
 	  _validators.optionValidators.context(options);
 	  _validators.optionValidators.state(options);
-	  _validators.optionValidators.asString(options);
+	  _validators.optionValidators.defaultValue(options);
 	  options.queries && _validators.optionValidators.query(options);
 	  options.then && (options.then.called = false);
 	  options.onFailure = options.onFailure ? options.onFailure.bind(options.context) : function () {};
@@ -713,7 +720,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _bind(endpoint, options, invoker, state) {
 	  (0, _validators._validateEndpoint)(endpoint);
 	  _validators.optionValidators.context(options);
-	  _validators.optionValidators.asString(options);
+	  _validators.optionValidators.defaultValue(options);
 	  invoker === 'listenTo' && _validators.optionValidators.then(options);
 	  invoker === 'bindToState' && _validators.optionValidators.state(options);
 	  options.queries && _validators.optionValidators.query(options);

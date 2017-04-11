@@ -1,5 +1,6 @@
 import {
   _isObject,
+  _isValid,
   _throwError
 } from './utils';
 
@@ -43,10 +44,12 @@ const optionValidators = {
       }
     }
   },
-  asString(options){
+  defaultValue(options){
     this.notObject(options);
-    if(options.asString === true && (options.isNullable === true || options.asArray === true)) {
-      _throwError(`The asString option must not be used in conjuntion with the options isNullable or asArray`, 'INVALID_OPTIONS');
+    if (options.hasOwnProperty('defaultValue')) {
+      if (!_isValid(options.defaultValue)) {
+        _throwError(`The typeof defaultValue must be one of string, number, boolean, object.`, 'INVALID_OPTIONS');
+      }
     }
   },
   makeError(prop, type, actual){

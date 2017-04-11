@@ -10,7 +10,7 @@ import {
 export default function _bind(endpoint, options, invoker, state){
   _validateEndpoint(endpoint);
   optionValidators.context(options);
-  optionValidators.asString(options);
+  optionValidators.defaultValue(options);
   invoker === 'listenTo' && optionValidators.then(options);
   invoker === 'bindToState' && optionValidators.state(options);
   options.queries && optionValidators.query(options);

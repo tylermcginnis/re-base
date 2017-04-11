@@ -16,11 +16,14 @@ const _toArray = function (snapshot){
   return arr;
 };
 
+const _isValid = function (value) {
+  return (typeof value ===  'string' || typeof value === 'number' || typeof value === 'boolean' || typeof value === 'object') ? true : false;
+}
+
 const _prepareData = function (snapshot, options = {}){
-  const {isNullable, asString, asArray} = options;
+  const {defaultValue, asArray} = options;
   const data = snapshot.val();
-  if(asString === true && data === null) return '';
-  if(isNullable === true && data === null) return null;
+  if(data === null && _isValid(defaultValue)) return defaultValue;
   if(asArray === true) return _toArray(snapshot);
   return data === null ? {} : data;
 };
@@ -175,6 +178,7 @@ export {
   _throwError,
   _prepareData,
   _toArray,
+  _isValid,
   _isObject,
   _addSync,
   _firebaseRefsMixin,

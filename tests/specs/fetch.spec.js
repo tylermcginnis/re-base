@@ -138,12 +138,12 @@ describe('fetch()', function(){
       });
     });
 
-    it('fetch()\'s asString property should return an empty string "" when there is no Firebase data', function(done){
+    it('fetch()\'s defaultValue returns defaultValue when there is no Firebase data', function(done){
       base.fetch(`${testEndpoint}/abcdefg`, {
-        asString: true,
+        defaultValue: 'test',
         context: {},
         then(data){
-          expect(data).toBe('');
+          expect(data).toBe('test');
           done();
         }
       });

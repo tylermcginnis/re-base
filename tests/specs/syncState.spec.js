@@ -253,7 +253,7 @@ describe('syncState()', function(){
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
-    it('syncState() returns a null when there is no Firebase data and asArray is false, isNullable is true', function(done){
+    it('syncState() returns defaultValue when there is no Firebase data and defaultValue is set', function(done){
       class TestComponent extends React.Component{
         constructor(props){
           super(props);
@@ -265,7 +265,42 @@ describe('syncState()', function(){
           this.ref = base.syncState(testEndpoint, {
             context: this,
             state: 'data',
-            isNullable: true
+            defaultValue: true
+          });
+        }
+        componentDidMount(){
+          ref.child(testEndpoint).set(true)
+        }
+        componentDidUpdate(){
+          expect(this.state.data).toEqual(true);
+          ReactDOM.unmountComponentAtNode(document.body);
+          done();
+        }
+        render(){
+          return (
+            <div>
+              No Data
+            </div>
+          )
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
+
+    it('syncState() returns defaultValue when there is no Firebase data, asArray is true and defaultValue is set', function(done){
+      class TestComponent extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = {
+            data: {}
+          }
+        }
+        componentWillMount(){
+          this.ref = base.syncState(testEndpoint, {
+            context: this,
+            state: 'data',
+            asArray: true,
+            defaultValue: null
           });
         }
         componentDidMount(){
@@ -286,41 +321,6 @@ describe('syncState()', function(){
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
-
-    it('syncState() returns an empty string when there is no Firebase data and asString is true', function(done){
-      class TestComponent extends React.Component{
-        constructor(props){
-          super(props);
-          this.state = {
-            data: {}
-          }
-        }
-        componentWillMount(){
-          this.ref = base.syncState(testEndpoint, {
-            context: this,
-            state: 'data',
-            asString: true
-          });
-        }
-        componentDidMount(){
-          ref.child(testEndpoint).set('')
-        }
-        componentDidUpdate(){
-          expect(this.state.data).toEqual('');
-          ReactDOM.unmountComponentAtNode(document.body);
-          done();
-        }
-        render(){
-          return (
-            <div>
-              No Data
-            </div>
-          )
-        }
-      }
-      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
-    });
-
 
     it('syncState() returns an array when there is data that was previously bound to another endpoint', function(done){
       ref.child(`${testEndpoint}/child2`).set(dummyArrData).then(() => {
@@ -381,40 +381,6 @@ describe('syncState()', function(){
         }
         componentDidUpdate(){
           expect(this.state.messages).toEqual([]);
-          done();
-        }
-        render(){
-          return (
-            <div>
-              No Data
-            </div>
-          )
-        }
-      }
-      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
-    });
-
-    it('syncState() returns a null when there is no Firebase data and asArray is true, isNullable is true', function(done){
-      class TestComponent extends React.Component{
-        constructor(props){
-          super(props);
-          this.state = {
-            messages: []
-          }
-        }
-        componentWillMount(){
-          this.ref = base.syncState(testEndpoint, {
-            context: this,
-            state: 'messages',
-            asArray: true,
-            isNullable: true
-          });
-        }
-        componentDidMount(){
-          ref.child(testEndpoint).set(null);
-        }
-        componentDidUpdate(){
-          expect(this.state.messages).toBeNull();
           done();
         }
         render(){

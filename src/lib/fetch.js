@@ -4,7 +4,7 @@ import { _addQueries, _toArray, _prepareData } from './utils';
 export default function _fetch(endpoint, options, db){
   _validateEndpoint(endpoint);
   optionValidators.context(options);
-  optionValidators.asString(options);
+  optionValidators.defaultValue(options);
   options.queries && optionValidators.query(options);
   var ref = db.ref(endpoint);
   ref = _addQueries(ref, options.queries);

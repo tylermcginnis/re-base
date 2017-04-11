@@ -173,7 +173,7 @@ describe('bindToState()', function(){
       ReactDOM.render(<TestComponent />, document.getElementById("mount"));
     });
 
-    it('bindToState() updates its local state with null when the Firebase endpoint is null and isNullable is true', function(done){
+    it('bindToState() updates its local state with defaultValue when the Firebase endpoint is null and defaultValue is set', function(done){
       class TestComponent extends React.Component{
         constructor(props){
           super(props);
@@ -185,41 +185,11 @@ describe('bindToState()', function(){
           this.firstRef = base.bindToState(`${testEndpoint}/abcdefg`, {
             context: this,
             state: 'empty',
-            isNullable: true
+            defaultValue: 0
           });
         }
         componentDidUpdate(){
-          expect(this.state.empty).toBeNull();
-          done();
-        }
-        render(){
-          return (
-            <div>
-              No Data
-            </div>
-          )
-        }
-      }
-      ReactDOM.render(<TestComponent />, document.getElementById("mount"));
-    });
-
-    it('bindToState() updates its local state with empty string "" when the Firebase endpoint is null and asString is true', function(done){
-      class TestComponent extends React.Component{
-        constructor(props){
-          super(props);
-          this.state = {
-            empty: 'someValue'
-          }
-        }
-        componentDidMount(){
-          this.firstRef = base.bindToState(`${testEndpoint}/abcdefg`, {
-            context: this,
-            state: 'empty',
-            asString: true
-          });
-        }
-        componentDidUpdate(){
-          expect(this.state.empty).toEqual('');
+          expect(this.state.empty).toEqual(0);
           done();
         }
         render(){
