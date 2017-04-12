@@ -90,6 +90,7 @@ const _addQueries = function (ref, queries){
     endAt: true,
     equalTo: true
   };
+
   for(var key in queries){
     if(queries.hasOwnProperty(key)){
       if(needArgs[key]) {
@@ -112,17 +113,6 @@ const _createHash = function (endpoint, invoker){
       hash = hash & hash;
   }
   return hash;
-}
-
-const _addScope = function (scope, provider){
-  if(Array.isArray(scope)){
-    scope.forEach(item => {
-        provider.addScope(item);
-    });
-  } else {
-      provider.addScope(scope);
-  }
-  return provider;
 }
 
 const _firebaseRefsMixin = function (id, ref, refs){
@@ -211,7 +201,6 @@ const _addListener = function _addListener(id, invoker, options, ref, listeners)
 };
 
 export {
-  _addScope,
   _createHash,
   _addQueries,
   _returnRef,
@@ -228,5 +217,6 @@ export {
   _firebaseRefsMixin,
   _updateSyncState,
   _addListener,
-  _setUnmountHandler
+  _setUnmountHandler,
+  _createNestedObject
 }
