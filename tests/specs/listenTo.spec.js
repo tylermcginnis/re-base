@@ -321,6 +321,22 @@ describe('listenTo()', function(){
           },
           asArray: true
         });
+        base.listenTo(`${testEndpoint}/secondListener`, {
+          context: this,
+          cleanUp: true,
+          then(data){
+            this.setState({data});
+          },
+          asArray: true
+        });
+        base.listenTo(`${testEndpoint}/thirdListener`, {
+          context: this,
+          cleanUp: true,
+          then(data){
+            this.setState({data});
+          },
+          asArray: true
+        });
       }
 
       componentWillUnmount() {
@@ -346,8 +362,12 @@ describe('listenTo()', function(){
       }
 
       setData(cb) {
-        base.initializedApp.database().ref().child(testEndpoint).set(dummyObjData).then(() => {
-          setTimeout(cb, 50)
+        Promise.all([
+          base.initializedApp.database().ref().child(testEndpoint).set(dummyObjData),
+          base.initializedApp.database().ref().child(`${testEndpoint}/secondListener`).set(dummyObjData),
+          base.initializedApp.database().ref().child(`${testEndpoint}/thirdListener`).set(dummyObjData),
+        ]).then(() => {
+          setTimeout(cb, 500)
         })
       }
 
