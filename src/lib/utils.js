@@ -1,10 +1,10 @@
 import _removeBinding from './removeBinding';
 
-const _isObject = function (obj){
+const _isObject = function (obj) {
     return Object.prototype.toString.call(obj) === '[object Object]' ? true : false;
 };
 
-const _toArray = function (snapshot){
+const _toArray = function (snapshot) {
   var arr = [];
   snapshot.forEach(function (childSnapshot){
     var val = childSnapshot.val();
@@ -53,7 +53,7 @@ const _hasOwnNestedProperty = function (obj, path) {
   return _getNestedObject(obj, path) === undefined ? false : true;
 }
 
-const _prepareData = function (snapshot, options = {}){
+const _prepareData = function (snapshot, options = {}) {
   const {defaultValue, asArray} = options;
   const data = snapshot.val();
   if(data === null && _isValid(defaultValue)) return defaultValue;
@@ -61,27 +61,27 @@ const _prepareData = function (snapshot, options = {}){
   return data === null ? {} : data;
 };
 
-const _addSync = function (context, sync, syncs){
+const _addSync = function (context, sync, syncs) {
   var existingSyncs = syncs.get(context) || [];
   existingSyncs.push(sync);
   syncs.set(context, existingSyncs);
 }
 
-const _throwError = function (msg, code){
+const _throwError = function (msg, code) {
   var err = new Error(`REBASE: ${msg}`);
   err.code = code;
   throw err;
 };
 
-const _setState = function (newState){
+const _setState = function (newState) {
   this.setState(newState);
 };
 
-const _returnRef = function (endpoint, method, id, context){
+const _returnRef = function (endpoint, method, id, context) {
   return { endpoint, method, id, context };
 };
 
-const _addQueries = function (ref, queries){
+const _addQueries = function (ref, queries) {
   var needArgs = {
     limitToFirst: true,
     limitToLast: true,
@@ -103,7 +103,7 @@ const _addQueries = function (ref, queries){
   return ref;
 };
 
-const _createHash = function (endpoint, invoker){
+const _createHash = function (endpoint, invoker) {
   var hash = 0;
   var str = endpoint + invoker + Date.now();
   if (str.length == 0) return hash;
@@ -115,31 +115,30 @@ const _createHash = function (endpoint, invoker){
   return hash;
 }
 
-const _firebaseRefsMixin = function (id, ref, refs){
+const _firebaseRefsMixin = function (id, ref, refs) {
   refs.set(id, ref);
 };
 
-const _handleError = function(onFailure, err){
+const _handleError = function (onFailure, err) {
   if(err && typeof onFailure === 'function'){
     onFailure(err);
   }
 }
 
-const _setUnmountHandler = function(context, id, refs, listeners, syncs){
+const _setUnmountHandler = function (context, id, refs, listeners, syncs) {
   var removeListeners = () => {
     _removeBinding({context, id}, {refs, listeners, syncs});
   }
   if(typeof context.componentWillUnmount === 'function') {
     var unmount = context.componentWillUnmount;
   }
-  context.componentWillUnmount = function () {
+  context.componentWillUnmount = function() {
     removeListeners()
     if(unmount) unmount.call(context);
   }
 }
 
-
-const _setData = function(ref, data, handleError, keepKeys){
+const _setData = function (ref, data, handleError, keepKeys) {
     if(Array.isArray(data) && keepKeys){
       var shouldConvertToObject = data.reduce((acc, curr) => {
         return acc ? acc : _isObject(curr) && curr.hasOwnProperty('key');
@@ -154,7 +153,7 @@ const _setData = function(ref, data, handleError, keepKeys){
     ref.set(data, handleError);
 }
 
-const _updateSyncState = function (ref, onFailure, keepKeys, data){
+const _updateSyncState = function (ref, onFailure, keepKeys, data) {
   if(_isObject(data)) {
     for(var prop in data){
       //allow timestamps to be set
@@ -169,7 +168,7 @@ const _updateSyncState = function (ref, onFailure, keepKeys, data){
   }
 };
 
-const _addListener = function _addListener(id, invoker, options, ref, listeners){
+const _addListener = function _addListener (id, invoker, options, ref, listeners) {
   ref = _addQueries(ref, options.queries);
   listeners.set(id, ref.on('value', (snapshot) => {
     const data = _prepareData(snapshot, options);
@@ -218,5 +217,7 @@ export {
   _updateSyncState,
   _addListener,
   _setUnmountHandler,
-  _createNestedObject
+  _createNestedObject,
+  _handleError,
+  _setData
 }
