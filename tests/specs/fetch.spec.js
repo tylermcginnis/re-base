@@ -84,9 +84,7 @@ describe('fetch()', function() {
         .then(done);
     });
 
-    it("fetch()'s .then gets invoked with the data from Firebase once the data is retrieved", function(
-      done
-    ) {
+    it("fetch()'s .then gets invoked with the data from Firebase once the data is retrieved", done => {
       base.fetch(testEndpoint, {
         then(data) {
           expect(data).toEqual(dummyObjData);
@@ -95,9 +93,7 @@ describe('fetch()', function() {
       });
     });
 
-    it("fetch()'s .then gets invoked with the data from Firebase once the data is retrieved using returned Promise", function(
-      done
-    ) {
+    it("fetch()'s .then gets invoked with the data from Firebase once the data is retrieved using returned Promise", done => {
       base
         .fetch(testEndpoint, {
           context: {}
@@ -109,9 +105,7 @@ describe('fetch()', function() {
         .catch(done.fail);
     });
 
-    it("fetch()'s asArray property should return the data from Firebase as an array", function(
-      done
-    ) {
+    it("fetch()'s asArray property should return the data from Firebase as an array", done => {
       base.fetch(testEndpoint, {
         asArray: true,
         context: {},
@@ -123,9 +117,7 @@ describe('fetch()', function() {
       });
     });
 
-    it("fetch()'s asArray property should return the data from Firebase as an array when using returned Promise", function(
-      done
-    ) {
+    it("fetch()'s asArray property should return the data from Firebase as an array when using returned Promise", done => {
       base
         .fetch(testEndpoint, {
           asArray: true,
@@ -141,9 +133,7 @@ describe('fetch()', function() {
         });
     });
 
-    it("fetch()'s asArray property should add a key property on nested objects", function(
-      done
-    ) {
+    it("fetch()'s asArray property should add a key property on nested objects", done => {
       var testApp = firebase.initializeApp(firebaseConfig, 'DB_CHECK');
       var ref = testApp.database().ref();
       ref.child(testEndpoint).set(dummyNestedObjData, () => {
@@ -158,9 +148,7 @@ describe('fetch()', function() {
       });
     });
 
-    it("fetch()'s defaultValue returns defaultValue when there is no Firebase data", function(
-      done
-    ) {
+    it("fetch()'s defaultValue returns defaultValue when there is no Firebase data", done => {
       base.fetch(`${testEndpoint}/abcdefg`, {
         defaultValue: 'test',
         context: {},
@@ -183,9 +171,7 @@ describe('fetch()', function() {
         });
     });
 
-    it('fetch() correctly updates the state of the component with data from fetch', function(
-      done
-    ) {
+    it('fetch() correctly updates the state of the component with data from fetch', done => {
       var testApp = firebase.initializeApp(firebaseConfig, 'DB_CHECK');
       var ref = testApp.database().ref();
       ref.child(testEndpoint).set(dummyObjData);
@@ -220,9 +206,7 @@ describe('fetch()', function() {
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
-    it('fetch() correctly updates the state of the component with data from fetch and asArray set to true', function(
-      done
-    ) {
+    it('fetch() correctly updates the state of the component with data from fetch and asArray set to true', done => {
       var testApp = firebase.initializeApp(firebaseConfig, 'DB_CHECK');
       var ref = testApp.database().ref();
       ref.child(testEndpoint).set(dummyArrData);
