@@ -15,7 +15,7 @@ export default function _fetch(endpoint, options, db){
     }
     return data;
   }).catch(err => {
-    //call onFailure callback if it exists otherwise return a rejected promise
+    //call onFailure callback if it exists otherwise rethrow error
     if(options.onFailure && typeof options.onFailure === 'function'){
       options.onFailure.call(options.context, err);
     } else {
