@@ -1,4 +1,4 @@
-export default function _reset(state){
+export default function _reset(state) {
   state.refs.forEach((ref, id) => {
     ref.off('value', state.listeners.get(id));
   });
@@ -6,4 +6,4 @@ export default function _reset(state){
   state.refs = new Map();
   state.syncs = new WeakMap();
   return null;
-};
+}

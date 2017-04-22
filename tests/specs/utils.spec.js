@@ -31,23 +31,23 @@ describe('utils', () => {
   describe('_toArray', () => {
     it('should return an array from an object', () => {
       var snapshot = mockSnapshot({
-        'key1': 'value',
-        'key2': 'value',
-        'key3': 'value'
+        key1: 'value',
+        key2: 'value',
+        key3: 'value'
       });
       var result = utils._toArray(snapshot);
       expect(result.length).toEqual(3);
-      expect(result[0]).toEqual({key1: 'value', key: 'key1'});
+      expect(result[0]).toEqual({ key1: 'value', key: 'key1' });
     });
 
     it('should return an array from an object with nested data', () => {
       var snapshot = mockSnapshot({
-        'key1': {'nKey1': 'value'}
+        key1: { nKey1: 'value' }
       });
       var result = utils._toArray(snapshot);
       expect(result.length).toEqual(1);
-      expect(result[0]).toEqual({key1: {'nKey1': 'value'}, key: 'key1'});
-    })
+      expect(result[0]).toEqual({ key1: { nKey1: 'value' }, key: 'key1' });
+    });
   });
 
   describe('_isValid', () => {
@@ -111,7 +111,7 @@ describe('utils', () => {
       var value = 5;
       var result = utils._createNestedObject(path, value, fakeObj);
       expect(result.foo.boz).toEqual(12);
-    })
+    });
   });
 
   describe('_getNestedObject', () => {
@@ -180,9 +180,9 @@ describe('utils', () => {
   describe('_prepareData()', () => {
     it('should return return an array if asArray option is true', () => {
       var snapshot = mockSnapshot({
-        'key1': 'value',
-        'key2': 'value',
-        'key3': 'value'
+        key1: 'value',
+        key2: 'value',
+        key3: 'value'
       });
       var options = {
         asArray: true
@@ -225,7 +225,7 @@ describe('utils', () => {
       });
 
       var result = utils._prepareData(snapshot);
-      expect(result).toEqual({key: 'value'});
+      expect(result).toEqual({ key: 'value' });
     });
   });
 
@@ -241,8 +241,8 @@ describe('utils', () => {
     it('should append a new sync to existing list of syncs for that context', () => {
       var syncs = mockSyncs();
       var context = {};
-      syncs.set(context, [function sync1(){}])
-      var sync = function sync2(){}
+      syncs.set(context, [function sync1() {}]);
+      var sync = function sync2() {};
       var result = utils._addSync(context, sync, syncs);
       expect(syncs.get(context)[1]).toEqual(sync);
     });
@@ -251,7 +251,7 @@ describe('utils', () => {
   describe('_throwError', () => {
     it('should throw specified error', () => {
       expect(() => {
-        utils._throwError('Test Error', 'INVALID')
+        utils._throwError('Test Error', 'INVALID');
       }).toThrowError('REBASE: Test Error');
     });
   });
@@ -260,16 +260,16 @@ describe('utils', () => {
     it('should call setState with the correct context', () => {
       var context = {
         setState: () => {}
-      }
+      };
       spyOn(context, 'setState');
-      utils._setState.call(context, {key: 'value'});
-      expect(context.setState).toHaveBeenCalledWith({key: 'value'});
+      utils._setState.call(context, { key: 'value' });
+      expect(context.setState).toHaveBeenCalledWith({ key: 'value' });
     });
   });
 
   describe('_returnRef', () => {
     it('should return an object with the supplied arguments', () => {
-      var result = utils._returnRef(1,2,3,4);
+      var result = utils._returnRef(1, 2, 3, 4);
       expect(result.endpoint).toEqual(1);
       expect(result.method).toEqual(2);
       expect(result.id).toEqual(3);
@@ -359,7 +359,7 @@ describe('utils', () => {
       var cleanUpSpy = jasmine.createSpy('cleanUpOne');
       var mockRef = jasmine.createSpyObj('mockRef', ['on', 'off']);
       var listeners = mockListeners();
-      var refs = mockRefs([[1234, mockRef], [2345, mockRef],[3456, mockRef]]);
+      var refs = mockRefs([[1234, mockRef], [2345, mockRef], [3456, mockRef]]);
       var syncs = mockSyncs();
       var ids = [1234, 2345, 3456];
       var context = {
@@ -380,11 +380,7 @@ describe('utils', () => {
       var mockRef = jasmine.createSpyObj('mockRef', ['on', 'off']);
       var listeners = mockListeners();
       spyOn(listeners, 'delete');
-      var refs = mockRefs([
-        [1234, mockRef],
-        [2345, mockRef],
-        [3456, mockRef]
-      ]);
+      var refs = mockRefs([[1234, mockRef], [2345, mockRef], [3456, mockRef]]);
       var syncs = mockSyncs();
       var ids = [1234, 2345, 3456];
       var context = {};
@@ -399,17 +395,22 @@ describe('utils', () => {
       var mockRef = jasmine.createSpyObj('mockRef', ['on', 'off']);
       var listeners = mockListeners();
       spyOn(listeners, 'delete');
-      var refs = mockRefs([
-        [1234, mockRef],
-        [2345, mockRef],
-        [3456, mockRef]
-      ]);
+      var refs = mockRefs([[1234, mockRef], [2345, mockRef], [3456, mockRef]]);
       var context = {};
-      var syncs = mockSyncs([[context, [
-        mockSync({id: 1234, updateFirebase: () => {}, state: 'stateOne'}),
-        mockSync({id: 2345, updateFirebase: () => {}, state: 'stateTwo'}),
-        mockSync({id: 3456, updateFirebase: () => {}, state: 'stateThree'})
-      ]]]);
+      var syncs = mockSyncs([
+        [
+          context,
+          [
+            mockSync({ id: 1234, updateFirebase: () => {}, state: 'stateOne' }),
+            mockSync({ id: 2345, updateFirebase: () => {}, state: 'stateTwo' }),
+            mockSync({
+              id: 3456,
+              updateFirebase: () => {},
+              state: 'stateThree'
+            })
+          ]
+        ]
+      ]);
       utils._setUnmountHandler(context, 1234, refs, listeners, syncs);
       utils._setUnmountHandler(context, 2345, refs, listeners, syncs);
       utils._setUnmountHandler(context, 3456, refs, listeners, syncs);
@@ -425,7 +426,7 @@ describe('utils', () => {
       var data = {
         key: 'value'
       };
-      var errorHandler = function errorHandler() {}
+      var errorHandler = function errorHandler() {};
       utils._setData(ref, data, errorHandler);
       expect(ref.set).toHaveBeenCalledWith(data, errorHandler);
     });
@@ -433,21 +434,24 @@ describe('utils', () => {
     it('should modify data from array to object when keepKeys is true', () => {
       var ref = mockRef();
       spyOn(ref, 'set');
-      var data = [{key: '-1234', name: 'Chris', comments: [1,2,3,4]}];
-      var errorHandler = function errorHandler() {}
+      var data = [{ key: '-1234', name: 'Chris', comments: [1, 2, 3, 4] }];
+      var errorHandler = function errorHandler() {};
       var keepKeys = true;
       utils._setData(ref, data, errorHandler, keepKeys);
-      expect(ref.set).toHaveBeenCalledWith({
-        ['-1234'] : {key: '-1234', name: 'Chris', comments: [1,2,3,4]}
-      }, errorHandler);
+      expect(ref.set).toHaveBeenCalledWith(
+        {
+          ['-1234']: { key: '-1234', name: 'Chris', comments: [1, 2, 3, 4] }
+        },
+        errorHandler
+      );
     });
   });
 
   describe('_updateSyncState', () => {
     it('should call ref.set with single value', () => {
       var ref = mockRef();
-      spyOn(ref, 'set')
-      var onFailure = () => {}
+      spyOn(ref, 'set');
+      var onFailure = () => {};
       var keepKeys = undefined;
       var data = 5;
       utils._updateSyncState(ref, onFailure, keepKeys, data);
@@ -456,8 +460,8 @@ describe('utils', () => {
 
     it('should call ref.set 3 times for an object with three child nodes', () => {
       var ref = mockRef();
-      spyOn(ref, 'set')
-      var onFailure = () => {}
+      spyOn(ref, 'set');
+      var onFailure = () => {};
       var keepKeys = undefined;
       var data = {
         key1: {
@@ -469,22 +473,22 @@ describe('utils', () => {
             }
           }
         }
-      }
+      };
       utils._updateSyncState(ref, onFailure, keepKeys, data);
       expect(ref.set.calls.count()).toEqual(3);
     });
 
     it('should call ref.set 2 times for an object with 1 child node and timestamp', () => {
       var ref = mockRef();
-      spyOn(ref, 'set')
-      var onFailure = () => {}
+      spyOn(ref, 'set');
+      var onFailure = () => {};
       var keepKeys = undefined;
       var data = {
         key1: {
           value: 1,
           '.sv': 'timestamp'
         }
-      }
+      };
       utils._updateSyncState(ref, onFailure, keepKeys, data);
       expect(ref.set.calls.count()).toEqual(2);
     });
@@ -506,5 +510,4 @@ describe('utils', () => {
       expect(listeners.size).toEqual(1);
     });
   });
-
-})
+});

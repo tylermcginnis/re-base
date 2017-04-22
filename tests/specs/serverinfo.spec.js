@@ -4,7 +4,7 @@ var database = require('firebase/database');
 
 var firebaseConfig = require('../fixtures/config');
 
-describe('Firebase Server Info', function(){
+describe('Firebase Server Info', function() {
   var base;
   var app;
 
@@ -18,7 +18,7 @@ describe('Firebase Server Info', function(){
     app.delete().then(done);
   });
 
-  it('correctly retrieves Server Time Offset', function(done){
+  it('correctly retrieves Server Time Offset', done => {
     base.fetch('.info/serverTimeOffset', {
       context: this,
       then: data => {
@@ -27,5 +27,4 @@ describe('Firebase Server Info', function(){
       }
     });
   });
-
 });

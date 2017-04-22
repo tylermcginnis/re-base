@@ -9,7 +9,7 @@ var dummyObjData = require('../fixtures/dummyObjData');
 var invalidOptions = require('../fixtures/invalidOptions');
 var firebaseConfig = require('../fixtures/config');
 
-describe('push()', function(){
+describe('push()', function() {
   var base;
   var testEndpoint = 'test/push';
   var app;
@@ -23,59 +23,63 @@ describe('push()', function(){
 
   afterEach(done => {
     var testApp = firebase.initializeApp(firebaseConfig, 'CLEAN_UP');
-    testApp.database().ref(testEndpoint).set(null).then(() => {
-        return firebase.Promise.all([
-          app.delete(),
-          testApp.delete()
-        ]);
-    }).then(done).catch(err => done.fail(err));
+    testApp
+      .database()
+      .ref(testEndpoint)
+      .set(null)
+      .then(() => {
+        return firebase.Promise.all([app.delete(), testApp.delete()]);
+      })
+      .then(done)
+      .catch(err => done.fail(err));
   });
 
-  it('push() throws an error given a invalid endpoint', function(){
-    invalidEndpoints.forEach((endpoint) => {
+  it('push() throws an error given a invalid endpoint', function() {
+    invalidEndpoints.forEach(endpoint => {
       try {
         base.push(endpoint, {
           data: dummyObjData
-        })
-      } catch(err) {
+        });
+      } catch (err) {
         expect(err.code).toEqual('INVALID_ENDPOINT');
       }
     });
   });
 
-  it('push() throws an error given an invalid options object', function(){
-    invalidOptions.forEach((option) => {
+  it('push() throws an error given an invalid options object', function() {
+    invalidOptions.forEach(option => {
       try {
         base.push(testEndpoint, option);
-      } catch(err) {
+      } catch (err) {
         expect(err.code).toEqual('INVALID_OPTIONS');
       }
     });
   });
 
-  it('push() returns a Firebase reference for the generated location', function(){
+  it('push() returns a Firebase reference for the generated location', function() {
     var returnedRef = base.push(testEndpoint, {
       data: dummyObjData
     });
     var endpointBaseUrl = returnedRef.parent.toString();
-    expect(endpointBaseUrl).toEqual(`${firebaseConfig.databaseURL}/${testEndpoint}`);
+    expect(endpointBaseUrl).toEqual(
+      `${firebaseConfig.databaseURL}/${testEndpoint}`
+    );
     expect(returnedRef.key).toEqual(jasmine.any(String));
   });
 
-  it('push() updates Firebase correctly', function(done){
+  it('push() updates Firebase correctly', done => {
     base.push(testEndpoint, {
       data: dummyObjData,
-      then(){
+      then() {
         var testApp = firebase.initializeApp(firebaseConfig, 'DB_CHECK');
         var ref = testApp.database().ref();
-        ref.child(testEndpoint).once('value', (snapshot) => {
+        ref.child(testEndpoint).once('value', snapshot => {
           var keyedData = snapshot.val();
           var data = keyedData[Object.keys(keyedData)[0]];
           expect(data).toEqual(dummyObjData);
           testApp.delete().then(done);
         });
       }
-    })
+    });
   });
-
 });

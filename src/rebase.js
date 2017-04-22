@@ -13,10 +13,9 @@ import _reset from './lib/reset';
 import _removeBinding from './lib/removeBinding';
 import _remove from './lib/remove';
 
-module.exports = (function(){
-
-  function init(db){
-    return (function(){
+module.exports = (function() {
+  function init(db) {
+    return (function() {
       var firebaseRefs = new Map();
       var firebaseListeners = new Map();
       var syncs = new WeakMap();
@@ -67,7 +66,7 @@ module.exports = (function(){
             syncs: syncs
           });
         },
-        remove(endpoint, fn){
+        remove(endpoint, fn) {
           return _remove(endpoint, db, fn);
         },
         reset() {
@@ -76,15 +75,15 @@ module.exports = (function(){
             listeners: firebaseListeners,
             syncs: syncs
           });
-        },
-      }
+        }
+      };
     })();
-  };
+  }
 
   return {
-    createClass(db){
-        _validateDatabase(db);
-        return init(db);
+    createClass(db) {
+      _validateDatabase(db);
+      return init(db);
     }
   };
 })();
