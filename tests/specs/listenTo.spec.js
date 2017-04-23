@@ -300,7 +300,7 @@ describe('listenTo()', function() {
     });
   });
 
-  it('listeners are removed when component unmounts and cleanUp option is true', done => {
+  it('listeners are removed when component unmounts', done => {
     spyOn(console, 'error');
     var componentWillMountSpy = jasmine.createSpy('componentWillMountSpy');
     class ChildComponent extends React.Component {
@@ -314,7 +314,6 @@ describe('listenTo()', function() {
       componentWillMount() {
         base.listenTo(testEndpoint, {
           context: this,
-          cleanUp: true,
           then(data) {
             this.setState({ data });
           },
@@ -322,7 +321,6 @@ describe('listenTo()', function() {
         });
         base.listenTo(`${testEndpoint}/secondListener`, {
           context: this,
-          cleanUp: true,
           then(data) {
             this.setState({ data });
           },
@@ -330,7 +328,6 @@ describe('listenTo()', function() {
         });
         base.listenTo(`${testEndpoint}/thirdListener`, {
           context: this,
-          cleanUp: true,
           then(data) {
             this.setState({ data });
           },

@@ -470,7 +470,7 @@ describe('bindToState()', function() {
     });
   });
 
-  it('listeners are removed when component unmounts and cleanUp option is true', done => {
+  it('listeners are removed when component unmounts', done => {
     spyOn(console, 'error');
     var componentWillMountSpy = jasmine.createSpy('componentWillMountSpy');
     class ChildComponent extends React.Component {
@@ -485,7 +485,6 @@ describe('bindToState()', function() {
         base.bindToState(testEndpoint, {
           context: this,
           state: 'data',
-          cleanUp: true,
           asArray: true
         });
       }

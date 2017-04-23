@@ -106,7 +106,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	module.exports = function () {
-
 	  function init(db) {
 	    return function () {
 	      var firebaseRefs = new Map();
@@ -171,7 +170,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	      };
 	    }();
-	  };
+	  }
 
 	  return {
 	    createClass: function createClass(db) {
@@ -193,7 +192,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports._setUnmountHandler = exports._addListener = exports._updateSyncState = exports._firebaseRefsMixin = exports._addSync = exports._hasOwnNestedProperty = exports._getNestedObject = exports._isNestedPath = exports._isObject = exports._isValid = exports._toArray = exports._prepareData = exports._throwError = exports._setState = exports._returnRef = exports._addQueries = exports._createHash = exports._addScope = undefined;
+	exports._setData = exports._handleError = exports._createNestedObject = exports._setUnmountHandler = exports._addListener = exports._updateSyncState = exports._firebaseRefsMixin = exports._addSync = exports._hasOwnNestedProperty = exports._getNestedObject = exports._isNestedPath = exports._isObject = exports._isValid = exports._toArray = exports._prepareData = exports._throwError = exports._setState = exports._returnRef = exports._addQueries = exports._createHash = undefined;
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
@@ -343,6 +342,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    endAt: true,
 	    equalTo: true
 	  };
+
 	  for (var key in queries) {
 	    if (queries.hasOwnProperty(key)) {
 	      if (needArgs[key]) {
@@ -365,17 +365,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    hash = hash & hash;
 	  }
 	  return hash;
-	};
-
-	var _addScope = function _addScope(scope, provider) {
-	  if (Array.isArray(scope)) {
-	    scope.forEach(function (item) {
-	      provider.addScope(item);
-	    });
-	  } else {
-	    provider.addScope(scope);
-	  }
-	  return provider;
 	};
 
 	var _firebaseRefsMixin = function _firebaseRefsMixin(id, ref, refs) {
@@ -462,7 +451,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, options.onFailure));
 	};
 
-	exports._addScope = _addScope;
 	exports._createHash = _createHash;
 	exports._addQueries = _addQueries;
 	exports._returnRef = _returnRef;
@@ -480,6 +468,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports._updateSyncState = _updateSyncState;
 	exports._addListener = _addListener;
 	exports._setUnmountHandler = _setUnmountHandler;
+	exports._createNestedObject = _createNestedObject;
+	exports._handleError = _handleError;
+	exports._setData = _setData;
 
 /***/ },
 /* 3 */
@@ -503,7 +494,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  var ref = refs.get(id);
 	  var listener = listeners.get(id);
-	  if (typeof ref !== "undefined") {
+	  if (typeof ref !== 'undefined') {
 	    ref.off('value', listener);
 	    refs.delete(id);
 	    listeners.delete(id);
@@ -520,7 +511,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    }
 	  }
-	};
+	}
 
 /***/ },
 /* 4 */
@@ -604,7 +595,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  if (typeof errorMsg !== 'undefined') {
-	    (0, _utils._throwError)(errorMsg, "INVALID_ENDPOINT");
+	    (0, _utils._throwError)(errorMsg, 'INVALID_ENDPOINT');
 	  }
 	};
 
@@ -618,7 +609,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  if (typeof errorMsg !== 'undefined') {
-	    (0, _utils._throwError)(errorMsg, "INVALID_CONFIG");
+	    (0, _utils._throwError)(errorMsg, 'INVALID_CONFIG');
 	  }
 	};
 
@@ -650,7 +641,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    returnEndpoint = ref.push(options.data);
 	  }
 	  return returnEndpoint;
-	};
+	}
 
 /***/ },
 /* 6 */
@@ -669,7 +660,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _fetch(endpoint, options, db) {
 	  (0, _validators._validateEndpoint)(endpoint);
-	  _validators.optionValidators.context(options);
 	  _validators.optionValidators.defaultValue(options);
 	  options.queries && _validators.optionValidators.query(options);
 	  var ref = db.ref(endpoint);
@@ -681,14 +671,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    return data;
 	  }).catch(function (err) {
-	    //call onFailure callback if it exists otherwise return a rejected promise
+	    //call onFailure callback if it exists otherwise rethrow error
 	    if (options.onFailure && typeof options.onFailure === 'function') {
 	      options.onFailure.call(options.context, err);
 	    } else {
 	      throw err;
 	    }
 	  });
-	};
+	}
 
 /***/ },
 /* 7 */
@@ -712,7 +702,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  } else {
 	    return ref.set(options.data);
 	  }
-	};
+	}
 
 /***/ },
 /* 8 */
@@ -750,9 +740,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var id = (0, _utils._createHash)(endpoint, 'syncState');
 	  (0, _utils._firebaseRefsMixin)(id, ref, state.refs);
 	  (0, _utils._addListener)(id, 'syncState', options, ref, state.listeners);
-	  if (options.cleanUp) {
-	    (0, _utils._setUnmountHandler)(options.context, id, state.refs, state.listeners, state.syncs);
-	  }
+	  (0, _utils._setUnmountHandler)(options.context, id, state.refs, state.listeners, state.syncs);
 	  var sync = {
 	    id: id,
 	    updateFirebase: _utils._updateSyncState.bind(null, ref, options.onFailure, options.keepKeys),
@@ -802,7 +790,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	  };
 	  return (0, _utils._returnRef)(endpoint, 'syncState', id, options.context);
-	};
+	}
 
 /***/ },
 /* 9 */
@@ -832,11 +820,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var ref = state.db.ref(endpoint);
 	  (0, _utils._firebaseRefsMixin)(id, ref, state.refs);
 	  (0, _utils._addListener)(id, invoker, options, ref, state.listeners);
-	  if (options.cleanUp) {
-	    (0, _utils._setUnmountHandler)(options.context, id, state.refs, state.listeners, state.syncs);
-	  }
+	  (0, _utils._setUnmountHandler)(options.context, id, state.refs, state.listeners, state.syncs);
 	  return (0, _utils._returnRef)(endpoint, invoker, id, options.context);
-	};
+	}
 
 /***/ },
 /* 10 */
@@ -860,7 +846,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  } else {
 	    return ref.update(options.data);
 	  }
-	};
+	}
 
 /***/ },
 /* 11 */
@@ -880,7 +866,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  state.refs = new Map();
 	  state.syncs = new WeakMap();
 	  return null;
-	};
+	}
 
 /***/ },
 /* 12 */

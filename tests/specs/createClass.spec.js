@@ -7,7 +7,7 @@ var database = require('firebase/database');
 var firebaseConfig = require('../fixtures/config');
 
 describe('createClass()', function() {
-  it('createClass() returns an object with the correct API', function(done) {
+  it('createClass() returns an object with the correct API', done => {
     //setup
     var app = firebase.initializeApp(firebaseConfig);
     var db = database(app);

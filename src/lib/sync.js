@@ -36,15 +36,13 @@ export default function _sync(endpoint, options, state) {
   var id = _createHash(endpoint, 'syncState');
   _firebaseRefsMixin(id, ref, state.refs);
   _addListener(id, 'syncState', options, ref, state.listeners);
-  if (options.cleanUp) {
-    _setUnmountHandler(
-      options.context,
-      id,
-      state.refs,
-      state.listeners,
-      state.syncs
-    );
-  }
+  _setUnmountHandler(
+    options.context,
+    id,
+    state.refs,
+    state.listeners,
+    state.syncs
+  );
   var sync = {
     id: id,
     updateFirebase: _updateSyncState.bind(

@@ -821,13 +821,11 @@ describe('syncState()', function() {
       firebase.Promise
         .all(
           dummyArrayOfObjects.map(item => {
-            return ref
-              .child(`${testEndpoint}/users`)
-              .push(
-                Object.assign(item, {
-                  timestamp: database.ServerValue.TIMESTAMP
-                })
-              );
+            return ref.child(`${testEndpoint}/users`).push(
+              Object.assign(item, {
+                timestamp: database.ServerValue.TIMESTAMP
+              })
+            );
           })
         )
         .then(() => {
@@ -1184,7 +1182,7 @@ describe('syncState()', function() {
     });
   });
 
-  it('listeners are removed when component unmounts and cleanUp option is true', done => {
+  it('listeners are removed when component unmounts', done => {
     spyOn(console, 'error');
     var componentWillMountSpy = jasmine.createSpy('componentWillMountSpy');
     class ChildComponent extends React.Component {
@@ -1198,8 +1196,7 @@ describe('syncState()', function() {
       componentWillMount() {
         base.syncState(testEndpoint, {
           context: this,
-          state: 'data',
-          cleanUp: true
+          state: 'data'
         });
       }
 
