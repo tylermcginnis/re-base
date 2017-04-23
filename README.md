@@ -24,8 +24,8 @@ I spent a few weeks trying to figure out the cleanest way to implement Firebase 
 - [*push*](#pushendpoint-options): Push new child data to Firebase.
 - [*update*](#updateendpoint-options): Update child data using only the referenced properties
 - [*remove*](#removeendpoint-callback): Remove data from Firebase
-- [*removeBinding*](#removebindingref): Remove all of the Firebase listeners when your component unmounts.
-- [*reset*](#reset): Removes all of the Firebase listeners and resets the re-base instance (for testing purposes).
+- [*removeBinding*](#removebindingref): Remove a Firebase listener before the component unmounts if you need to. (Listeners are automatically cleaned up when component unmounts)
+- [*reset*](#reset): Removes all of the Firebase listeners.
 
 # Installing
 
@@ -99,8 +99,8 @@ var base = Rebase.createClass(db);
     - type: object
     - properties:
       - context: (object - required) The context of your component
-      - state: (string - required) The state property you want to sync with Firebase; can be an arbitrarily nested property a là `foo.bar` (no arrays)
-      - defaultValue: (string|boolean|number|object - optional) A default value to set when the Firebase endpoint is null (i.e., on init) (instead of empty Object or Array)
+      - state: (string - required) The state property you want to sync with Firebase; can be an arbitrarily nested property a là `foo.bar`
+      - defaultValue: (string|boolean|number|object - optional) A default value to set when the Firebase endpoint has no value (i.e., on init) (use this if you want a value other than an empty object or empty array)
       - asArray: (boolean - optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
       - keepKeys: (boolean - optional) will keep any firebase generated keys intact when manipulating data using the asArray option.
       - queries: (object - optional) Queries to be used with your read operations.  See [Query Options](#queries) for more details.
@@ -108,7 +108,7 @@ var base = Rebase.createClass(db);
       - onFailure: (function - optional) A callback function that will be invoked if the current user does not have read  or write permissions at the location.
 
 #### Return Value
-  An object which you can pass to `removeBinding` when your component unmounts to remove the Firebase listeners.
+  An object which you can pass to `removeBinding` if you want to remove the listener while the component is still mounted.
 
 #### Example
 
@@ -137,7 +137,7 @@ addItem(newItem){
 #### Arguments
   1. endpoint
     - type: string
-    - The relative Firebase endpoint that you'd like your component's state property to listen for changes
+    - The relative Firebase endpoint that you'd like to bind to your component's state
   2. options
     - type: object
     - properties:
@@ -149,7 +149,7 @@ addItem(newItem){
       - onFailure: (function - optional) A callback function that will be invoked if the current user does not have read permissions at the location.
 
 #### Return Value
-  An object which you can pass to `removeBinding` when your component unmounts to remove the Firebase listeners.
+  An object which you can pass to `removeBinding` if you want to remove the listener while the component is still mounted.
 
 #### Example
 
@@ -529,6 +529,17 @@ The binding above will sort the `users` endpoint by iq, retrieve the last three 
 
 ## <a name='upgrading'>Upgrading to re-base 3.x from 2.x</a>
 
+### Major Changes: ###
+
+3.x no longer requires you to include the full Firebase SDK in your app. This means that you need to include the parts of Firebase SDK you wish to use and handle initialization of the firebase services in your app instead of re-base doing this for you. re-base only requires you pass it the initialized database service . This also means that the authentication helpers are deprecated and re-base no longer exposes the firebase services.
+
+3.x also removes listeners automatically for you on `componentWillUnmount`
+so you don't have to explicitly call `removeBinding`. `removeBinding` is still available if you need to remove a listener while the component is still mounted.
+For instance, if you are adding and removing listeners in response to a prop change.
+
+To help with migrating to 3.x please see the [Migration Guide](docs/MIGRATION.md)
+for the equivalent Firebase SDK methods to use for the deprecated auth helpers.
+
 Change your re-base initialization to use the new firebase configuration.
 
 **Change** this....
@@ -589,9 +600,9 @@ No changes. Your existing code should work.
 
 1. `npm install`
 2. Edit `src/rebase.js`
-3. Add/edit tests in `tests/specs/re-base.spec.js`
+3. Add/edit tests in `tests/specs`
 4. `npm run build`
-5. `npm run test`
+5. `npm test`
 
 ## Credits
 
