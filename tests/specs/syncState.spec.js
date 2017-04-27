@@ -1260,4 +1260,84 @@ describe('syncState()', function() {
     }
     ReactDOM.render(<ParentComponent />, document.getElementById('mount'));
   });
+
+  it('setState callback is called', done => {
+    var callbackSpy = jasmine.createSpy('cb');
+    class TestComponent extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = {
+          data: 5
+        };
+      }
+
+      componentWillMount() {
+        base.syncState(testEndpoint, {
+          context: this,
+          state: 'data'
+        });
+      }
+
+      componentDidMount() {
+        this.setState(
+          {
+            data: 6
+          },
+          callbackSpy
+        );
+      }
+
+      componentDidUpdate() {
+        setTimeout(() => {
+          expect(callbackSpy).toHaveBeenCalled();
+          done();
+        }, 200);
+      }
+
+      render() {
+        return <div>{this.state.data}</div>;
+      }
+    }
+    ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+  });
+
+  it('syncs correctly when setState argument is a function', done => {
+    class TestComponent extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = {
+          data: 5
+        };
+      }
+
+      componentWillMount() {
+        base.syncState(testEndpoint, {
+          context: this,
+          state: 'data'
+        });
+      }
+
+      componentDidMount() {
+        this.setState((prevState, props) => ({
+          data: prevState.data + 1
+        }));
+      }
+
+      componentDidUpdate() {
+        setTimeout(() => {
+          expect(this.state.data).toEqual(6);
+          ref.child(testEndpoint).once('value').then(snapshot => {
+            var val = snapshot.val();
+            expect(val).toEqual(6);
+            done();
+          });
+        }, 1000);
+      }
+
+      render() {
+        return <div>{this.state.data}</div>;
+      }
+    }
+    ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+  });
 });

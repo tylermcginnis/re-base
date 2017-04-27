@@ -749,6 +749,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	  (0, _utils._addSync)(options.context, sync, state.syncs);
 
 	  options.context.setState = function (data, cb) {
+	    //if setState is a function, call it first before syncing to fb
+	    if (typeof data === 'function') {
+	      return _sync.reactSetState.call(options.context, data, function () {
+	        if (cb) cb.call(options.context);
+	        return options.context.setState.call(options.context, options.context.state);
+	      });
+	    }
+	    //if callback is supplied, call setState first before syncing to fb
+	    if (typeof cb === 'function') {
+	      return _sync.reactSetState.call(options.context, data, function () {
+	        cb();
+	        return options.context.setState.call(options.context, data);
+	      });
+	    }
 	    var syncsToCall = state.syncs.get(this);
 	    //if sync does not exist, call original Component.setState
 	    if (!syncsToCall || syncsToCall.length === 0) {
