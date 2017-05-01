@@ -531,7 +531,7 @@ The binding above will sort the `users` endpoint by iq, retrieve the last three 
 
 ### Major Changes: ###
 
-3.x no longer requires you to include the full Firebase SDK in your app. This means that you need to include the parts of Firebase SDK you wish to use and handle initialization of the firebase services in your app instead of re-base doing this for you. re-base only requires you pass it the initialized database service . This also means that the authentication helpers are deprecated and re-base no longer exposes the firebase services.
+3.x no longer requires you to include the full Firebase SDK in your app. This means that you need to include the parts of Firebase SDK you wish to use and handle initialization of the firebase services in your app instead of re-base doing this for you. re-base only requires you pass it the initialized database service. This also means that the authentication helpers are deprecated and re-base no longer exposes the firebase services.
 
 3.x also removes listeners automatically for you on `componentWillUnmount`
 so you don't have to explicitly call `removeBinding`. `removeBinding` is still available if you need to remove a listener while the component is still mounted.
@@ -540,7 +540,7 @@ For instance, if you are adding and removing listeners in response to a prop cha
 To help with migrating to 3.x please see the [Migration Guide](docs/MIGRATION.md)
 for the equivalent Firebase SDK methods to use for the deprecated auth helpers.
 
-Change your re-base initialization to use the new firebase configuration.
+Changes your re-base initialization:
 
 **Change** this....
 ```javascript
