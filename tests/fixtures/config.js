@@ -1,7 +1,8 @@
 module.exports = {
-  apiKey: 'AIzaSyBm3py9af9BqQMfUMnMKpAXJUfxlsegnDI',
-  authDomain: 'qwales1-test.firebaseapp.com',
-  databaseURL: 'https://qwales1-test.firebaseio.com',
-  storageBucket: 'qwales1-test.appspot.com',
-  messagingSenderId: '326619787816'
+  apiKey: 'AIzaSyCETlSYkOH6Cut5Ii31THM3j5iOiHLz89Q',
+  authDomain: 'qwales1-test-fa2c0.firebaseapp.com',
+  databaseURL: 'https://qwales1-test-fa2c0.firebaseio.com',
+  projectId: 'qwales1-test-fa2c0',
+  storageBucket: 'qwales1-test-fa2c0.appspot.com',
+  messagingSenderId: '128777366679'
 };
