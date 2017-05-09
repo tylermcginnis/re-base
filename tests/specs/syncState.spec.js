@@ -1318,20 +1318,21 @@ describe('syncState()', function() {
       }
 
       componentDidMount() {
-        this.setState((prevState, props) => ({
-          data: prevState.data + 1
-        }));
-      }
-
-      componentDidUpdate() {
-        setTimeout(() => {
-          expect(this.state.data).toEqual(6);
-          ref.child(testEndpoint).once('value').then(snapshot => {
-            var val = snapshot.val();
-            expect(val).toEqual(6);
-            done();
-          });
-        }, 1000);
+        this.setState(
+          (prevState, props) => ({
+            data: prevState.data + 1
+          }),
+          () => {
+            expect(this.state.data).toEqual(6);
+            setTimeout(() => {
+              ref.child(testEndpoint).once('value').then(snapshot => {
+                var val = snapshot.val();
+                expect(val).toEqual(6);
+                done();
+              });
+            }, 1000);
+          }
+        );
       }
 
       render() {

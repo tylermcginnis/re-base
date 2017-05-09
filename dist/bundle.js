@@ -52,14 +52,14 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__(1);
 
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -183,9 +183,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	//database
 	//helpers
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -472,9 +472,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports._handleError = _handleError;
 	exports._setData = _setData;
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -513,9 +513,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	}
 
-/***/ },
+/***/ }),
 /* 4 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -602,7 +602,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _validateDatabase = function _validateDatabase(db) {
 	  var defaultError = 'Rebase.createClass failed.';
 	  var errorMsg;
-	  if ((typeof db === 'undefined' ? 'undefined' : _typeof(db)) !== 'object' || !db.app) {
+	  if ((typeof db === 'undefined' ? 'undefined' : _typeof(db)) !== 'object' || !db.ref) {
 	    errorMsg = defaultError + ' Expected an initialized firebase database object.';
 	  } else if (!db || arguments.length > 1) {
 	    errorMsg = defaultError + ' expects 1 argument.';
@@ -617,9 +617,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports._validateDatabase = _validateDatabase;
 	exports._validateEndpoint = _validateEndpoint;
 
-/***/ },
+/***/ }),
 /* 5 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -643,9 +643,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return returnEndpoint;
 	}
 
-/***/ },
+/***/ }),
 /* 6 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -680,9 +680,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  });
 	}
 
-/***/ },
+/***/ }),
 /* 7 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -704,9 +704,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	}
 
-/***/ },
+/***/ }),
 /* 8 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -806,9 +806,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return (0, _utils._returnRef)(endpoint, 'syncState', id, options.context);
 	}
 
-/***/ },
+/***/ }),
 /* 9 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -838,9 +838,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return (0, _utils._returnRef)(endpoint, invoker, id, options.context);
 	}
 
-/***/ },
+/***/ }),
 /* 10 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -862,9 +862,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	}
 
-/***/ },
+/***/ }),
 /* 11 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -882,9 +882,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return null;
 	}
 
-/***/ },
+/***/ }),
 /* 12 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 
@@ -896,7 +896,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return db.ref().child(endpoint).remove(fn);
 	};
 
-/***/ }
+/***/ })
 /******/ ])
 });
 ;

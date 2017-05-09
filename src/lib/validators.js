@@ -99,7 +99,7 @@ const _validateEndpoint = function(endpoint) {
 const _validateDatabase = function(db) {
   var defaultError = 'Rebase.createClass failed.';
   var errorMsg;
-  if (typeof db !== 'object' || !db.app) {
+  if (typeof db !== 'object' || !db.ref) {
     errorMsg = `${defaultError} Expected an initialized firebase database object.`;
   } else if (!db || arguments.length > 1) {
     errorMsg = `${defaultError} expects 1 argument.`;

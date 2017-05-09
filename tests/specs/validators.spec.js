@@ -241,7 +241,7 @@ describe('Validators', () => {
 
     it('should not throw if argument is valid', () => {
       expect(() => {
-        _validateDatabase({ app: {} });
+        _validateDatabase({ ref: () => {} });
       }).not.toThrow();
     });
   });
