@@ -3,6 +3,7 @@
   "version": "2.7.0",
   "description": "A Relay inspired library for building React.js + Firebase applications.",
   "main": "index.js",
+  "typings": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/tylermcginnis/re-base"
