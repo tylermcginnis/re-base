@@ -109,6 +109,8 @@ myApp.delete(() => {
 ##### Purpose
   Allows you to set up two way data binding between your component's state and your Firebase. Whenever your Firebase changes, your component's state will change. Whenever your component's state changes, Firebase will change.
 
+ **Note that you cannot invoke `setState()` [with a function](https://facebook.github.io/react/docs/state-and-lifecycle.html#state-updates-may-be-asynchronous),** e.g. `this.setState(({ counter }) => ({ counter: counter + 1 }))`. Support is coming in [3.x](https://github.com/tylermcginnis/re-base/pull/198).
+
 #### Arguments
   1. endpoint
     - type: string
