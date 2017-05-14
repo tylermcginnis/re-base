@@ -1,6 +1,6 @@
 /// <reference path="../index.d.ts" />
 
-import Rebase from 're-base';
+import Rebase = require('re-base');
 
 let base = Rebase.createClass({
       apiKey: "apiKey",

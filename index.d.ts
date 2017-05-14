@@ -7,38 +7,38 @@ interface FirebaseConfiguration {
     messagingSenderId?: string
 }
 interface SyncStateOptions {
-    context: object
+    context: Object
     state: string
     asArray?: boolean
     isNullable?: boolean
     keepKeys?: boolean
-    queries?: object
+    queries?: Object
     then?: () => void
     onFailure?: () => void
 }
 interface BindToStateOptions {
-    context: object
+    context: Object
     state: string
     asArray?: boolean
-    queries?: object
+    queries?: Object
     then?: () => void
     onFailure?: () => void
 }
 
 interface ListenToOptions {
-    context: object
+    context: Object
     asArray?: boolean
     then: (result : any) => void
     onFailure?: (error : any) => void
-    queries?: object
+    queries?: Object
 }
 
 interface FetchOptions {
-    context: object
+    context: Object
     asArray?: boolean
     then?: (result : any) => void
     onFailure?: () => void
-    queries?: object
+    queries?: Object
 }
 
 interface PostOptions {
@@ -81,19 +81,19 @@ interface Rebase {
 
     reset(): void
 
-    authWithPassword(auth : { email: string, password: string }, authHandler: (error : object | null, user: object) => void): void
+    authWithPassword(auth : { email: string, password: string }, authHandler: (error : Object | null, user: Object) => void): void
 
-    authWithOAuthPopup(provider : string, authHandler: (error : object | null, user: object) => void, settings?: {scope: Array<any> | string})
+    authWithOAuthPopup(provider : string, authHandler: (error : Object | null, user: Object) => void, settings?: {scope: Array<any> | string})
 
-    authWithOAuthRedirect(provider : string, authHandler: (error : object | null) => void, settings?: {scope: Array<any> | string})
+    authWithOAuthRedirect(provider : string, authHandler: (error : Object | null) => void, settings?: {scope: Array<any> | string})
 
-    authGetOAuthRedirectResult(handler: (error : object | null, user: object) => void)
+    authGetOAuthRedirectResult(handler: (error : Object | null, user: Object) => void)
 
-    authWithCustomToken(token : string, handler: (error : object | null, user: object) => void)
+    authWithCustomToken(token : string, handler: (error : Object | null, user: Object) => void)
 
     unauth()
 
-    onAuth(handler: (user: object) => void) : Function
+    onAuth(handler: (user: Object) => void) : Function
 
     createUser(auth : { email: string, password: string }, userHandler: (user) => void)
 
