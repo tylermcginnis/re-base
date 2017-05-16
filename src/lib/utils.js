@@ -14,6 +14,39 @@ const _toArray = function (snapshot){
   return arr;
 };
 
+const _isNestedPath = function (path) {
+  return path.split('.').length > 1 ? true : false;
+}
+
+const _createNestedObject = function (path, value, obj = {}) {
+  let keys = path.split('.');
+  const lastKey = value === undefined ? false : keys.pop();
+  const root = obj;
+
+  for (let key of keys) {
+    obj = obj[key] = obj[key] || {};
+  }
+  if (lastKey) obj[lastKey] = value;
+
+  return root;
+}
+
+const _getNestedObject = function (obj, path) {
+  if (_isNestedPath(path) === false) return;
+
+  const keys = path.split('.');
+  for (let key of keys) {
+    if (!obj || typeof obj !== 'object') return;
+    obj = obj[key];
+  }
+
+  return obj;
+}
+
+const _hasOwnNestedProperty = function (obj, path) {
+  return _getNestedObject(obj, path) === undefined ? false : true;
+}
+
 const _prepareData = function (snapshot, options = {}){
   const {isNullable, asString, asArray} = options;
   const data = snapshot.val();
@@ -133,19 +166,27 @@ const _addListener = function _addListener(id, invoker, options, ref, listeners)
     const data = _prepareData(snapshot, options);
     if(invoker === 'listenTo'){
       options.then.call(options.context, data);
-    } else if(invoker === 'syncState'){
-        options.reactSetState.call(options.context, {[options.state]: data});
+    } else {
+      let newState = {[options.state]: data};
+      if (_isNestedPath(options.state)) {
+        const root = options.state.split('.')[0];
+        // Merge the previous state with the new one
+        let prevState = {[root]: options.context.state[root]}
+        newState = _createNestedObject(options.state, data, prevState)
+      }
+      if(invoker === 'syncState'){
+        options.reactSetState.call(options.context, newState);
         if(options.then && options.then.called === false){
           options.then.call(options.context);
           options.then.called = true;
         }
-    } else if(invoker === 'bindToState') {
-        var newState = {[options.state]: data};
+      } else if(invoker === 'bindToState') {
         _setState.call(options.context, newState);
         if(options.then && options.then.called === false){
           options.then.call(options.context);
           options.then.called = true;
         }
+      }
     }
   }, options.onFailure));
 };
@@ -160,6 +201,9 @@ export {
   _prepareData,
   _toArray,
   _isObject,
+  _isNestedPath,
+  _getNestedObject,
+  _hasOwnNestedProperty,
   _addSync,
   _firebaseRefsMixin,
   _updateSyncState,
