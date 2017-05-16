@@ -512,6 +512,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }
 	}
+
 /***/ }),
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -894,6 +895,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = function (endpoint, db, fn) {
 	  return db.ref().child(endpoint).remove(fn);
 	};
+
 /***/ })
 /******/ ])
 });
