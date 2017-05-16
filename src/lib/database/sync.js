@@ -6,7 +6,10 @@ import {
   _updateSyncState,
   _addSync,
   _returnRef,
-  _addListener
+  _addListener,
+  _isNestedPath,
+  _getNestedObject,
+  _hasOwnNestedProperty
 } from '../utils';
 
 export default function _sync(endpoint, options, state){
@@ -47,17 +50,32 @@ export default function _sync(endpoint, options, state){
     var syncedKeys = syncsToCall.map(sync => {
       return {
         key : sync.stateKey,
-        update: sync.updateFirebase
+        update: sync.updateFirebase,
+        nested: _isNestedPath(sync.stateKey)
       }
     });
     syncedKeys.forEach( syncedKey => {
-      if(data.hasOwnProperty(syncedKey.key)){
+      if (syncedKey.nested === true) {
+        if (_hasOwnNestedProperty(data, syncedKey.key)) {
+          var datum = _getNestedObject(data, syncedKey.key);
+          syncedKey.update(datum);
+        }
+      } else if (data.hasOwnProperty(syncedKey.key)) {
         syncedKey.update(data[syncedKey.key]);
       }
     });
     var allKeys = Object.keys(data);
     allKeys.forEach(key => {
-      if(!syncedKeys.find(syncedKey => syncedKey.key === key)){
+      var absent = !syncedKeys.find(syncedKey => {
+        var k = syncedKey.key;
+        if (syncedKey.nested === true) {
+          // Check with the root
+          k = syncedKey.key.split('.')[0];
+        }
+        return k === key;
+      });
+
+      if (absent) {
         var update = {};
         update[key] = data[key];
         _sync.reactSetState.call(options.context, update, cb);
