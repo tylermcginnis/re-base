@@ -1,4 +1,4 @@
-var Rebase = require('../../src/rebase.js');
+var Rebase = require('../../dist/bundle');
 var firebase = require('firebase');
 var database = require('firebase/database');
 
