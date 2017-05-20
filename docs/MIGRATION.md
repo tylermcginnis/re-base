@@ -47,7 +47,7 @@ var firebase = require('firebase/app');
 require('firebase/auth');
 var app = firebase.initializeApp(yourConfig);
 
-auth().signOut().then(() => {
+app.auth().signOut().then(() => {
   //return value is null
 });
 ```
@@ -60,7 +60,7 @@ var firebase = require('firebase/app');
 require('firebase/auth');
 var app = firebase.initializeApp(yourConfig);
 
-auth().currentUser;
+app.auth().currentUser;
 ```
 See [Firebase docs](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#currentUser) for more information.
 
@@ -71,7 +71,7 @@ var firebase = require('firebase/app');
 require('firebase/auth');
 var app = firebase.initializeApp(yourConfig);
 
-auth().createUserWithEmailAndPassword(email,password).then(user => {
+app.auth().createUserWithEmailAndPassword(email,password).then(user => {
   //
 });
 ```
@@ -83,7 +83,7 @@ var firebase = require('firebase/app');
 require('firebase/auth');
 var app = firebase.initializeApp(yourConfig);
 
-auth().sendPasswordResetEmail(email).then(...)
+app.auth().sendPasswordResetEmail(email).then(...)
 ```
 See [Firebase Docs](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#sendPasswordResetEmail) for more information.
 
@@ -94,7 +94,7 @@ var firebase = require('firebase/app');
 require('firebase/auth');
 var app = firebase.initializeApp(yourConfig);
 
-auth().signInWithCustomToken(token).then(user => {
+app.auth().signInWithCustomToken(token).then(user => {
   //
 })
 ```
@@ -108,7 +108,7 @@ require('firebase/auth');
 var app = firebase.initializeApp(yourConfig);
 
 var provider = new firebase.auth.FacebookAuthProvider();
-auth().signInWithPopup(provider).then(() => {
+app.auth().signInWithPopup(provider).then(() => {
   //return value is null
 });
 
@@ -122,7 +122,7 @@ var firebase = require('firebase/app');
 require('firebase/auth');
 var app = firebase.initializeApp(yourConfig);
 
-auth().getRedirectResult().then(function(result) {
+app.auth().getRedirectResult().then(function(result) {
   //
 });
 
@@ -153,7 +153,7 @@ require('firebase/auth');
 var app = firebase.initializeApp(yourConfig);
 
 var provider = new firebase.auth.FacebookAuthProvider();
-auth().signInWithRedirect(provider).then(() => {
+app.auth().signInWithRedirect(provider).then(() => {
   //return value is null
 });
 
