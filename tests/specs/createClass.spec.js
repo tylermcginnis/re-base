@@ -1,63 +1,89 @@
-var Rebase = require('../../src/rebase.js');
+var Rebase = require('../../dist/bundle');
 var React = require('react');
 var ReactDOM = require('react-dom');
-var firebase = require('firebase');
+var firebase = require('firebase/app');
+var database = require('firebase/database');
 
 var firebaseConfig = require('../fixtures/config');
 
-describe('createClass()', function(){
-  var base;
+describe('createClass()', function() {
+  it('createClass() returns an object with the correct API', done => {
+    //setup
+    var app = firebase.initializeApp(firebaseConfig);
+    var db = database(app);
+    var base = Rebase.createClass(db);
 
-  beforeEach(() => {
-    base = Rebase.createClass(firebaseConfig);
+    expect(base.listenTo).toEqual(
+      jasmine.any(Function),
+      'Public API: listenTo() not exposed'
+    );
+    expect(base.bindToState).toEqual(
+      jasmine.any(Function),
+      'Public API: bindToState() not exposed'
+    );
+    expect(base.syncState).toEqual(
+      jasmine.any(Function),
+      'Public API: syncState() not exposed'
+    );
+    expect(base.fetch).toEqual(
+      jasmine.any(Function),
+      'Public API: fetch() not exposed'
+    );
+    expect(base.update).toEqual(
+      jasmine.any(Function),
+      'Public API: update() not exposed'
+    );
+    expect(base.post).toEqual(
+      jasmine.any(Function),
+      'Public API: post() not exposed'
+    );
+    expect(base.removeBinding).toEqual(
+      jasmine.any(Function),
+      'Public API: removeBinding() not exposed'
+    );
+    expect(base.remove).toEqual(
+      jasmine.any(Function),
+      'Public API: remove() not exposed'
+    );
+    expect(base.reset).toEqual(
+      jasmine.any(Function),
+      'Public API: reset() not exposed'
+    );
+    expect(base.initializedApp).toEqual(
+      jasmine.any(Object),
+      'Public API: initializedApp not exposed'
+    );
+    done();
+
+    //clean up
+    base = null;
+    db = null;
+    app.delete().then(done).catch(() => {
+      done.fail('Firebase App not cleaned up after test');
+    });
   });
 
-  afterEach(done => {
-    base.delete().then(done);
+  it('createClass() should throw if not passed an initialized firebase database instance', function() {
+    expect(function() {
+      Rebase.createClass({});
+    }).toThrow(
+      new Error(
+        'REBASE: Rebase.createClass failed. Expected an initialized firebase database object.'
+      )
+    );
+    expect(function() {
+      Rebase.createClass(database);
+    }).toThrow(
+      new Error(
+        'REBASE: Rebase.createClass failed. Expected an initialized firebase database object.'
+      )
+    );
+    expect(function() {
+      Rebase.createClass('some string');
+    }).toThrow(
+      new Error(
+        'REBASE: Rebase.createClass failed. Expected an initialized firebase database object.'
+      )
+    );
   });
-
-  it('createClass() returns an object with the correct API', function(){
-    expect(base.delete).toEqual(jasmine.any(Function));
-    expect(base.listenTo).toEqual(jasmine.any(Function));
-    expect(base.bindToState).toEqual(jasmine.any(Function));
-    expect(base.syncState).toEqual(jasmine.any(Function));
-    expect(base.fetch).toEqual(jasmine.any(Function));
-    expect(base.update).toEqual(jasmine.any(Function));
-    expect(base.post).toEqual(jasmine.any(Function));
-    expect(base.removeBinding).toEqual(jasmine.any(Function));
-    expect(base.listenTo).toEqual(jasmine.any(Function));
-    expect(base.bindToState).toEqual(jasmine.any(Function));
-    expect(base.fetch).toEqual(jasmine.any(Function));
-    expect(base.post).toEqual(jasmine.any(Function));
-    expect(base.removeBinding).toEqual(jasmine.any(Function));
-    expect(base.remove).toEqual(jasmine.any(Function));
-    expect(base.authWithPassword).toEqual(jasmine.any(Function));
-    expect(base.authWithOAuthPopup).toEqual(jasmine.any(Function));
-    expect(base.authWithOAuthRedirect).toEqual(jasmine.any(Function));
-    expect(base.authGetOAuthRedirectResult).toEqual(jasmine.any(Function));
-    expect(base.authWithOAuthToken).toEqual(jasmine.any(Function));
-    expect(base.authWithCustomToken).toEqual(jasmine.any(Function));
-    expect(base.unauth).toEqual(jasmine.any(Function));
-    expect(base.onAuth).toEqual(jasmine.any(Function));
-    expect(base.createUser).toEqual(jasmine.any(Function));
-    expect(base.resetPassword).toEqual(jasmine.any(Function));
-    expect(base.storage).toEqual(jasmine.any(Function));
-    expect(base.app).toEqual(jasmine.any(Function));
-    expect(base.database).toEqual(jasmine.any(Function));
-    expect(base.auth).toEqual(jasmine.any(Function));
-    expect(base.messaging).toEqual(jasmine.any(Function));
-  });
-
-  it('createClass() returns the default app if it\'s already been initialized', function(){
-    var nextBase = Rebase.createClass(firebaseConfig);
-    expect(base.name).toEqual('[DEFAULT]');
-    expect(base).toEqual(nextBase);
-  });
-
-  it('createClass() returns a named app', function(done){
-    var namedBase = Rebase.createClass(firebaseConfig, 'namedApp');
-    expect(namedBase.name).toEqual('namedApp');
-    namedBase.delete().then(done);
-  });
-
 });

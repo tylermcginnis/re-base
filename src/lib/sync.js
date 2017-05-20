@@ -1,4 +1,4 @@
-import { _validateEndpoint, optionValidators } from '../validators';
+import { _validateEndpoint, optionValidators } from './validators';
 
 import {
   _createHash,
@@ -7,23 +7,26 @@ import {
   _addSync,
   _returnRef,
   _addListener,
+  _setUnmountHandler,
   _isNestedPath,
   _getNestedObject,
   _hasOwnNestedProperty
-} from '../utils';
+} from './utils';
 
-export default function _sync(endpoint, options, state){
+export default function _sync(endpoint, options, state) {
   _validateEndpoint(endpoint);
   optionValidators.context(options);
   optionValidators.state(options);
-  optionValidators.asString(options);
+  optionValidators.defaultValue(options);
   options.queries && optionValidators.query(options);
   options.then && (options.then.called = false);
-  options.onFailure = options.onFailure ? options.onFailure.bind(options.context) : () => {};
+  options.onFailure = options.onFailure
+    ? options.onFailure.bind(options.context)
+    : () => {};
   options.keepKeys = options.keepKeys && options.asArray;
 
   //store reference to react's setState
-  if(_sync.called !== true){
+  if (_sync.called !== true) {
     _sync.reactSetState = options.context.setState;
     _sync.called = true;
   }
@@ -33,28 +36,56 @@ export default function _sync(endpoint, options, state){
   var id = _createHash(endpoint, 'syncState');
   _firebaseRefsMixin(id, ref, state.refs);
   _addListener(id, 'syncState', options, ref, state.listeners);
-
+  _setUnmountHandler(
+    options.context,
+    id,
+    state.refs,
+    state.listeners,
+    state.syncs
+  );
   var sync = {
     id: id,
-    updateFirebase: _updateSyncState.bind(null, ref, options.onFailure, options.keepKeys),
+    updateFirebase: _updateSyncState.bind(
+      null,
+      ref,
+      options.onFailure,
+      options.keepKeys
+    ),
     stateKey: options.state
-  }
+  };
   _addSync(options.context, sync, state.syncs);
 
-  options.context.setState = function(data,cb){
+  options.context.setState = function(data, cb) {
+    //if setState is a function, call it first before syncing to fb
+    if (typeof data === 'function') {
+      return _sync.reactSetState.call(options.context, data, () => {
+        if (cb) cb.call(options.context);
+        return options.context.setState.call(
+          options.context,
+          options.context.state
+        );
+      });
+    }
+    //if callback is supplied, call setState first before syncing to fb
+    if (typeof cb === 'function') {
+      return _sync.reactSetState.call(options.context, data, () => {
+        cb();
+        return options.context.setState.call(options.context, data);
+      });
+    }
     var syncsToCall = state.syncs.get(this);
     //if sync does not exist, call original Component.setState
-    if(!syncsToCall || syncsToCall.length === 0){
+    if (!syncsToCall || syncsToCall.length === 0) {
       return _sync.reactSetState.call(this, data, cb);
     }
     var syncedKeys = syncsToCall.map(sync => {
       return {
-        key : sync.stateKey,
+        key: sync.stateKey,
         update: sync.updateFirebase,
         nested: _isNestedPath(sync.stateKey)
-      }
+      };
     });
-    syncedKeys.forEach( syncedKey => {
+    syncedKeys.forEach(syncedKey => {
       if (syncedKey.nested === true) {
         if (_hasOwnNestedProperty(data, syncedKey.key)) {
           var datum = _getNestedObject(data, syncedKey.key);
@@ -81,6 +112,6 @@ export default function _sync(endpoint, options, state){
         _sync.reactSetState.call(options.context, update, cb);
       }
     });
-  }
+  };
   return _returnRef(endpoint, 'syncState', id, options.context);
-};
+}

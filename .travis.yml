@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-- '0.12'
+- 'node'
 install:
 - npm install
 before_install:
@@ -10,5 +10,7 @@ script:
 - npm run travis
 addons:
   firefox: "latest-esr"
+env:
+- NODE_ENV=test
 after_script:
 - cat ./tests/coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js

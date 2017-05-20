@@ -1,15 +1,16 @@
-import { optionValidators, _validateEndpoint } from '../validators';
+import { optionValidators, _validateEndpoint } from './validators';
 import {
   _createHash,
   _returnRef,
   _firebaseRefsMixin,
-  _addListener
-} from '../utils';
+  _addListener,
+  _setUnmountHandler
+} from './utils';
 
-export default function _bind(endpoint, options, invoker, state){
+export default function _bind(endpoint, options, invoker, state) {
   _validateEndpoint(endpoint);
   optionValidators.context(options);
-  optionValidators.asString(options);
+  optionValidators.defaultValue(options);
   invoker === 'listenTo' && optionValidators.then(options);
   invoker === 'bindToState' && optionValidators.state(options);
   options.queries && optionValidators.query(options);
@@ -19,5 +20,12 @@ export default function _bind(endpoint, options, invoker, state){
   var ref = state.db.ref(endpoint);
   _firebaseRefsMixin(id, ref, state.refs);
   _addListener(id, invoker, options, ref, state.listeners);
+  _setUnmountHandler(
+    options.context,
+    id,
+    state.refs,
+    state.listeners,
+    state.syncs
+  );
   return _returnRef(endpoint, invoker, id, options.context);
-};
+}

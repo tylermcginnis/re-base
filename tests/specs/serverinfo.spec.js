@@ -1,20 +1,24 @@
-var Rebase = require('../../src/rebase.js');
+var Rebase = require('../../dist/bundle');
 var firebase = require('firebase');
+var database = require('firebase/database');
 
-var config = require('../fixtures/config');
+var firebaseConfig = require('../fixtures/config');
 
-describe('Firebase Server Info', function(){
+describe('Firebase Server Info', function() {
   var base;
+  var app;
 
   beforeEach(() => {
-    base = Rebase.createClass(config);
+    app = firebase.initializeApp(firebaseConfig);
+    var db = database(app);
+    base = Rebase.createClass(db);
   });
 
   afterEach(done => {
-    base.delete().then(done);
+    app.delete().then(done);
   });
 
-  it('correctly retrieves Server Time Offset', function(done){
+  it('correctly retrieves Server Time Offset', done => {
     base.fetch('.info/serverTimeOffset', {
       context: this,
       then: data => {
@@ -23,5 +27,4 @@ describe('Firebase Server Info', function(){
       }
     });
   });
-
 });

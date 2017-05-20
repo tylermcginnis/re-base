@@ -3,3 +3,4 @@ node_modules
 **.sw*
 **.log
 examples/**/bundle.js
+coverage

@@ -1,1 +1,7 @@
-module.exports = [[], {}, {then: undefined}, {then: 'strNotFn'}, {onConnectionLoss: 'strNotFn'}];
+module.exports = [
+  [],
+  {},
+  { then: undefined },
+  { then: 'strNotFn' },
+  { onConnectionLoss: 'strNotFn' }
+];

@@ -1,1 +1,1 @@
-module.exports = {name: 'Tyler McGinnis', age: 25};
+module.exports = { name: 'Tyler McGinnis', age: 25 };

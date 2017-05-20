@@ -24,9 +24,8 @@ I spent a few weeks trying to figure out the cleanest way to implement Firebase 
 - [*push*](#pushendpoint-options): Push new child data to Firebase.
 - [*update*](#updateendpoint-options): Update child data using only the referenced properties
 - [*remove*](#removeendpoint-callback): Remove data from Firebase
-- [*removeBinding*](#removebindingref): Remove all of the Firebase listeners when your component unmounts.
-- [*reset*](#reset): Removes all of the Firebase listeners and resets the re-base instance (for testing purposes).
-- [*Firebase Services*](#firebase-services) Exposes the firebase services directly if you want to use anything that re-base does not provide a helper function for
+- [*removeBinding*](#removebindingref): Remove a Firebase listener before the component unmounts if you need to. (Listeners are automatically cleaned up when component unmounts)
+- [*reset*](#reset): Removes all of the Firebase listeners.
 
 # Installing
 
@@ -39,77 +38,58 @@ $ npm install re-base
 #### For more in depth examples of the API, see the [`examples`](examples) folder.
 
 
-## createClass(firebaseConfig, name)
+## createClass(firebaseDatabase)
 
 ##### Purpose
-Accepts a firebase configuration object as the first argument and an optional 'name' for the app as the second
+Accepts an initialized firebase database object
 
 ##### Arguments
-  1. configuration
+  1. initialized firebase database
     - type: object
-    - properties:
-      - apiKey (string - required) your firebase API key
-      - authDomain (string - required) your firebase auth domain
-      - databaseURL (string - required) your firebase database root URL
-      - storageBucket (string - optional) your firebase storage bucket
-      - messagingSenderId: (string - optional) your firebase messaging sender id
-  2. app name
-    - type: string (optional, defaults to '[DEFAULT]')
 
 ##### Return Value
   An instance of re-base.
 
-##### Example
+##### Example using all of firebase
 
 ```javascript
 var Rebase = require('re-base');
-var base = Rebase.createClass({
+var firebase = require('firebase');
+var app = firebase.initializeApp({
       apiKey: "apiKey",
       authDomain: "projectId.firebaseapp.com",
       databaseURL: "https://databaseName.firebaseio.com",
       storageBucket: "bucket.appspot.com",
       messagingSenderId: "xxxxxxxxxxxxxx"
-}, 'myApp');
+});
+var base = Rebase.createClass(app.database());
+
 ```
 
-<br />
-
-## delete(callback)
-
-##### Purpose
-  Deletes the instance of re-base returned from `Rebase.createClass`, removing all the listeners that were added by the instance, and the underlying firebase app that was created.
-  **Note**: _You cannot re-initialize an app of the same name after it has been deleted._
-
-
-#### Arguments
-  1. callback
-   - type: (function - optional)
-   - function that is called when the app has been deleted
-
-#### Example
+##### Example using only the firebase database component
 
 ```javascript
-
 var Rebase = require('re-base');
-var myApp = Rebase.createClass({
+var firebase = require('firebase/app');
+var database = require('firebase/database');
+var app = firebase.initializeApp({
       apiKey: "apiKey",
       authDomain: "projectId.firebaseapp.com",
       databaseURL: "https://databaseName.firebaseio.com",
       storageBucket: "bucket.appspot.com",
-}, 'myApp');
-
-myApp.delete(() => {
-	//app has been deleted
+      messagingSenderId: "xxxxxxxxxxxxxx"
 });
+var db = database(app);
+var base = Rebase.createClass(db);
 
 ```
+
+<br />
 
 ## syncState(endpoint, options)
 
 ##### Purpose
   Allows you to set up two way data binding between your component's state and your Firebase. Whenever your Firebase changes, your component's state will change. Whenever your component's state changes, Firebase will change.
-
- **Note that you cannot invoke `setState()` [with a function](https://facebook.github.io/react/docs/state-and-lifecycle.html#state-updates-may-be-asynchronous),** e.g. `this.setState(({ counter }) => ({ counter: counter + 1 }))`. Support is coming in [3.x](https://github.com/tylermcginnis/re-base/pull/198).
 
 #### Arguments
   1. endpoint
@@ -119,17 +99,16 @@ myApp.delete(() => {
     - type: object
     - properties:
       - context: (object - required) The context of your component
-      - state: (string - required) The state property you want to sync with Firebase; can be an arbitrarily nested property a là `foo.bar` (no arrays)
+      - state: (string - required) The state property you want to sync with Firebase; can be an arbitrarily nested property a là `foo.bar`
+      - defaultValue: (string|boolean|number|object - optional) A default value to set when the Firebase endpoint has no value (i.e., on init) (use this if you want a value other than an empty object or empty array)
       - asArray: (boolean - optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
-			- asString: (boolean - optional) Sets state as empty string instead of empty Object or Array if there is no Firebase data
-      - isNullable: (boolean - optional) Sets state as null instead of empty Object or Array if there is no Firebase data
       - keepKeys: (boolean - optional) will keep any firebase generated keys intact when manipulating data using the asArray option.
       - queries: (object - optional) Queries to be used with your read operations.  See [Query Options](#queries) for more details.
       - then: (function - optional) The callback function that will be invoked when the initial listener is established with Firebase. Typically used (with syncState) to change `this.state.loading` to false.
       - onFailure: (function - optional) A callback function that will be invoked if the current user does not have read  or write permissions at the location.
 
 #### Return Value
-  An object which you can pass to `removeBinding` when your component unmounts to remove the Firebase listeners.
+  An object which you can pass to `removeBinding` if you want to remove the listener while the component is still mounted.
 
 #### Example
 
@@ -158,7 +137,7 @@ addItem(newItem){
 #### Arguments
   1. endpoint
     - type: string
-    - The relative Firebase endpoint that you'd like your component's state property to listen for changes
+    - The relative Firebase endpoint that you'd like to bind to your component's state
   2. options
     - type: object
     - properties:
@@ -170,7 +149,7 @@ addItem(newItem){
       - onFailure: (function - optional) A callback function that will be invoked if the current user does not have read permissions at the location.
 
 #### Return Value
-  An object which you can pass to `removeBinding` when your component unmounts to remove the Firebase listeners.
+  An object which you can pass to `removeBinding` if you want to remove the listener while the component is still mounted.
 
 #### Example
 
@@ -239,9 +218,9 @@ componentDidMount(){
   2. options
     - type: object
     - properties:
-      - context: (object - required) The context of your component
+      - context: (object - optional) The context of your component
       - asArray: (boolean - optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
-      - then: (function - required) The callback function that will be invoked with the data from the specified endpoint when the endpoint changes
+      - then: (function - optional) The callback function that will be invoked with the data from the specified endpoint when the endpoint changes
       - onFailure: (function - optional) The callback function that will be invoked with an error that occurs reading data from the specified endpoint
       - queries: (object - optional) Queries to be used with your read operations.  See [Query Options](#queries) for more details.
 
@@ -548,391 +527,27 @@ base.syncState('users', {
 
 The binding above will sort the `users` endpoint by iq, retrieve the last three (or, three with highest iq), and bind it to the component's `users` state.  NOTE: This query is happening within Firebase.  The *only* data that will be retrieved are the three users with the highest iq.
 
-## <a name='auth'>Authentication</a>
+## <a name='upgrading'>Upgrading to re-base 3.x from 2.x</a>
 
-re-base exposes a few methods of [the Firebase Auth service](https://firebase.google.com/docs/reference/js/firebase.auth.Auth) to help with user authentication.
+### Major Changes: ###
 
-## authWithPassword(auth, authHandler)
+3.x no longer requires you to include the full Firebase SDK in your app. This means that you need to include the parts of Firebase SDK you wish to use and handle initialization of the firebase services in your app instead of re-base doing this for you. re-base only requires you pass it the initialized database service. This also means that the authentication helpers are deprecated and re-base no longer exposes the firebase services.
 
-#### Purpose
-  Authenticate a user by email and password.
+3.x also removes listeners automatically for you on `componentWillUnmount`
+so you don't have to explicitly call `removeBinding`. `removeBinding` is still available if you need to remove a listener while the component is still mounted.
+For instance, if you are adding and removing listeners in response to a prop change.
 
-  **_the Email sign-in method needs to be enabled in your firebase console_**
+To help with migrating to 3.x please see the [Migration Guide](docs/MIGRATION.md)
+for the equivalent Firebase SDK methods to use for the deprecated auth helpers.
 
-#### Arguments
-  1. authentication object
-    - type: Object
-    - properties:
-    	- email (string - required)
-    	- password (string - required)
-  2. auth handler
-  	- type: function
-  		- arguments:
-  			- error (object or null)
-  			- user data (object)
-
-#### Return Value
-  No return value
-
-#### Example
-
-```javascript
-var authHandler = function(error, user) {
-  if(error) doSomethingWithError(error);
-  doSomethingWithUser(user);
-}
-
-// Simple email/password authentication
-base.authWithPassword({
-  email    : 'bobtony@firebase.com',
-  password : 'correcthorsebatterystaple'
-}, authHandler);
-
-```
-<br />
-
-## authWithOAuthPopup(provider, handler, settings)
-
-#### Purpose
-  Authenticate a user using an OAuth popup
-
-  **_the sign in provider you are using needs to be enabled in your firebase console_**
-
-#### Arguments
-  1. provider
-    - type: string
-    - name of auth provider "facebook, twitter, github, google"
-  2. auth handler
-  	- type: function
-  		- arguments:
-  			- error (object or null)
-  			- user data (object)
-  3. settings (available settings vary per auth provider)
-  	- type: object (optional)
-  		- properties:
-  			- scope (array or string)
-
-#### Return Value
-  No return value
-
-#### Example
-
-```javascript
-var authHandler = function(error, user) {
-  if(error) doSomethingWithError(error);
-  doSomethingWithUser(user);
-}
-//basic
-base.authWithOAuthPopup('twitter', authHandler);
-
-// with settings
-base.authWithOAuthPopup('github', authHandler, {scope: ['repos']});
-
-```
-<br />
-
-## authWithOAuthRedirect(provider, handler, settings)
-
-#### Purpose
-  Authenticate a user using an OAuth redirect
-
-  **_the sign in provider you are using needs to be enabled in your firebase console_**
-
-#### Arguments
-  1. provider
-    - type: string
-    - name of auth provider "facebook, twitter, github, google"
-  2. auth handler
-  	- type: function
-  		- arguments:
-  			- error (object or null)
-  3. settings (available settings vary per auth provider)
-  	- type: object (optional)
-  		- properties:
-  			- scope (array or string)
-
-#### Return Value
-  No return value
-
-#### Example
-
-```javascript
-var authHandler = function(error) {
-  if(error) doSomethingWithError(error);
-  // noop if redirect is successful
-  return;
-}
-//basic
-base.authWithOAuthRedirect('twitter', authHandler);
-
-// with settings
-base.authWithOAuthRedirect('github', authHandler, {scope: ['repos']});
-
-```
-<br />
-
-## authGetOAuthRedirectResult(handler)
-
-#### Purpose
- Completes the OAuth redirect flow initiated by `authWithOAuthRedirect`
-
-#### Arguments
-
-  1. handler
-  	- type: function
-  		- arguments:
-  			- error (object or null)
-  			- user data (object)
-
-#### Return Value
-  No return value
-
-#### <a name='redirect-example'>Example</a>
-
-```javascript
-var authHandler = function(error) {
-  if(error) console.log(error);
-  // noop if redirect is successful
-  return;
-}
-
-var onRedirectBack = function(error, authData){
-  if(error) console.log(error);
-  if(authData.user){
-    doSomethingWithAuthenticatedUser(authData.user);
-  } else {
-    //redirect to twitter for auth
-    base.authWithOAuthRedirect('twitter', authHandler);
-  }
-}
-
-base.authGetOAuthRedirectResult(onRedirectBack);
-
-
-```
-<br />
-
-## authWithOAuthToken(provider, token, handler, settings)
-
-#### Purpose
- Authenticate with OAuth provider using a token
-
-#### Arguments
-
-  1. provider
-    - type: string
-    - name of auth provider "facebook, twitter, github, google"
-  2. token
-    - type: string
-  3. handler
-  	- type: function
-  		- arguments:
-  			- error (object or null)
-  			- user data (object)
-  4. settings (available settings vary per auth provider)
-  	- type: object (optional)
-  		- properties:
-  			- scope (array or string)
-  			- providerOptions (object)
-  				- properties:
-  					- secret (twitter only - optional)
-  					- idToken(google only - optional, must be null if using accessToken)
-  					- accessToken(google only - optional)
-
-#### Return Value
-  No return value
-
-#### Example
-
-```javascript
-var authHandler = function(error, user) {
-  if(error) doSomethingWithError(error);
-  doSomethingWithAuthenticatedUser(user);
-}
-
-// optional settings for auth provider
-var settings = { scope: ['repos'] };
-
-base.authWithOAuthToken('twitter', <yourtoken>, authHandler, settings);
-
-```
-<br />
-
-## authWithCustomToken(token,handler)
-
-#### Purpose
- Authenticate OAuth redirect flow initiated by `authWithOAuthRedirect`
-
-#### Arguments
-
-  1. token
-    - type: string
-  2. auth handler
-  	- type: function
-  		- arguments:
-  			- error (object or null)
-  			- user data (object)
-
-#### Return Value
-  No return value
-
-#### Example
-
-```javascript
-var authHandler = function(error, user) {
-  if(error) doSomethingWithError(error);
-  doSomethingWithAuthenticatedUser(user);
-}
-
-base.authWithCustomToken(<yourtoken>, authHandler);
-
-
-```
-<br />
-
-## unauth()
-
-#### Purpose
- Signs out the currently logged in user
-
-#### Arguments
-
-none
-
-#### Return Value
-  No return value
-
-#### Example
-
-```javascript
-
-base.unauth()
-
-```
-
-<br />
-
-## onAuth(handler)
-
-#### Purpose
- Listen to the authentication event
-
-#### Arguments
-
-  1. handler
-  	- type: function
-  		- arguments:
-  			- user data (object or null) null if user is not logged in
-
-#### Return Value
-  an unsubscribe function for the added listener
-#### Example
-
-```javascript
-
-function authDataCallback(user) {
-  if (user) {
-    console.log("User " + user.uid + " is logged in with " + user.providerId);
-  } else {
-    console.log("User is logged out");
-  }
-}
-
-// Listen to authentication
-var unsubscribe = base.onAuth(authDataCallback);
-
-//to remove listener
-unsubscribe();
-
-```
-
-## <a name='users'>User Management</a>
-
-re-base exposes a few helper methods for user methods for user management.
-
-
-```javascript
-// Create
-base.createUser({
-  email: 'bobtony@firebase.com',
-  password: 'correcthorsebatterystaple'
-}, userHandler);
-
-
-// Reset Password
-base.resetPassword({
-  email: 'bobtony@firebase.com'
-}, errorHandler);
-
-```
-
-## <a name='firebase-services'>Firebase Services</a>
-
-re-base also exposes the firebase services directly if you need them.
-
-Firebase App  [Docs](https://firebase.google.com/docs/reference/js/firebase.app)
-
-`base.app`
-
-Firebase Database [Docs](https://firebase.google.com/docs/reference/js/firebase.database)
-
-`base.database`
-
-Firebase Storage [Docs](https://firebase.google.com/docs/reference/js/firebase.storage)
-
-`base.storage`
-
-Firebase Auth [Docs](https://firebase.google.com/docs/reference/js/firebase.auth)
-
-`base.auth`
-
-Firebase Messaging [Docs](https://firebase.google.com/docs/reference/js/firebase.messaging)
-
-`base.messaging`
-
-The initialized Firebase app for the re-base instance
-
-`base.initializedApp`
-
-#### Example ####
-
-_Using the default app_
-
-```javascript
-var base = Rebase.createClass(configObject);
-
-var databaseService = base.database();
-
-```
-_Using another 'named' app_
-
-```javascript
-var base = Rebase.createClass(configObject, 'myApp');
-
-var databaseService = base.database(base.initializedApp);
-
-```
-
-## <a name='upgrading'>Upgrading to re-base 2.x from 1.x</a>
-
-First follow the upgrade guide at [https://firebase.google.com/support/guides/firebase-web](https://firebase.google.com/support/guides/firebase-web)
-
-Change your re-base initialization to use the new firebase configuration.
+Changes your re-base initialization:
 
 **Change** this....
 ```javascript
 
 var Rebase = require('re-base');
-var base = Rebase.createClass('https://myapp.firebaseio.com');
-
-```
-
-***To*** this...
-```javascript
-
-var Rebase = require('re-base');
 var base = Rebase.createClass({
-  	  apiKey: "apiKey",
+      apiKey: "apiKey",
       authDomain: "projectId.firebaseapp.com",
       databaseURL: "https://databaseName.firebaseio.com",
       storageBucket: "bucket.appspot.com",
@@ -940,9 +555,23 @@ var base = Rebase.createClass({
 
 ```
 
+***To*** this...
+```javascript
+
+var Rebase = require('re-base');
+var firebase = require('firebase');
+var app = firebase.initializeApp({
+      apiKey: "apiKey",
+      authDomain: "projectId.firebaseapp.com",
+      databaseURL: "https://databaseName.firebaseio.com",
+      storageBucket: "bucket.appspot.com",
+});
+var base = Rebase.createClass(app.database());
+
+```
+
 ### Changes to Database methods
 <hr />
-
 
 No changes. Your existing code should work.
 
@@ -954,36 +583,26 @@ No changes. Your existing code should work.
 
 ***Deprecated Methods***
 
-`base.offAuth`
-
-`base.onAuth` now returns an unsubscribe function that removes the listener.
-
-***Behavior Changes***
-
+`base.resetPassword`
+`base.createUser`
+`base.authWithPassword`
+`base.authWithCustomToken`
+`base.authWithOAuthPopup`
+`base.getOAuthRedirectResult`
+`base.authWithOAuthToken`
 `base.authWithOAuthRedirect`
+`base.onAuth`
+`base.unauth`
+`base.getAuth`
 
-The redirect flow needs to be completed with an added `base.authGetOAuthRedirectResult` method. See [example](#redirect-example).
-
-<br />
-### Changes to User Management
-<hr />
-
-***Deprecated Methods***
-
-`base.removeUser` - users can only remove themselves. See [firebase documentation.](https://firebase.google.com/docs/reference/js/firebase.User#delete)
-`base.changePassword` users can only change their own passwords. See [firebase documentation.](https://firebase.google.com/docs/reference/js/firebase.User#updatePassword)
-
-***Behavior Changes***
-
-`base.createUser` - This method will now log you in as the newly created user on success. See [firebase documentation.](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#createUserWithEmailAndPassword)
 
 ## Contributing
 
 1. `npm install`
 2. Edit `src/rebase.js`
-3. Add/edit tests in `tests/specs/re-base.spec.js`
+3. Add/edit tests in `tests/specs`
 4. `npm run build`
-5. `npm run test`
+5. `npm test`
 
 ## Credits
 

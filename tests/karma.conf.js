@@ -6,12 +6,12 @@ module.exports = function(config) {
     autowatch: true,
     singleRun: !!travis,
     files: [
-      { pattern: 'specs/*.spec.js', watched: false }
+      { pattern: 'specs/**/*.spec.js', watched: false }
     ],
     reporters: ["spec", "failed", "coverage"],
     browsers: [travis ? 'Firefox' : 'Chrome'],
     preprocessors: {
-    'specs/*.spec.js': ['webpack'],
+    'specs/**/*.spec.js': ['webpack'],
     },
     webpack: {
       module: {
