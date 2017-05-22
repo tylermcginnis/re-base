@@ -3,18 +3,14 @@ import Repos from './Github/Repos';
 import UserProfile from './Github/UserProfile';
 import Notes from './Notes/Notes';
 import helpers from '../utils/helpers';
-import Rebase from 're-base';
+import base from '../rebase';
 
-var base = Rebase.createClass({
-    apiKey: "AIzaSyBm3py9af9BqQMfUMnMKpAXJUfxlsegnDI",
-    authDomain: "qwales1-test.firebaseapp.com",
-    databaseURL: "https://qwales1-test.firebaseio.com",
-    storageBucket: "qwales1-test.appspot.com",
-});
-console.log('Please change to your own firebase address in app/components/Profile.js');
+console.log(
+  'Please change to your own firebase address in app/components/Profile.js'
+);
 
-class Profile extends React.Component{
-  constructor(props){
+class Profile extends React.Component {
+  constructor(props) {
     super(props);
     this.state = {
       notes: [],
@@ -22,42 +18,41 @@ class Profile extends React.Component{
       repos: []
     };
   }
-  init(){
+  init() {
     this.ref = base.syncState(`/github/${this.props.routeParams.username}`, {
       context: this,
       asArray: true,
       state: 'notes'
     });
 
-    helpers.getGithubInfo(this.props.routeParams.username)
-      .then((dataObj) => {
-        this.setState({
-          bio: dataObj.bio,
-          repos: dataObj.repos
-        });
+    helpers.getGithubInfo(this.props.routeParams.username).then(dataObj => {
+      this.setState({
+        bio: dataObj.bio,
+        repos: dataObj.repos
       });
+    });
   }
-  componentDidMount(){
+  componentDidMount() {
     this.init();
   }
-  componentWillUnmount(){
+  componentWillUnmount() {
     base.removeBinding(this.ref);
   }
-  componentWillReceiveProps(){
+  componentWillReceiveProps() {
     base.removeBinding(this.ref);
     this.init();
   }
-  handleAddNote(newNote){
+  handleAddNote(newNote) {
     this.setState({
       notes: this.state.notes.concat([newNote])
-    })
+    });
   }
-  render(){
+  render() {
     var username = this.props.routeParams.username;
     return (
       <div className="row">
         <div className="col-md-4">
-          <UserProfile username={username} bio={this.state.bio}/>
+          <UserProfile username={username} bio={this.state.bio} />
         </div>
         <div className="col-md-4">
           <Repos username={username} repos={this.state.repos} />
@@ -66,12 +61,13 @@ class Profile extends React.Component{
           <Notes
             username={username}
             notes={this.state.notes}
-            addNote={this.handleAddNote.bind(this)} />
+            addNote={this.handleAddNote.bind(this)}
+          />
         </div>
       </div>
-    )
+    );
   }
-};
+}
 
 Profile.contextTypes = {
   router: React.PropTypes.object.isRequired
