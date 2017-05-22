@@ -1,18 +1,9 @@
 import React from 'react';
-import Rebase from 're-base';
 import ReactDOM from 'react-dom';
-
-var base = Rebase.createClass({
-    apiKey: "AIzaSyBm3py9af9BqQMfUMnMKpAXJUfxlsegnDI",
-    authDomain: "qwales1-test.firebaseapp.com",
-    databaseURL: "https://qwales1-test.firebaseio.com",
-    storageBucket: "qwales1-test.appspot.com",
-});
-console.log('Please change to your own firebase address in components/NewChat.js');
-
+import base from '../rebase';
 
 class NewChat extends React.Component {
-  _newChat(e){
+  _newChat(e) {
     e.preventDefault();
 
     /*
@@ -28,10 +19,12 @@ class NewChat extends React.Component {
     */
 
     base.post('chats', {
-      data: this.props.chats.concat([{
-        title: ReactDOM.findDOMNode(this.refs.title).value,
-        message: ReactDOM.findDOMNode(this.refs.message).value
-      }]),
+      data: this.props.chats.concat([
+        {
+          title: ReactDOM.findDOMNode(this.refs.title).value,
+          message: ReactDOM.findDOMNode(this.refs.message).value
+        }
+      ]),
       context: this,
       /*
        * This 'then' method will run after the
@@ -44,18 +37,31 @@ class NewChat extends React.Component {
 
     ReactDOM.findDOMNode(this.refs.message).value = '';
     ReactDOM.findDOMNode(this.refs.title).value = '';
-
   }
-  render(){
+  render() {
     return (
-      <div className='col-md-12'>
-        <form onSubmit={ this._newChat.bind(this) } className='form-group col-md-8'>
-          <input ref='title' type='text' placeholder='Title' className='form-control' />
-          <textarea ref='message'  placeholder='Message' className='form-control' />
-          <input type='submit' className='btn btn-success' />
+      <div className="col-md-12">
+        <form
+          onSubmit={this._newChat.bind(this)}
+          className="form-group col-md-8"
+        >
+          <input
+            ref="title"
+            type="text"
+            placeholder="Title"
+            className="form-control"
+            style={{ margin: '5px auto' }}
+          />
+          <textarea
+            ref="message"
+            placeholder="Message"
+            className="form-control"
+            style={{ margin: '5px auto' }}
+          />
+          <input type="submit" className="btn btn-success" />
         </form>
       </div>
-    )
+    );
   }
 }
 
