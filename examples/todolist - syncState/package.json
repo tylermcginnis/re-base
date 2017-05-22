@@ -16,7 +16,7 @@
     "webpack": "^1.13.1"
   },
   "dependencies": {
-    "re-base": "^2.0.0",
+    "re-base": "^3.0.0",
     "react": "^15.3.0",
     "react-dom": "^15.3.0"
   }

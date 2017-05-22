@@ -13,7 +13,7 @@
     "babel-core": "^5.8.38",
     "babel-loader": "^5.4.2",
     "http-server": "^0.9.0",
-    "re-base": "^2.0.0",
+    "re-base": "^3.0.0",
     "react": "^15.3.0",
     "react-dom": "^15.3.0",
     "webpack": "^1.13.1"

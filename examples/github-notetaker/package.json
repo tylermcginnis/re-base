@@ -20,7 +20,7 @@
   "dependencies": {
     "axios": "^0.13.1",
     "firebase": "^3.3.0",
-    "re-base": "^2.0.0",
+    "re-base": "^3.0.0",
     "react": "^15.3.0",
     "react-dom": "^15.3.0",
     "react-router": "^2.6.1",

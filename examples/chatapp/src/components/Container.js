@@ -1,26 +1,16 @@
 import React from 'react';
-import Rebase from 're-base';
-
 import Message from './Message.js';
-
-var base = Rebase.createClass({
-    apiKey: "AIzaSyBm3py9af9BqQMfUMnMKpAXJUfxlsegnDI",
-    authDomain: "qwales1-test.firebaseapp.com",
-    databaseURL: "https://qwales1-test.firebaseio.com",
-    storageBucket: "qwales1-test.appspot.com",
-});
-console.log('Please change to your own firebase address in components/Container.js');
+import base from '../rebase';
 
 class Container extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
       messages: [],
       show: null
-    }
+    };
   }
-  componentWillMount(){
-
+  componentWillMount() {
     /*
      * We bind the 'chats' firebase endopint to our 'messages' state.
      * Anytime the firebase updates, it will call 'setState' on this component
@@ -38,7 +28,7 @@ class Container extends React.Component {
       asArray: true
     });
   }
-  componentWillUnmount(){
+  componentWillUnmount() {
     /*
      * When the component unmounts, we remove the binding.
      * Invoking syncState (or bindToState or listenTo)
@@ -48,7 +38,7 @@ class Container extends React.Component {
 
     base.removeBinding(this.ref);
   }
-  _removeMessage(index, e){
+  _removeMessage(index, e) {
     e.stopPropagation();
     var arr = this.state.messages.concat([]);
     arr.splice(index, 1);
@@ -65,8 +55,7 @@ class Container extends React.Component {
       show: null
     });
   }
-  _toggleView(index){
-
+  _toggleView(index) {
     /*
      * Because nothing is bound to our 'show' state, calling
      * setState on 'show' here will do nothing with Firebase,
@@ -76,27 +65,28 @@ class Container extends React.Component {
       show: index
     });
   }
-  render(){
-    var messages = this.state.messages.map( (item, index) => {
+  render() {
+    var messages = this.state.messages.map((item, index) => {
       return (
         <Message
-          thread={ item }
-          show={ this.state.show === index }
-          removeMessage={ this._removeMessage.bind(this, index) }
-          handleClick={ this._toggleView.bind(this, index) }
-          key={ index } />
+          thread={item}
+          show={this.state.show === index}
+          removeMessage={this._removeMessage.bind(this, index)}
+          handleClick={this._toggleView.bind(this, index)}
+          key={index}
+        />
       );
     });
 
     return (
-      <div className='col-md-12'>
-        <div className='col-md-8'>
-          <h1>{ (this.state.messages.length || 0) + ' messages' }</h1>
-          <ul>{ messages }</ul>
+      <div className="col-md-12">
+        <div className="col-md-8">
+          <h1>{(this.state.messages.length || 0) + ' messages'}</h1>
+          <ul style={{ listStyle: 'none' }}>{messages}</ul>
         </div>
       </div>
     );
   }
 }
 
-export default Container
+export default Container;
