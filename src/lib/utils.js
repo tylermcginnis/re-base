@@ -183,6 +183,9 @@ const _addListener = function _addListener(
   listeners
 ) {
   ref = _addQueries(ref, options.queries);
+  const boundOnFailure = typeof options.onFailure === 'function'
+    ? options.onFailure.bind(options.context)
+    : null;
   listeners.set(
     id,
     ref.on(
@@ -214,7 +217,7 @@ const _addListener = function _addListener(
           }
         }
       },
-      options.onFailure
+      boundOnFailure
     )
   );
 };

@@ -86,6 +86,13 @@ var base = Rebase.createClass(db);
 
 <br />
 
+## initializedApp
+
+##### Purpose
+  This property contains the initialized firebase app that was passed into re-base. You can access any of the firebase services that you are using off this object. For instance, if you want to use some firebase `database` methods that re-base doesn't have helpers for or if you are using the `auth` service and want to quickly access it off of re-base.
+
+<br />
+
 ## syncState(endpoint, options)
 
 ##### Purpose
