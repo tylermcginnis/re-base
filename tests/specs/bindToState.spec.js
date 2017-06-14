@@ -116,10 +116,13 @@ describe('bindToState()', function() {
           };
         }
         componentDidMount() {
+          var self = this;
           this.ref = base.bindToState(`/readFail`, {
             context: this,
             state: 'user',
             onFailure(err) {
+              expect(this).toEqual(self);
+              expect(this.setState).toEqual(self.setState);
               expect(err).not.toBeUndefined();
               done();
             }

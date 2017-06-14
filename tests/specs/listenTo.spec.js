@@ -129,7 +129,7 @@ describe('listenTo()', function() {
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
-    it("listenTo's .onFailure method gets invoked with error if permissions do not allow read", done => {
+    it("listenTo's .onFailure method gets invoked in the component context with error if permissions do not allow read", done => {
       var didUpdate = false;
       class TestComponent extends React.Component {
         constructor(props) {

@@ -422,6 +422,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _addListener = function _addListener(id, invoker, options, ref, listeners) {
 	  ref = _addQueries(ref, options.queries);
+	  var boundOnFailure = typeof options.onFailure === 'function' ? options.onFailure.bind(options.context) : null;
 	  listeners.set(id, ref.on('value', function (snapshot) {
 	    var data = _prepareData(snapshot, options);
 	    if (invoker === 'listenTo') {
@@ -448,7 +449,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	      }
 	    }
-	  }, options.onFailure));
+	  }, boundOnFailure));
 	};
 
 	exports._createHash = _createHash;
