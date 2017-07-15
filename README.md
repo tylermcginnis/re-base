@@ -381,7 +381,7 @@ addBear(){
 
 #### Purpose
   Allows you to update data at a Firebase endpoint changing only the properties you pass to it.
-  **Warning: calling update with `options.data` being null will remove the all the data at that endpoint**
+  **Warning: calling update with `options.data` being null will remove all the data at that endpoint**
 
 #### Arguments
   1. endpoint
