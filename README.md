@@ -109,6 +109,8 @@ myApp.delete(() => {
 ##### Purpose
   Allows you to set up two way data binding between your component's state and your Firebase. Whenever your Firebase changes, your component's state will change. Whenever your component's state changes, Firebase will change.
 
+ **Note that you cannot invoke `setState()` [with a function](https://facebook.github.io/react/docs/state-and-lifecycle.html#state-updates-may-be-asynchronous),** e.g. `this.setState(({ counter }) => ({ counter: counter + 1 }))`. Support is coming in [3.x](https://github.com/tylermcginnis/re-base/pull/198).
+
 #### Arguments
   1. endpoint
     - type: string
@@ -117,7 +119,7 @@ myApp.delete(() => {
     - type: object
     - properties:
       - context: (object - required) The context of your component
-      - state: (string - required) The state property you want to sync with Firebase
+      - state: (string - required) The state property you want to sync with Firebase; can be an arbitrarily nested property a là `foo.bar` (no arrays)
       - asArray: (boolean - optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
 			- asString: (boolean - optional) Sets state as empty string instead of empty Object or Array if there is no Firebase data
       - isNullable: (boolean - optional) Sets state as null instead of empty Object or Array if there is no Firebase data
@@ -161,7 +163,7 @@ addItem(newItem){
     - type: object
     - properties:
       - context: (object - required) The context of your component
-      - state: (string - required) The state property you want to sync with Firebase
+      - state: (string - required) The state property you want to sync with Firebase; can be an arbitrarily nested property a là `foo.bar` (no arrays)
       - asArray: (boolean - optional) Returns the Firebase data at the specified endpoint as an Array instead of an Object
       - queries: (object - optional) Queries to be used with your read operations.  See [Query Options](#queries) for more details.
       - then: (function - optional) The callback function that will be invoked when the initial listener is established with Firebase. Typically used (with bindToState) to change `this.state.loading` to false.
