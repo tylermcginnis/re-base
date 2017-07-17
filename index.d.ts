@@ -109,5 +109,14 @@ interface Rebase {
 }
 
 declare module 're-base' {
-    export function createClass(configuration: FirebaseConfiguration, types?: string): Rebase
+
+    /**
+     * Accepts a firebase configuration object as the first argument
+     * and an optional 'name' for the app as the second
+     * @param {FirebaseConfiguration} configuration: .
+     * @param {string} name: OPTIONAL, defaults to `[DEFAULT]`.
+     * @since 2.8
+     * @return Rebase
+     */
+    export function createClass(configuration: FirebaseConfiguration, name?: string): Rebase
 }
