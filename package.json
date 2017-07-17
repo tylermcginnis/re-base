@@ -3,6 +3,7 @@
   "version": "2.8.0",
   "description": "A Relay inspired library for building React.js + Firebase applications.",
   "main": "index.js",
+  "typings": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/tylermcginnis/re-base"
@@ -29,11 +30,12 @@
     "node-libs-browser": "^1.0.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
+    "typescript": "^2.3.2",
     "webpack": "^1.13.3"
   },
   "scripts": {
     "build": "webpack",
-    "test": "karma start tests/karma.conf.js",
+    "test": "tsc ./tests/re-base.tests.ts && karma start tests/karma.conf.js",
     "travis": "./node_modules/karma/bin/karma start tests/karma.conf.js"
   },
   "license": "MIT"
