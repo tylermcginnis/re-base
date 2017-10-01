@@ -29,7 +29,7 @@ describe('reset()', function() {
 
   beforeEach(() => {
     app = firebase.initializeApp(firebaseConfig);
-    var db = database(app);
+    var db = firebase.database(app);
     base = Rebase.createClass(db);
   });
 
@@ -54,19 +54,18 @@ describe('reset()', function() {
           state: 'user'
         });
         base.reset();
-        ref.child(testEndpoint).set({ user: 'abcdef' }).then(() => {
-          setTimeout(done, 500);
-        });
+        ref
+          .child(testEndpoint)
+          .set({ user: 'abcdef' })
+          .then(() => {
+            setTimeout(done, 500);
+          });
       }
       componentDidUpdate() {
         done.fail('listener should have been removed');
       }
       render() {
-        return (
-          <div>
-            No Data
-          </div>
-        );
+        return <div>No Data</div>;
       }
     }
     ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -86,19 +85,18 @@ describe('reset()', function() {
           state: 'user'
         });
         base.reset();
-        ref.child(testEndpoint).set({ user: 'abcdef' }).then(() => {
-          setTimeout(done, 500);
-        });
+        ref
+          .child(testEndpoint)
+          .set({ user: 'abcdef' })
+          .then(() => {
+            setTimeout(done, 500);
+          });
       }
       componentDidUpdate() {
         done.fail('Sync should have been removed');
       }
       render() {
-        return (
-          <div>
-            No Data
-          </div>
-        );
+        return <div>No Data</div>;
       }
     }
     ReactDOM.render(<TestComponent />, document.getElementById('mount'));

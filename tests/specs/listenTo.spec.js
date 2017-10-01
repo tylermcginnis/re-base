@@ -30,7 +30,7 @@ describe('listenTo()', function() {
 
   beforeEach(() => {
     app = firebase.initializeApp(firebaseConfig);
-    var db = database(app);
+    var db = firebase.database(app);
     base = Rebase.createClass(db);
   });
 
@@ -84,9 +84,12 @@ describe('listenTo()', function() {
           }
         }
       });
-      ref.child(testEndpoint).set(dummyObjData).then(() => {
-        didUpdate = true;
-      });
+      ref
+        .child(testEndpoint)
+        .set(dummyObjData)
+        .then(() => {
+          didUpdate = true;
+        });
     });
 
     it("listenTo's .then method gets invoked when the Firebase endpoint changes and correctly updates the component's state", done => {
@@ -107,9 +110,12 @@ describe('listenTo()', function() {
           });
         }
         componentDidMount() {
-          ref.child(testEndpoint).set(dummyObjData).then(() => {
-            didUpdate = true;
-          });
+          ref
+            .child(testEndpoint)
+            .set(dummyObjData)
+            .then(() => {
+              didUpdate = true;
+            });
         }
         componentDidUpdate() {
           if (didUpdate) {
@@ -183,9 +189,12 @@ describe('listenTo()', function() {
           });
         }
         componentDidMount() {
-          ref.child(testEndpoint).set(dummyObjData).then(() => {
-            didUpdate = true;
-          });
+          ref
+            .child(testEndpoint)
+            .set(dummyObjData)
+            .then(() => {
+              didUpdate = true;
+            });
         }
         componentDidUpdate() {
           if (didUpdate) {
@@ -397,11 +406,7 @@ describe('listenTo()', function() {
       }
 
       render() {
-        return (
-          <div>
-            {this.state.showChild ? <ChildComponent /> : null}
-          </div>
-        );
+        return <div>{this.state.showChild ? <ChildComponent /> : null}</div>;
       }
     }
     ReactDOM.render(<ParentComponent />, document.getElementById('mount'));
