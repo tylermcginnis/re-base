@@ -29,8 +29,8 @@
     "karma-spec-reporter": "0.0.26",
     "karma-webpack": "^1.8.0",
     "node-libs-browser": "^1.0.0",
-    "react": "^15.3.2",
-    "react-dom": "^15.3.2",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
     "webpack": "^1.13.3"
   },
   "scripts": {

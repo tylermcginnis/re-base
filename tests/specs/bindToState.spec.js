@@ -2,7 +2,7 @@ var Rebase = require('../../dist/bundle');
 var React = require('react');
 var ReactDOM = require('react-dom');
 var firebase = require('firebase/app');
-var database = require('firebase/database');
+require('firebase/database');
 
 var invalidEndpoints = require('../fixtures/invalidEndpoints');
 var dummyObjData = require('../fixtures/dummyObjData');
@@ -33,7 +33,7 @@ describe('bindToState()', function() {
 
   beforeEach(() => {
     app = firebase.initializeApp(firebaseConfig);
-    var db = database(app);
+    var db = firebase.database(app);
     base = Rebase.createClass(db);
   });
 
@@ -96,11 +96,7 @@ describe('bindToState()', function() {
           });
         }
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -129,11 +125,7 @@ describe('bindToState()', function() {
           });
         }
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -167,11 +159,7 @@ describe('bindToState()', function() {
           done();
         }
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -197,11 +185,7 @@ describe('bindToState()', function() {
           done();
         }
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -232,11 +216,7 @@ describe('bindToState()', function() {
           base.removeBinding(this.ref);
         }
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -271,11 +251,7 @@ describe('bindToState()', function() {
           base.removeBinding(this.ref);
         }
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -312,11 +288,7 @@ describe('bindToState()', function() {
           base.removeBinding(this.ref);
         }
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -345,11 +317,7 @@ describe('bindToState()', function() {
           done();
         }
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -377,11 +345,7 @@ describe('bindToState()', function() {
           done();
         }
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -543,11 +507,7 @@ describe('bindToState()', function() {
       }
 
       render() {
-        return (
-          <div>
-            {this.state.showChild ? <ChildComponent /> : null}
-          </div>
-        );
+        return <div>{this.state.showChild ? <ChildComponent /> : null}</div>;
       }
     }
     ReactDOM.render(<ParentComponent />, document.getElementById('mount'));

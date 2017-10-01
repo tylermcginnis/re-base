@@ -22,7 +22,7 @@ describe('remove()', function() {
 
   beforeEach(done => {
     app = firebase.initializeApp(firebaseConfig);
-    var db = database(app);
+    var db = firebase.database(app);
     base = Rebase.createClass(db);
     done();
   });

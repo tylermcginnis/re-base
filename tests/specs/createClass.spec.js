@@ -10,7 +10,7 @@ describe('createClass()', function() {
   it('createClass() returns an object with the correct API', done => {
     //setup
     var app = firebase.initializeApp(firebaseConfig);
-    var db = database(app);
+    var db = firebase.database(app);
     var base = Rebase.createClass(db);
 
     expect(base.listenTo).toEqual(
@@ -58,9 +58,12 @@ describe('createClass()', function() {
     //clean up
     base = null;
     db = null;
-    app.delete().then(done).catch(() => {
-      done.fail('Firebase App not cleaned up after test');
-    });
+    app
+      .delete()
+      .then(done)
+      .catch(() => {
+        done.fail('Firebase App not cleaned up after test');
+      });
   });
 
   it('createClass() should throw if not passed an initialized firebase database instance', function() {

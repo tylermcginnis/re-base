@@ -2,7 +2,7 @@ var Rebase = require('../../dist/bundle');
 var React = require('react');
 var ReactDOM = require('react-dom');
 var firebase = require('firebase');
-var database = require('firebase/database');
+require('firebase/database');
 
 var invalidEndpoints = require('../fixtures/invalidEndpoints');
 var dummyObjData = require('../fixtures/dummyObjData');
@@ -34,7 +34,7 @@ describe('syncState()', function() {
 
   beforeEach(() => {
     app = firebase.initializeApp(firebaseConfig);
-    var db = database(app);
+    var db = firebase.database(app);
     base = Rebase.createClass(db);
   });
 
@@ -170,11 +170,7 @@ describe('syncState()', function() {
         }
 
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -225,11 +221,7 @@ describe('syncState()', function() {
         }
 
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -258,11 +250,7 @@ describe('syncState()', function() {
           done();
         }
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -292,11 +280,7 @@ describe('syncState()', function() {
           done();
         }
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -327,53 +311,48 @@ describe('syncState()', function() {
           done();
         }
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
     it('syncState() returns an array when there is data that was previously bound to another endpoint', done => {
-      ref.child(`${testEndpoint}/child2`).set(dummyArrData).then(() => {
-        class TestComponent extends React.Component {
-          constructor(props) {
-            super(props);
-            this.state = {
-              data: []
-            };
+      ref
+        .child(`${testEndpoint}/child2`)
+        .set(dummyArrData)
+        .then(() => {
+          class TestComponent extends React.Component {
+            constructor(props) {
+              super(props);
+              this.state = {
+                data: []
+              };
+            }
+            componentWillMount() {
+              this.ref = base.syncState(`${testEndpoint}/child1`, {
+                context: this,
+                state: 'data'
+              });
+            }
+            componentDidMount() {
+              base.removeBinding(this.ref);
+              this.nextRef = base.syncState(`${testEndpoint}/child2`, {
+                context: this,
+                state: 'data'
+              });
+            }
+            componentDidUpdate() {
+              expect(this.state.data).toEqual(dummyArrData);
+              ReactDOM.unmountComponentAtNode(document.body);
+              done();
+            }
+            render() {
+              return <div>No Data</div>;
+            }
           }
-          componentWillMount() {
-            this.ref = base.syncState(`${testEndpoint}/child1`, {
-              context: this,
-              state: 'data'
-            });
-          }
-          componentDidMount() {
-            base.removeBinding(this.ref);
-            this.nextRef = base.syncState(`${testEndpoint}/child2`, {
-              context: this,
-              state: 'data'
-            });
-          }
-          componentDidUpdate() {
-            expect(this.state.data).toEqual(dummyArrData);
-            ReactDOM.unmountComponentAtNode(document.body);
-            done();
-          }
-          render() {
-            return (
-              <div>
-                No Data
-              </div>
-            );
-          }
-        }
-        ReactDOM.render(<TestComponent />, document.getElementById('mount'));
-      });
+          ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+        });
     });
 
     it('syncState() returns an empty array when there is no Firebase data and asArray is true', done => {
@@ -399,11 +378,7 @@ describe('syncState()', function() {
           done();
         }
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -438,11 +413,7 @@ describe('syncState()', function() {
           });
         }
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -481,11 +452,7 @@ describe('syncState()', function() {
           });
         }
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -526,11 +493,7 @@ describe('syncState()', function() {
           });
         }
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -566,11 +529,7 @@ describe('syncState()', function() {
           });
         }
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -597,11 +556,7 @@ describe('syncState()', function() {
           });
         }
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -629,11 +584,7 @@ describe('syncState()', function() {
           this.setState({ user: { name: 'Chris' } });
         }
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -673,11 +624,7 @@ describe('syncState()', function() {
           });
         }
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -723,11 +670,7 @@ describe('syncState()', function() {
           });
         }
         render() {
-          return (
-            <div>
-              No Data
-            </div>
-          );
+          return <div>No Data</div>;
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -823,7 +766,7 @@ describe('syncState()', function() {
           dummyArrayOfObjects.map(item => {
             return ref.child(`${testEndpoint}/users`).push(
               Object.assign(item, {
-                timestamp: database.ServerValue.TIMESTAMP
+                timestamp: firebase.database.ServerValue.TIMESTAMP
               })
             );
           })
@@ -938,7 +881,7 @@ describe('syncState()', function() {
             users: [
               {
                 name: 'Al',
-                timestamp: database.ServerValue.TIMESTAMP
+                timestamp: firebase.database.ServerValue.TIMESTAMP
               }
             ]
           });
@@ -977,7 +920,7 @@ describe('syncState()', function() {
           this.setState({
             user: {
               name: 'Al',
-              timestamp: database.ServerValue.TIMESTAMP
+              timestamp: firebase.database.ServerValue.TIMESTAMP
             }
           });
         }
@@ -1251,11 +1194,7 @@ describe('syncState()', function() {
       }
 
       render() {
-        return (
-          <div>
-            {this.state.showChild ? <ChildComponent /> : null}
-          </div>
-        );
+        return <div>{this.state.showChild ? <ChildComponent /> : null}</div>;
       }
     }
     ReactDOM.render(<ParentComponent />, document.getElementById('mount'));
@@ -1325,11 +1264,14 @@ describe('syncState()', function() {
           () => {
             expect(this.state.data).toEqual(6);
             setTimeout(() => {
-              ref.child(testEndpoint).once('value').then(snapshot => {
-                var val = snapshot.val();
-                expect(val).toEqual(6);
-                done();
-              });
+              ref
+                .child(testEndpoint)
+                .once('value')
+                .then(snapshot => {
+                  var val = snapshot.val();
+                  expect(val).toEqual(6);
+                  done();
+                });
             }, 1000);
           }
         );

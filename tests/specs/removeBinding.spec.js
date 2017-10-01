@@ -29,14 +29,17 @@ describe('removeBinding()', function() {
 
   beforeEach(() => {
     app = firebase.initializeApp(firebaseConfig);
-    var db = database(db);
+    var db = firebase.database(db);
     base = Rebase.createClass(db);
   });
 
   afterEach(done => {
-    ref.child(testEndpoint).set(null).then(() => {
-      app.delete().then(done);
-    });
+    ref
+      .child(testEndpoint)
+      .set(null)
+      .then(() => {
+        app.delete().then(done);
+      });
   });
 
   it('should remove listeners set by the app', done => {
@@ -53,19 +56,18 @@ describe('removeBinding()', function() {
           state: 'user'
         });
         base.removeBinding(this.ref);
-        ref.child(`${testEndpoint}`).set({ user: 'abcdef' }).then(() => {
-          setTimeout(done, 500);
-        });
+        ref
+          .child(`${testEndpoint}`)
+          .set({ user: 'abcdef' })
+          .then(() => {
+            setTimeout(done, 500);
+          });
       }
       componentDidUpdate() {
         done.fail('listener should have been removed');
       }
       render() {
-        return (
-          <div>
-            No Data
-          </div>
-        );
+        return <div>No Data</div>;
       }
     }
     ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -85,19 +87,18 @@ describe('removeBinding()', function() {
           state: 'user'
         });
         base.removeBinding(this.ref);
-        ref.child(`${testEndpoint}`).set({ user: 'abcdef' }).then(() => {
-          setTimeout(done, 500);
-        });
+        ref
+          .child(`${testEndpoint}`)
+          .set({ user: 'abcdef' })
+          .then(() => {
+            setTimeout(done, 500);
+          });
       }
       componentDidUpdate() {
         done.fail('Sync should have been removed');
       }
       render() {
-        return (
-          <div>
-            No Data
-          </div>
-        );
+        return <div>No Data</div>;
       }
     }
     ReactDOM.render(<TestComponent />, document.getElementById('mount'));
@@ -118,19 +119,18 @@ describe('removeBinding()', function() {
         });
         base.removeBinding(this.ref);
         base.removeBinding(this.ref);
-        ref.child(`${testEndpoint}`).set({ user: 'abcdef' }).then(() => {
-          setTimeout(done, 500);
-        });
+        ref
+          .child(`${testEndpoint}`)
+          .set({ user: 'abcdef' })
+          .then(() => {
+            setTimeout(done, 500);
+          });
       }
       componentDidUpdate() {
         done.fail('Sync should have been removed');
       }
       render() {
-        return (
-          <div>
-            No Data
-          </div>
-        );
+        return <div>No Data</div>;
       }
     }
     ReactDOM.render(<TestComponent />, document.getElementById('mount'));
