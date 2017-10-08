@@ -4,6 +4,7 @@ import UserProfile from './Github/UserProfile';
 import Notes from './Notes/Notes';
 import helpers from '../utils/helpers';
 import base from '../rebase';
+import PropTypes from 'prop-types';
 
 console.log(
   'Please change to your own firebase address in app/components/Profile.js'
@@ -18,14 +19,14 @@ class Profile extends React.Component {
       repos: []
     };
   }
-  init() {
-    this.ref = base.syncState(`/github/${this.props.routeParams.username}`, {
+  init(username) {
+    this.ref = base.syncState(`/github/${username}`, {
       context: this,
       asArray: true,
       state: 'notes'
     });
 
-    helpers.getGithubInfo(this.props.routeParams.username).then(dataObj => {
+    helpers.getGithubInfo(username).then(dataObj => {
       this.setState({
         bio: dataObj.bio,
         repos: dataObj.repos
@@ -33,14 +34,16 @@ class Profile extends React.Component {
     });
   }
   componentDidMount() {
-    this.init();
+    const { username } = this.props.match.params;
+    this.init(username);
   }
-  componentWillUnmount() {
-    base.removeBinding(this.ref);
-  }
-  componentWillReceiveProps() {
-    base.removeBinding(this.ref);
-    this.init();
+  componentWillReceiveProps(nextProps) {
+    const currentUsername = this.props.match.params.username;
+    const nextUsername = nextProps.match.params.username;
+    if (currentUsername !== nextUsername) {
+      base.removeBinding(this.ref);
+      this.init(nextUsername);
+    }
   }
   handleAddNote(newNote) {
     this.setState({
@@ -48,7 +51,7 @@ class Profile extends React.Component {
     });
   }
   render() {
-    var username = this.props.routeParams.username;
+    const { username } = this.props.match.params;
     return (
       <div className="row">
         <div className="col-md-4">
@@ -70,7 +73,7 @@ class Profile extends React.Component {
 }
 
 Profile.contextTypes = {
-  router: React.PropTypes.object.isRequired
+  router: PropTypes.object.isRequired
 };
 
 export default Profile;
