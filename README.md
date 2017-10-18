@@ -4,7 +4,7 @@
 
 ![welcome](https://media.giphy.com/media/6459ZFRF1Wxna/giphy.gif)
 
-Questions? Find me on twitter at [@tylermcginnis33](http://twitter.com/tylermcginnis33)
+Questions? Find me on twitter at [@tylermcginnis](http://twitter.com/tylermcginnis)
 
 # What is re-base?
 
