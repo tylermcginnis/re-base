@@ -1,10 +1,13 @@
-fdescribe('Validators', () => {
-  var optionValidators = require('../../src/lib/validators').optionValidators;
-  var _validateEndpoint = require('../../src/lib/validators')._validateEndpoint;
-  var _validateDatabase = require('../../src/lib/validators')._validateDatabase;
-  var _validateDocumentPath = require('../../src/lib/validators')
-    ._validateDocumentPath;
-  var invalidEndpoints = require('../fixtures/invalidEndpoints');
+describe('Validators', () => {
+  const {
+    optionValidators,
+    _validateEndpoint,
+    _validateDatabase,
+    _validateCollectionPath,
+    _validateDocumentPath
+  } = require('../../src/lib/validators');
+  const invalidEndpoints = require('../fixtures/invalidEndpoints');
+
   describe('optionValidators', () => {
     describe('notObject()', () => {
       it('should throw on non object', () => {
@@ -251,6 +254,24 @@ fdescribe('Validators', () => {
     it('should not throw if argument is valid', () => {
       expect(() => {
         _validateDocumentPath('collectionName/document');
+      }).not.toThrow();
+    });
+  });
+
+  describe('_validateCollectionPath', () => {
+    it('should throw if path does not have an odd number of segments', () => {
+      expect(() => {
+        _validateCollectionPath('collectionName/document');
+      }).toThrow();
+    });
+    it('should not throw if argument is valid', () => {
+      expect(() => {
+        _validateCollectionPath('collectionName');
+      }).not.toThrow();
+    });
+    it('should not throw if argument is valid', () => {
+      expect(() => {
+        _validateCollectionPath('collectionName/document/subCollection');
       }).not.toThrow();
     });
   });

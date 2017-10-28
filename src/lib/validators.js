@@ -119,9 +119,17 @@ const _validateDocumentPath = function(path) {
   if (segmentCount % 2 === 0) _throwError(defaultError, 'INVALID_ENDPOINT');
 };
 
+const _validateCollectionPath = function(path) {
+  var defaultError = 'Invalid collection path.';
+  if (typeof path !== 'string') _throwError(defaultError, 'INVALID_ENDPOINT');
+  const segmentCount = path.split('/').slice(1).length;
+  if (segmentCount % 2 !== 0) _throwError(defaultError, 'INVALID_ENDPOINT');
+};
+
 export {
   optionValidators,
   _validateDatabase,
   _validateEndpoint,
-  _validateDocumentPath
+  _validateDocumentPath,
+  _validateCollectionPath
 };
