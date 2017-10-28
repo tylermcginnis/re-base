@@ -3,11 +3,12 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var firebase = require('firebase/app');
 var database = require('firebase/database');
+var firestore = require('firebase/firestore');
 
 var firebaseConfig = require('../fixtures/config');
 
 describe('createClass()', function() {
-  it('createClass() returns an object with the correct API', done => {
+  it('createClass() returns an object with the correct API for RTDB', done => {
     //setup
     var app = firebase.initializeApp(firebaseConfig);
     var db = firebase.database(app);
@@ -66,26 +67,97 @@ describe('createClass()', function() {
       });
   });
 
+  it('createClass() returns an object with the correct API for Firestore', done => {
+    //setup
+    var app = firebase.initializeApp(firebaseConfig);
+    var db = firebase.firestore(app);
+    var base = Rebase.createClass(db);
+
+    expect(base.bindDoc).toEqual(
+      jasmine.any(Function),
+      'Public API: bindDoc() not exposed'
+    );
+    expect(base.bindCollection).toEqual(
+      jasmine.any(Function),
+      'Public API: bindCollection() not exposed'
+    );
+    expect(base.syncDoc).toEqual(
+      jasmine.any(Function),
+      'Public API: syncDoc() not exposed'
+    );
+    expect(base.listenToDoc).toEqual(
+      jasmine.any(Function),
+      'Public API: listenToDoc() not exposed'
+    );
+    expect(base.listenToCollection).toEqual(
+      jasmine.any(Function),
+      'Public API: listenToCollection() not exposed'
+    );
+    expect(base.addToCollection).toEqual(
+      jasmine.any(Function),
+      'Public API: addToCollection() not exposed'
+    );
+    expect(base.updateDoc).toEqual(
+      jasmine.any(Function),
+      'Public API: updateDoc() not exposed'
+    );
+    expect(base.get).toEqual(
+      jasmine.any(Function),
+      'Public API: get() not exposed'
+    );
+    expect(base.removeDoc).toEqual(
+      jasmine.any(Function),
+      'Public API: removeDoc() not exposed'
+    );
+    expect(base.removeCollection).toEqual(
+      jasmine.any(Function),
+      'Public API: removeCollection() not exposed'
+    );
+    expect(base.removeBinding).toEqual(
+      jasmine.any(Function),
+      'Public API: removeBinding() not exposed'
+    );
+    expect(base.reset).toEqual(
+      jasmine.any(Function),
+      'Public API: reset() not exposed'
+    );
+    expect(base.initializedApp).toEqual(
+      jasmine.any(Object),
+      'Public API: initializedApp not exposed'
+    );
+    done();
+
+    //clean up
+    base = null;
+    db = null;
+    app
+      .delete()
+      .then(done)
+      .catch(() => {
+        done.fail('Firebase App not cleaned up after test');
+      });
+  });
+
   it('createClass() should throw if not passed an initialized firebase database instance', function() {
     expect(function() {
       Rebase.createClass({});
     }).toThrow(
       new Error(
-        'REBASE: Rebase.createClass failed. Expected an initialized firebase database object.'
+        'REBASE: Rebase.createClass failed. Expected an initialized firebase or firestore database object.'
       )
     );
     expect(function() {
       Rebase.createClass(database);
     }).toThrow(
       new Error(
-        'REBASE: Rebase.createClass failed. Expected an initialized firebase database object.'
+        'REBASE: Rebase.createClass failed. Expected an initialized firebase or firestore database object.'
       )
     );
     expect(function() {
       Rebase.createClass('some string');
     }).toThrow(
       new Error(
-        'REBASE: Rebase.createClass failed. Expected an initialized firebase database object.'
+        'REBASE: Rebase.createClass failed. Expected an initialized firebase or firestore database object.'
       )
     );
   });
