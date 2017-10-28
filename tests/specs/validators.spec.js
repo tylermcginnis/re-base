@@ -1,14 +1,10 @@
-describe('Validators', () => {
-  var optionValidators;
-  var _validateEndpoint;
-  var _validateDatabase;
-  var invalidEndpoints;
-  beforeAll(() => {
-    optionValidators = require('../../src/lib/validators').optionValidators;
-    _validateEndpoint = require('../../src/lib/validators')._validateEndpoint;
-    _validateDatabase = require('../../src/lib/validators')._validateDatabase;
-    invalidEndpoints = require('../fixtures/invalidEndpoints');
-  });
+fdescribe('Validators', () => {
+  var optionValidators = require('../../src/lib/validators').optionValidators;
+  var _validateEndpoint = require('../../src/lib/validators')._validateEndpoint;
+  var _validateDatabase = require('../../src/lib/validators')._validateDatabase;
+  var _validateDocumentPath = require('../../src/lib/validators')
+    ._validateDocumentPath;
+  var invalidEndpoints = require('../fixtures/invalidEndpoints');
   describe('optionValidators', () => {
     describe('notObject()', () => {
       it('should throw on non object', () => {
@@ -242,6 +238,19 @@ describe('Validators', () => {
     it('should not throw if argument is valid', () => {
       expect(() => {
         _validateDatabase({ ref: () => {} });
+      }).not.toThrow();
+    });
+  });
+
+  describe('_validateDocumentPath', () => {
+    it('should throw if path does not have an even number of segments', () => {
+      expect(() => {
+        _validateDocumentPath('collectionName');
+      }).toThrow();
+    });
+    it('should not throw if argument is valid', () => {
+      expect(() => {
+        _validateDocumentPath('collectionName/document');
       }).not.toThrow();
     });
   });

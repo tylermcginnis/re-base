@@ -53,7 +53,9 @@ const optionValidators = {
     for (var key in queries) {
       if (queries.hasOwnProperty(key) && validQueries.indexOf(key) === -1) {
         _throwError(
-          `The query field must contain valid Firebase queries.  Expected one of [${validQueries.join(', ')}]. Instead, got ${key}`,
+          `The query field must contain valid Firebase queries.  Expected one of [${validQueries.join(
+            ', '
+          )}]. Instead, got ${key}`,
           'INVALID_OPTIONS'
         );
       }
@@ -110,4 +112,16 @@ const _validateDatabase = function(db) {
   }
 };
 
-export { optionValidators, _validateDatabase, _validateEndpoint };
+const _validateDocumentPath = function(path) {
+  var defaultError = 'Invalid document path.';
+  if (typeof path !== 'string') _throwError(defaultError, 'INVALID_ENDPOINT');
+  const segmentCount = path.split('/').slice(1).length;
+  if (segmentCount % 2 === 0) _throwError(defaultError, 'INVALID_ENDPOINT');
+};
+
+export {
+  optionValidators,
+  _validateDatabase,
+  _validateEndpoint,
+  _validateDocumentPath
+};
