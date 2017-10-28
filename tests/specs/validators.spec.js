@@ -238,9 +238,15 @@ describe('Validators', () => {
       }).toThrow();
     });
 
-    it('should not throw if argument is valid', () => {
+    it('should not throw if argument is valid RTDB object', () => {
       expect(() => {
         _validateDatabase({ ref: () => {} });
+      }).not.toThrow();
+    });
+
+    it('should not throw if argument is valid Firestore DB object', () => {
+      expect(() => {
+        _validateDatabase({ collection: () => {} });
       }).not.toThrow();
     });
   });
