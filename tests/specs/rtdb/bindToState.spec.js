@@ -1,14 +1,14 @@
-var Rebase = require('../../dist/bundle');
+var Rebase = require('../../../dist/bundle');
 var React = require('react');
 var ReactDOM = require('react-dom');
 var firebase = require('firebase/app');
 require('firebase/database');
 
-var invalidEndpoints = require('../fixtures/invalidEndpoints');
-var dummyObjData = require('../fixtures/dummyObjData');
-var invalidOptions = require('../fixtures/invalidOptions');
-var dummyArrData = require('../fixtures/dummyArrData');
-var firebaseConfig = require('../fixtures/config');
+var invalidEndpoints = require('../../fixtures/invalidEndpoints');
+var dummyObjData = require('../../fixtures/dummyObjData');
+var invalidOptions = require('../../fixtures/invalidOptions');
+var dummyArrData = require('../../fixtures/dummyArrData');
+var firebaseConfig = require('../../fixtures/config');
 
 describe('bindToState()', function() {
   var base;

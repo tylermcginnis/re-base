@@ -1,7 +1,7 @@
-var Rebase = require('../../dist/bundle');
+var Rebase = require('../../../dist/bundle');
 var firebase = require('firebase');
-var firebaseConfig = require('../fixtures/config');
-var dummyObjData = require('../fixtures/dummyObjData');
+var firebaseConfig = require('../../fixtures/config');
+var dummyObjData = require('../../fixtures/dummyObjData');
 var database = require('firebase/database');
 
 describe('remove()', function() {

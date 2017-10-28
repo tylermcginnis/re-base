@@ -1,16 +1,16 @@
-var Rebase = require('../../dist/bundle');
+var Rebase = require('../../../dist/bundle');
 var React = require('react');
 var ReactDOM = require('react-dom');
 var firebase = require('firebase/app');
 require('firebase/database');
 
-var invalidEndpoints = require('../fixtures/invalidEndpoints');
-var dummyObjData = require('../fixtures/dummyObjData');
-var dummyNestedObjData = require('../fixtures/dummyNestedObjData');
-var invalidOptions = require('../fixtures/invalidOptions');
-var firebaseConfig = require('../fixtures/config');
-var nestedObjArrResult = require('../fixtures/nestedObjArrResult');
-var dummyArrData = require('../fixtures/dummyArrData');
+var invalidEndpoints = require('../../fixtures/invalidEndpoints');
+var dummyObjData = require('../../fixtures/dummyObjData');
+var dummyNestedObjData = require('../../fixtures/dummyNestedObjData');
+var invalidOptions = require('../../fixtures/invalidOptions');
+var firebaseConfig = require('../../fixtures/config');
+var nestedObjArrResult = require('../../fixtures/nestedObjArrResult');
+var dummyArrData = require('../../fixtures/dummyArrData');
 
 describe('fetch()', function() {
   var base;
