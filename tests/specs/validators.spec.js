@@ -262,6 +262,11 @@ describe('Validators', () => {
         _validateDocumentPath('collectionName/document');
       }).not.toThrow();
     });
+    it('should not throw if argument is valid', () => {
+      expect(() => {
+        _validateDocumentPath('/collectionName/document');
+      }).not.toThrow();
+    });
   });
 
   describe('_validateCollectionPath', () => {
