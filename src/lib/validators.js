@@ -115,17 +115,21 @@ const _validateDatabase = function(db) {
 const _validateDocumentPath = function(path) {
   var defaultError = 'Invalid document path.';
   if (typeof path !== 'string') _throwError(defaultError, 'INVALID_ENDPOINT');
-  const segmentCount = path.match(/^\//)
-    ? path.split('/').slice(1).length
-    : path.split('/').length;
+  const segmentCount = _getSegmentCount(path);
   if (segmentCount % 2 !== 0) _throwError(defaultError, 'INVALID_ENDPOINT');
 };
 
 const _validateCollectionPath = function(path) {
   var defaultError = 'Invalid collection path.';
   if (typeof path !== 'string') _throwError(defaultError, 'INVALID_ENDPOINT');
-  const segmentCount = path.split('/').slice(1).length;
-  if (segmentCount % 2 !== 0) _throwError(defaultError, 'INVALID_ENDPOINT');
+  const segmentCount = _getSegmentCount(path);
+  if (segmentCount % 2 === 0) _throwError(defaultError, 'INVALID_ENDPOINT');
+};
+
+const _getSegmentCount = function(path) {
+  return path.match(/^\//)
+    ? path.split('/').slice(1).length
+    : path.split('/').length;
 };
 
 export {

@@ -262,7 +262,7 @@ describe('Validators', () => {
         _validateDocumentPath('collectionName/document');
       }).not.toThrow();
     });
-    it('should not throw if argument is valid', () => {
+    it('should not throw if argument is valid with leading slash', () => {
       expect(() => {
         _validateDocumentPath('/collectionName/document');
       }).not.toThrow();
@@ -283,6 +283,11 @@ describe('Validators', () => {
     it('should not throw if argument is valid', () => {
       expect(() => {
         _validateCollectionPath('collectionName/document/subCollection');
+      }).not.toThrow();
+    });
+    it('should not throw if argument is valid with leading slash', () => {
+      expect(() => {
+        _validateCollectionPath('/collectionName/document/subCollection');
       }).not.toThrow();
     });
   });
