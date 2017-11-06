@@ -300,14 +300,16 @@ const _getSegmentCount = function(path) {
 };
 
 const _fsPrepareData = function(snapshot, options, isCollection = false) {
+  let meta = {};
   if (!isCollection) {
+    if (options.withRefs) meta.ref = snapshot.ref;
+    if (options.withIds) meta.id = snapshot.id;
     return options.state
-      ? { [options.state]: snapshot.data() }
-      : snapshot.data();
+      ? { [options.state]: Object.assign({}, snapshot.data(), meta) }
+      : Object.assign({}, snapshot.data(), meta);
   }
   const collection = [];
   snapshot.forEach(doc => {
-    const meta = {};
     if (options.withRefs) meta.ref = doc.ref;
     if (options.withIds) meta.id = doc.id;
     collection.push(Object.assign({}, doc.data(), meta));

@@ -252,6 +252,46 @@ describe('utils', () => {
       });
     });
 
+    it('should return object with embedded ref if options.withRefs is true', () => {
+      var snapshot = mockFirestoreDocumentSnapshot({
+        key1: 'value',
+        key2: 'value',
+        key3: 'value'
+      });
+      var options = {
+        state: 'prop',
+        withRefs: true
+      };
+      var result = utils._fsPrepareData(snapshot, options);
+      expect(result.hasOwnProperty('prop')).toBe(true);
+      expect(result.prop).toEqual({
+        key1: 'value',
+        key2: 'value',
+        key3: 'value',
+        ref: { _id: 'something' }
+      });
+    });
+
+    it('should return object with embedded id if options.withIds is true', () => {
+      var snapshot = mockFirestoreDocumentSnapshot({
+        key1: 'value',
+        key2: 'value',
+        key3: 'value'
+      });
+      var options = {
+        state: 'prop',
+        withIds: true
+      };
+      var result = utils._fsPrepareData(snapshot, options);
+      expect(result.hasOwnProperty('prop')).toBe(true);
+      expect(result.prop).toEqual({
+        key1: 'value',
+        key2: 'value',
+        key3: 'value',
+        id: '12345'
+      });
+    });
+
     it('should return an object with collection keyed with options.state if isCollection is true', () => {
       var snapshot = mockFirestoreQuerySnapshot([
         mockFirestoreDocumentSnapshot({
@@ -272,7 +312,7 @@ describe('utils', () => {
       });
     });
 
-    it('should return documents with embedded ref if options.withRefs is true', () => {
+    it('should return collection of documents with embedded ref if options.withRefs is true', () => {
       var snapshot = mockFirestoreQuerySnapshot([
         mockFirestoreDocumentSnapshot({
           key1: 'value',
@@ -294,7 +334,7 @@ describe('utils', () => {
       });
     });
 
-    it('should return documents with embedded id if options.withIds is true', () => {
+    it('should return collection of documents with embedded id if options.withIds is true', () => {
       var snapshot = mockFirestoreQuerySnapshot([
         mockFirestoreDocumentSnapshot({
           key1: 'value',
