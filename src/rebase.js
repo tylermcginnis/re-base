@@ -13,6 +13,10 @@ import _reset from './lib/reset';
 import _removeBinding from './lib/removeBinding';
 import _remove from './lib/remove';
 
+//firestore
+import _fsSync from './lib/fsSync';
+import _fsRemoveBinding from './lib/fsRemoveBinding';
+
 module.exports = (function() {
   function init(db) {
     return (function() {
@@ -83,7 +87,14 @@ module.exports = (function() {
           initializedApp: db.app,
           bindDoc() {},
           bindCollection() {},
-          syncDoc() {},
+          syncDoc(doc, options) {
+            return _fsSync.call(this, doc, options, {
+              db: db,
+              refs: firebaseRefs,
+              listeners: firebaseListeners,
+              syncs: syncs
+            });
+          },
           listenToDoc() {},
           listenToCollection() {},
           addToCollection() {},
@@ -92,7 +103,7 @@ module.exports = (function() {
           removeDoc() {},
           removeCollection() {},
           removeBinding(binding) {
-            _removeBinding(binding, {
+            _fsRemoveBinding(binding, {
               refs: firebaseRefs,
               listeners: firebaseListeners,
               syncs: syncs

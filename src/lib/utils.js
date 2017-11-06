@@ -189,6 +189,10 @@ const _updateSyncState = function(ref, onFailure, keepKeys, data) {
   }
 };
 
+const _fsUpdateSyncState = function(ref, data) {
+  ref.set(data);
+};
+
 const _addListener = function _addListener(
   id,
   invoker,
@@ -197,9 +201,10 @@ const _addListener = function _addListener(
   listeners
 ) {
   ref = _addQueries(ref, options.queries);
-  const boundOnFailure = typeof options.onFailure === 'function'
-    ? options.onFailure.bind(options.context)
-    : null;
+  const boundOnFailure =
+    typeof options.onFailure === 'function'
+      ? options.onFailure.bind(options.context)
+      : null;
   listeners.set(
     id,
     ref.on(
@@ -279,9 +284,12 @@ export {
   _addSync,
   _firebaseRefsMixin,
   _updateSyncState,
+  _fsUpdateSyncState,
   _addListener,
+  _addFirestoreListener,
   _setUnmountHandler,
   _createNestedObject,
   _handleError,
-  _setData
+  _setData,
+  _fsSetUnmountHandler
 };
