@@ -268,8 +268,15 @@ const _addFirestoreListener = function _addFirestoreListener(
   );
 };
 
+const _getSegmentCount = function(path) {
+  return path.match(/^\//)
+    ? path.split('/').slice(1).length
+    : path.split('/').length;
+};
+
 export {
   _createHash,
+  _getSegmentCount,
   _addQueries,
   _returnRef,
   _setState,

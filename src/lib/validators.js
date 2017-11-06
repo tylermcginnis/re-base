@@ -1,4 +1,4 @@
-import { _isObject, _isValid, _throwError } from './utils';
+import { _isObject, _isValid, _throwError, _getSegmentCount } from './utils';
 
 const optionValidators = {
   notObject(options) {
@@ -124,12 +124,6 @@ const _validateCollectionPath = function(path) {
   if (typeof path !== 'string') _throwError(defaultError, 'INVALID_ENDPOINT');
   const segmentCount = _getSegmentCount(path);
   if (segmentCount % 2 === 0) _throwError(defaultError, 'INVALID_ENDPOINT');
-};
-
-const _getSegmentCount = function(path) {
-  return path.match(/^\//)
-    ? path.split('/').slice(1).length
-    : path.split('/').length;
 };
 
 export {
