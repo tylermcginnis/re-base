@@ -106,7 +106,13 @@ module.exports = (function() {
               syncs
             });
           },
-          listenToDoc() {},
+          listenToDoc(doc, options) {
+            return _fsBind.call(this, doc, options, 'listenToDoc', {
+              db,
+              refs,
+              listeners
+            });
+          },
           listenToCollection() {},
           addToCollection() {},
           updateDoc() {},

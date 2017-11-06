@@ -263,31 +263,46 @@ const _addFirestoreListener = function _addFirestoreListener(
   listeners.set(
     id,
     ref.onSnapshot(snapshot => {
-      if (invoker === 'syncDoc') {
-        if (snapshot.exists) {
-          let newState = _fsPrepareData(snapshot, options);
-          options.reactSetState.call(options.context, function(currentState) {
-            return Object.assign(currentState, newState);
-          });
+      if (invoker.match(/^listenTo/)) {
+        if (invoker === 'listenToDoc') {
+          if (snapshot.exists) {
+            let newState = _fsPrepareData(snapshot, options);
+            return options.then.call(options.context, newState);
+          }
         }
-      } else if (invoker === 'bindDoc') {
-        if (snapshot.exists) {
-          let newState = _fsPrepareData(snapshot, options);
-          _setState.call(options.context, function(currentState) {
-            return Object.assign(currentState, newState);
-          });
+        if (invoker === 'listenToCollection') {
+          if (snapshot.exists) {
+            let newState = _fsPrepareData(snapshot, options, true);
+            return options.then.call(options.context, newState);
+          }
         }
-      } else if (invoker === 'bindCollection') {
-        if (!snapshot.empty) {
-          let newState = _fsPrepareData(snapshot, options, true);
-          _setState.call(options.context, function(currentState) {
-            return Object.assign(currentState, newState);
-          });
+      } else {
+        if (invoker === 'syncDoc') {
+          if (snapshot.exists) {
+            let newState = _fsPrepareData(snapshot, options);
+            options.reactSetState.call(options.context, function(currentState) {
+              return Object.assign(currentState, newState);
+            });
+          }
+        } else if (invoker === 'bindDoc') {
+          if (snapshot.exists) {
+            let newState = _fsPrepareData(snapshot, options);
+            _setState.call(options.context, function(currentState) {
+              return Object.assign(currentState, newState);
+            });
+          }
+        } else if (invoker === 'bindCollection') {
+          if (!snapshot.empty) {
+            let newState = _fsPrepareData(snapshot, options, true);
+            _setState.call(options.context, function(currentState) {
+              return Object.assign(currentState, newState);
+            });
+          }
         }
-      }
-      if (options.then && options.then.called === false) {
-        options.then.call(options.context);
-        options.then.called = true;
+        if (options.then && options.then.called === false) {
+          options.then.call(options.context);
+          options.then.called = true;
+        }
       }
     }, boundOnFailure)
   );
