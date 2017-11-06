@@ -6,7 +6,9 @@ const {
   mockRef,
   mockSync,
   mockCollection,
-  mockDoc
+  mockDoc,
+  mockFirestoreDocumentSnapshot,
+  mockFirestoreQuerySnapshot
 } = require('../helpers');
 
 describe('utils', () => {
@@ -228,6 +230,90 @@ describe('utils', () => {
 
       var result = utils._prepareData(snapshot);
       expect(result).toEqual({ key: 'value' });
+    });
+  });
+
+  describe('_fsPrepareData()', () => {
+    it('should return object keyed with options.state', () => {
+      var snapshot = mockFirestoreDocumentSnapshot({
+        key1: 'value',
+        key2: 'value',
+        key3: 'value'
+      });
+      var options = {
+        state: 'prop'
+      };
+      var result = utils._fsPrepareData(snapshot, options);
+      expect(result.hasOwnProperty('prop')).toBe(true);
+      expect(result.prop).toEqual({
+        key1: 'value',
+        key2: 'value',
+        key3: 'value'
+      });
+    });
+
+    it('should return an object with collection keyed with options.state if isCollection is true', () => {
+      var snapshot = mockFirestoreQuerySnapshot([
+        mockFirestoreDocumentSnapshot({
+          key1: 'value',
+          key2: 'value',
+          key3: 'value'
+        })
+      ]);
+      var options = {
+        state: 'prop'
+      };
+      var result = utils._fsPrepareData(snapshot, options, true);
+      expect(result.prop.length).toEqual(1);
+      expect(result.prop[0]).toEqual({
+        key1: 'value',
+        key2: 'value',
+        key3: 'value'
+      });
+    });
+
+    it('should return documents with embedded ref if options.withRefs is true', () => {
+      var snapshot = mockFirestoreQuerySnapshot([
+        mockFirestoreDocumentSnapshot({
+          key1: 'value',
+          key2: 'value',
+          key3: 'value'
+        })
+      ]);
+      var options = {
+        state: 'prop',
+        withRefs: true
+      };
+      var result = utils._fsPrepareData(snapshot, options, true);
+      expect(result.prop.length).toEqual(1);
+      expect(result.prop[0]).toEqual({
+        key1: 'value',
+        key2: 'value',
+        key3: 'value',
+        ref: { _id: 'something' }
+      });
+    });
+
+    it('should return documents with embedded id if options.withIds is true', () => {
+      var snapshot = mockFirestoreQuerySnapshot([
+        mockFirestoreDocumentSnapshot({
+          key1: 'value',
+          key2: 'value',
+          key3: 'value'
+        })
+      ]);
+      var options = {
+        state: 'prop',
+        withIds: true
+      };
+      var result = utils._fsPrepareData(snapshot, options, true);
+      expect(result.prop.length).toEqual(1);
+      expect(result.prop[0]).toEqual({
+        key1: 'value',
+        key2: 'value',
+        key3: 'value',
+        id: '12345'
+      });
     });
   });
 

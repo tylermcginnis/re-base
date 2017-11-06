@@ -19,6 +19,30 @@ exports.mockSnapshot = object => {
   return snapshot;
 };
 
+exports.mockFirestoreDocumentSnapshot = object => {
+  //set up snapshot
+  var snapshot = {
+    data() {
+      return object;
+    },
+    exists: true,
+    id: '12345',
+    ref: { _id: 'something' }
+  };
+  return snapshot;
+};
+
+exports.mockFirestoreQuerySnapshot = collection => {
+  //set up snapshot
+  var snapshot = {
+    forEach(cb) {
+      return collection.forEach(cb);
+    },
+    empty: collection.length
+  };
+  return snapshot;
+};
+
 exports.mockSyncs = data => new WeakMap(data);
 
 exports.mockRefs = data => new Map(data);

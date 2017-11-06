@@ -194,6 +194,66 @@ describe('bindCollection()', function() {
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
+    it('bindCollection() returns documents with embedded refrence if options.withRefs is true', done => {
+      class TestComponent extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            data: {}
+          };
+        }
+        componentWillMount() {
+          base.bindCollection(`${collectionPath}`, {
+            context: this,
+            state: 'data',
+            withRefs: true
+          });
+        }
+        componentDidMount() {
+          collectionRef.doc('testDoc').set(dummyCollection[0]);
+        }
+        componentDidUpdate() {
+          expect(this.state.data[0].ref).toEqual(
+            jasmine.any(firebase.firestore.DocumentReference)
+          );
+          done();
+        }
+        render() {
+          return <div>No Data</div>;
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
+
+    it('bindCollection() returns documents with Firestore id embedded if options.withIds is true', done => {
+      class TestComponent extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            data: {}
+          };
+        }
+        componentWillMount() {
+          base.bindCollection(`${collectionPath}`, {
+            context: this,
+            state: 'data',
+            withIds: true
+          });
+        }
+        componentDidMount() {
+          collectionRef.doc('testDoc').set(dummyCollection[0]);
+        }
+        componentDidUpdate() {
+          expect(this.state.data[0].id).toEqual(jasmine.any(String));
+          done();
+        }
+        render() {
+          return <div>No Data</div>;
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
+
     it('bindCollection() can apply a simple query', done => {
       class TestComponent extends React.Component {
         constructor(props) {

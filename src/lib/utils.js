@@ -265,28 +265,23 @@ const _addFirestoreListener = function _addFirestoreListener(
     ref.onSnapshot(snapshot => {
       if (invoker === 'syncDoc') {
         if (snapshot.exists) {
-          let newState = _prepareNextState(snapshot, options.state);
+          let newState = _fsPrepareData(snapshot, options);
           options.reactSetState.call(options.context, function(currentState) {
             return Object.assign(currentState, newState);
           });
         }
       } else if (invoker === 'bindDoc') {
         if (snapshot.exists) {
-          let newState = _prepareNextState(snapshot, options.state);
+          let newState = _fsPrepareData(snapshot, options);
           _setState.call(options.context, function(currentState) {
             return Object.assign(currentState, newState);
           });
         }
       } else if (invoker === 'bindCollection') {
         if (!snapshot.empty) {
-          const collection = [];
-          snapshot.forEach(doc =>
-            collection.push(Object.assign({}, { id: doc.id }, doc.data()))
-          );
+          let newState = _fsPrepareData(snapshot, options, true);
           _setState.call(options.context, function(currentState) {
-            return Object.assign(currentState, {
-              [options.state]: collection
-            });
+            return Object.assign(currentState, newState);
           });
         }
       }
@@ -304,8 +299,22 @@ const _getSegmentCount = function(path) {
     : path.split('/').length;
 };
 
-const _prepareNextState = function(snapshot, stateProp) {
-  return stateProp ? { [stateProp]: snapshot.data() } : snapshot.data();
+const _fsPrepareData = function(snapshot, options, isCollection = false) {
+  if (!isCollection) {
+    return options.state
+      ? { [options.state]: snapshot.data() }
+      : snapshot.data();
+  }
+  const collection = [];
+  snapshot.forEach(doc => {
+    const meta = {};
+    if (options.withRefs) meta.ref = doc.ref;
+    if (options.withIds) meta.id = doc.id;
+    collection.push(Object.assign({}, doc.data(), meta));
+  });
+  return {
+    [options.state]: collection
+  };
 };
 
 export {
@@ -317,6 +326,7 @@ export {
   _setState,
   _throwError,
   _prepareData,
+  _fsPrepareData,
   _toArray,
   _isValid,
   _isObject,
