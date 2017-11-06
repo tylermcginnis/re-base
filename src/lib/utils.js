@@ -249,6 +249,10 @@ const _addFirestoreListener = function _addFirestoreListener(
   listeners
 ) {
   ref = _addQueries(ref, options.queries);
+  const boundOnFailure =
+    typeof options.onFailure === 'function'
+      ? options.onFailure.bind(options.context)
+      : undefined;
   listeners.set(
     id,
     ref.onSnapshot(snapshot => {
@@ -256,15 +260,21 @@ const _addFirestoreListener = function _addFirestoreListener(
         const newState = options.state
           ? { [options.state]: snapshot.data() }
           : snapshot.data();
-        options.reactSetState.call(options.context, function(currentState) {
-          return Object.assign(currentState, newState);
-        });
+        if (invoker === 'syncDoc') {
+          options.reactSetState.call(options.context, function(currentState) {
+            return Object.assign(currentState, newState);
+          });
+        } else if (invoker === 'listenDoc') {
+          _setState.call(options.context, function(currentState) {
+            return Object.assign(currentState, newState);
+          });
+        }
       }
       if (options.then && options.then.called === false) {
         options.then.call(options.context);
         options.then.called = true;
       }
-    })
+    }, boundOnFailure)
   );
 };
 

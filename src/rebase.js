@@ -16,6 +16,7 @@ import _remove from './lib/remove';
 //firestore
 import _fsSync from './lib/fsSync';
 import _fsRemoveBinding from './lib/fsRemoveBinding';
+import _fsBind from './lib/fsBind';
 
 module.exports = (function() {
   function init(db) {
@@ -85,7 +86,13 @@ module.exports = (function() {
       } else {
         var rebase = {
           initializedApp: db.app,
-          bindDoc() {},
+          bindDoc(path, options) {
+            return _fsBind.call(this, path, options, 'listenDoc', {
+              db: db,
+              refs: firebaseRefs,
+              listeners: firebaseListeners
+            });
+          },
           bindCollection() {},
           syncDoc(doc, options) {
             return _fsSync.call(this, doc, options, {
