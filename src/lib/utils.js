@@ -112,7 +112,10 @@ const _addQueries = function(ref, queries) {
 };
 
 const _addFirestoreQuery = function(ref, query) {
-  return query(ref);
+  if (query) {
+    return query(ref);
+  }
+  return ref;
 };
 
 const _createHash = function(endpoint, invoker) {
@@ -302,7 +305,7 @@ const _getSegmentCount = function(path) {
 };
 
 const _prepareNextState = function(snapshot, stateProp) {
-  return options.state ? { [options.state]: snapshot.data() } : snapshot.data();
+  return stateProp ? { [stateProp]: snapshot.data() } : snapshot.data();
 };
 
 export {

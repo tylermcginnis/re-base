@@ -85,11 +85,10 @@ module.exports = (function() {
         var rebase = {
           initializedApp: db.app,
           bindDoc(path, options) {
-            return _fsBind.call(this, path, options, 'listenDoc', {
+            return _fsBind.call(this, path, options, 'bindDoc', {
               db,
               refs,
-              listeners,
-              syncs
+              listeners
             });
           },
           bindCollection(path, options) {

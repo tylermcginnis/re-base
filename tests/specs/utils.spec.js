@@ -314,7 +314,7 @@ describe('utils', () => {
   });
 
   describe('_addFirestoreQuery', () => {
-    fit('should add valid queries to the ref', () => {
+    it('should add valid queries to the ref', () => {
       var ref = jasmine.createSpyObj([
         'endAt',
         'endBefore',

@@ -1,4 +1,8 @@
-import { optionValidators, _validateDocumentPath } from './validators';
+import {
+  optionValidators,
+  _validateDocumentPath,
+  _validateCollectionPath
+} from './validators';
 import {
   _createHash,
   _returnRef,
@@ -9,14 +13,16 @@ import {
 } from './utils';
 
 export default function _fsBind(path, options, invoker, state) {
-  _validateDocumentPath(path);
   optionValidators.context(options);
-  invoker === 'listen' && optionValidators.then(options);
   if (invoker === 'bindDoc') {
-    optionValidators.state(options);
     _validateDocumentPath(path);
   }
-  options.queries && optionValidators.query(options);
+  if (invoker === 'bindCollection') {
+    optionValidators.state(options);
+    _validateCollectionPath(path);
+  }
+  invoker === 'listen' && optionValidators.then(options);
+
   options.then && (options.then.called = false);
 
   var id = _createHash(path, invoker);
