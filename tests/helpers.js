@@ -1,4 +1,4 @@
-exports.mockSnapshot = (object) => {
+exports.mockSnapshot = object => {
   //set up snapshot
   var snapshot = {
     data: object,
@@ -23,7 +23,7 @@ exports.mockSyncs = data => new WeakMap(data);
 
 exports.mockRefs = data => new Map(data);
 
-exports.mockListeners = () => new Map();
+exports.mockListeners = data => new Map(data);
 
 exports.mockRef = () => {
   return {
@@ -44,6 +44,15 @@ exports.mockSync = data => ({
 
 exports.mockCollection = () => ({
   onSnapshot() {},
+  get() {},
+  add() {},
+  doc() {}
+});
+
+exports.mockDoc = unsubscribeSpy => ({
+  onSnapshot() {
+    return unsubscribeSpy;
+  },
   get() {},
   add() {},
   doc() {}

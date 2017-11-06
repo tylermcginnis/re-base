@@ -5,7 +5,8 @@ const {
   mockListeners,
   mockRef,
   mockSync,
-  mockCollection
+  mockCollection,
+  mockDoc
 } = require('../helpers');
 
 describe('utils', () => {
@@ -415,6 +416,108 @@ describe('utils', () => {
       utils._setUnmountHandler(context, 1234, refs, listeners, syncs);
       utils._setUnmountHandler(context, 2345, refs, listeners, syncs);
       utils._setUnmountHandler(context, 3456, refs, listeners, syncs);
+      context.componentWillUnmount();
+      expect(syncs.get(context).length).toEqual(0);
+    });
+  });
+
+  describe('_fsSetUnmountHandler', () => {
+    it('should call supplied componentWillUnmount in the correct context', () => {
+      var cleanUpSpy = jasmine.createSpy('cleanUp');
+      var listeners = mockListeners();
+      var refs = mockRefs();
+      var syncs = mockSyncs();
+      var id = 1234;
+      var context = {
+        componentWillUnmount() {
+          cleanUpSpy(this.value);
+        },
+        value: 10
+      };
+      utils._fsSetUnmountHandler(context, id, refs, listeners, syncs);
+      context.componentWillUnmount();
+      expect(cleanUpSpy).toHaveBeenCalledWith(10);
+    });
+
+    it('should call listener unsubscribe 3 times when the component unmounts', () => {
+      var cleanUpSpy = jasmine.createSpy('cleanUpOne');
+      var unsubscribeSpy = jasmine.createSpy();
+      var listeners = mockListeners([
+        [1234, unsubscribeSpy],
+        [2345, unsubscribeSpy],
+        [3456, unsubscribeSpy]
+      ]);
+      var refs = mockRefs();
+      var syncs = mockSyncs();
+      var ids = [1234, 2345, 3456];
+      var context = {
+        componentWillUnmount() {
+          cleanUpSpy(this.value);
+        }
+      };
+      utils._fsSetUnmountHandler(context, ids[0], refs, listeners, syncs);
+      utils._fsSetUnmountHandler(context, ids[1], refs, listeners, syncs);
+      utils._fsSetUnmountHandler(context, ids[2], refs, listeners, syncs);
+      context.componentWillUnmount();
+      expect(cleanUpSpy.calls.count()).toEqual(1);
+      expect(unsubscribeSpy.calls.count()).toEqual(3);
+    });
+
+    it('should call listeners.delete 3 times when the component unmounts', () => {
+      var unsubscribeSpy = jasmine.createSpy();
+      var mockedDoc = mockDoc(unsubscribeSpy);
+      var listeners = mockListeners([
+        [1234, unsubscribeSpy],
+        [2345, unsubscribeSpy],
+        [3456, unsubscribeSpy]
+      ]);
+      spyOn(listeners, 'delete');
+      var refs = mockRefs([
+        [1234, mockedDoc],
+        [2345, mockedDoc],
+        [3456, mockedDoc]
+      ]);
+      var syncs = mockSyncs();
+      var ids = [1234, 2345, 3456];
+      var context = {};
+      utils._fsSetUnmountHandler(context, ids[0], refs, listeners, syncs);
+      utils._fsSetUnmountHandler(context, ids[1], refs, listeners, syncs);
+      utils._fsSetUnmountHandler(context, ids[2], refs, listeners, syncs);
+      context.componentWillUnmount();
+      expect(listeners.delete.calls.count()).toEqual(3);
+    });
+
+    it('should remove syncs when the component unmounts', () => {
+      const unsubscribeSpy = jasmine.createSpy();
+      var listeners = mockListeners([
+        [1234, unsubscribeSpy],
+        [2345, unsubscribeSpy],
+        [3456, unsubscribeSpy]
+      ]);
+      var mockedDoc = mockDoc();
+      var refs = mockRefs([
+        [1234, mockedDoc],
+        [2345, mockedDoc],
+        [3456, mockedDoc]
+      ]);
+      var context = {};
+      var syncs = mockSyncs([
+        [
+          context,
+          [
+            mockSync({ id: 1234, updateFirebase: () => {}, state: 'stateOne' }),
+            mockSync({ id: 2345, updateFirebase: () => {}, state: 'stateTwo' }),
+            mockSync({
+              id: 3456,
+              updateFirebase: () => {},
+              state: 'stateThree'
+            })
+          ]
+        ]
+      ]);
+      utils._fsSetUnmountHandler(context, 1234, refs, listeners, syncs);
+      utils._fsSetUnmountHandler(context, 2345, refs, listeners, syncs);
+      utils._fsSetUnmountHandler(context, 3456, refs, listeners, syncs);
       context.componentWillUnmount();
       expect(syncs.get(context).length).toEqual(0);
     });

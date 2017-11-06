@@ -1,4 +1,5 @@
 import _removeBinding from './removeBinding';
+import _fsRemoveBinding from './fsRemoveBinding';
 
 const _isObject = function(obj) {
   return Object.prototype.toString.call(obj) === '[object Object]'
@@ -135,6 +136,19 @@ const _handleError = function(onFailure, err) {
 const _setUnmountHandler = function(context, id, refs, listeners, syncs) {
   var removeListeners = () => {
     _removeBinding({ context, id }, { refs, listeners, syncs });
+  };
+  if (typeof context.componentWillUnmount === 'function') {
+    var unmount = context.componentWillUnmount;
+  }
+  context.componentWillUnmount = function() {
+    removeListeners();
+    if (unmount) unmount.call(context);
+  };
+};
+
+const _fsSetUnmountHandler = function(context, id, refs, listeners, syncs) {
+  var removeListeners = () => {
+    _fsRemoveBinding({ context, id }, { refs, listeners, syncs });
   };
   if (typeof context.componentWillUnmount === 'function') {
     var unmount = context.componentWillUnmount;
