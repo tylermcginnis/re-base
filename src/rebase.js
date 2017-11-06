@@ -21,8 +21,8 @@ import _fsBind from './lib/fsBind';
 module.exports = (function() {
   function init(db) {
     return (function() {
-      var firebaseRefs = new Map();
-      var firebaseListeners = new Map();
+      var refs = new Map();
+      var listeners = new Map();
       var syncs = new WeakMap();
 
       if (typeof db.ref === 'function') {
@@ -30,25 +30,25 @@ module.exports = (function() {
           initializedApp: db.app,
           listenTo(endpoint, options) {
             return _bind.call(this, endpoint, options, 'listenTo', {
-              db: db,
-              refs: firebaseRefs,
-              listeners: firebaseListeners,
-              syncs: syncs
+              db,
+              refs,
+              listeners,
+              syncs
             });
           },
           bindToState(endpoint, options) {
             return _bind.call(this, endpoint, options, 'bindToState', {
-              db: db,
-              refs: firebaseRefs,
-              listeners: firebaseListeners
+              db,
+              refs,
+              listeners
             });
           },
           syncState(endpoint, options) {
             return _sync.call(this, endpoint, options, {
-              db: db,
-              refs: firebaseRefs,
-              listeners: firebaseListeners,
-              syncs: syncs
+              db,
+              refs,
+              listeners,
+              syncs
             });
           },
           fetch(endpoint, options) {
@@ -58,18 +58,16 @@ module.exports = (function() {
             return _post(endpoint, options, db);
           },
           update(endpoint, options) {
-            return _update(endpoint, options, {
-              db: db
-            });
+            return _update(endpoint, options, { db });
           },
           push(endpoint, options) {
             return _push(endpoint, options, db);
           },
           removeBinding(binding) {
             _removeBinding(binding, {
-              refs: firebaseRefs,
-              listeners: firebaseListeners,
-              syncs: syncs
+              refs,
+              listeners,
+              syncs
             });
           },
           remove(endpoint, fn) {
@@ -77,9 +75,9 @@ module.exports = (function() {
           },
           reset() {
             return _reset({
-              refs: firebaseRefs,
-              listeners: firebaseListeners,
-              syncs: syncs
+              refs,
+              listeners,
+              syncs
             });
           }
         };
@@ -88,18 +86,25 @@ module.exports = (function() {
           initializedApp: db.app,
           bindDoc(path, options) {
             return _fsBind.call(this, path, options, 'listenDoc', {
-              db: db,
-              refs: firebaseRefs,
-              listeners: firebaseListeners
+              db,
+              refs,
+              listeners,
+              syncs
             });
           },
-          bindCollection() {},
+          bindCollection(path, options) {
+            return _fsBind.call(this, path, options, 'bindCollection', {
+              db,
+              refs,
+              listeners
+            });
+          },
           syncDoc(doc, options) {
             return _fsSync.call(this, doc, options, {
-              db: db,
-              refs: firebaseRefs,
-              listeners: firebaseListeners,
-              syncs: syncs
+              db,
+              refs,
+              listeners,
+              syncs
             });
           },
           listenToDoc() {},
@@ -111,16 +116,16 @@ module.exports = (function() {
           removeCollection() {},
           removeBinding(binding) {
             _fsRemoveBinding(binding, {
-              refs: firebaseRefs,
-              listeners: firebaseListeners,
-              syncs: syncs
+              refs,
+              listeners,
+              syncs
             });
           },
           reset() {
             return _reset({
-              refs: firebaseRefs,
-              listeners: firebaseListeners,
-              syncs: syncs
+              refs,
+              listeners,
+              syncs
             });
           }
         };
