@@ -111,6 +111,10 @@ const _addQueries = function(ref, queries) {
   return ref;
 };
 
+const _addFirestoreQuery = function(ref, query) {
+  return query(ref);
+};
+
 const _createHash = function(endpoint, invoker) {
   var hash = 0;
   var str = endpoint + invoker + Date.now();
@@ -248,7 +252,7 @@ const _addFirestoreListener = function _addFirestoreListener(
   ref,
   listeners
 ) {
-  ref = _addQueries(ref, options.queries);
+  ref = _addFirestoreQuery(ref, options.query);
   const boundOnFailure =
     typeof options.onFailure === 'function'
       ? options.onFailure.bind(options.context)
@@ -256,17 +260,30 @@ const _addFirestoreListener = function _addFirestoreListener(
   listeners.set(
     id,
     ref.onSnapshot(snapshot => {
-      if (snapshot.exists) {
-        const newState = options.state
-          ? { [options.state]: snapshot.data() }
-          : snapshot.data();
-        if (invoker === 'syncDoc') {
+      if (invoker === 'syncDoc') {
+        if (snapshot.exists) {
+          let newState = _prepareNextState(snapshot, options.state);
           options.reactSetState.call(options.context, function(currentState) {
             return Object.assign(currentState, newState);
           });
-        } else if (invoker === 'listenDoc') {
+        }
+      } else if (invoker === 'bindDoc') {
+        if (snapshot.exists) {
+          let newState = _prepareNextState(snapshot, options.state);
           _setState.call(options.context, function(currentState) {
             return Object.assign(currentState, newState);
+          });
+        }
+      } else if (invoker === 'bindCollection') {
+        if (!snapshot.empty) {
+          const collection = [];
+          snapshot.forEach(doc =>
+            collection.push(Object.assign({}, { id: doc.id }, doc.data()))
+          );
+          _setState.call(options.context, function(currentState) {
+            return Object.assign(currentState, {
+              [options.state]: collection
+            });
           });
         }
       }
@@ -284,10 +301,15 @@ const _getSegmentCount = function(path) {
     : path.split('/').length;
 };
 
+const _prepareNextState = function(snapshot, stateProp) {
+  return options.state ? { [options.state]: snapshot.data() } : snapshot.data();
+};
+
 export {
   _createHash,
   _getSegmentCount,
   _addQueries,
+  _addFirestoreQuery,
   _returnRef,
   _setState,
   _throwError,

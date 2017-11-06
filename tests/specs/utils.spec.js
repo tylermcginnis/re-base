@@ -313,6 +313,45 @@ describe('utils', () => {
     });
   });
 
+  describe('_addFirestoreQuery', () => {
+    fit('should add valid queries to the ref', () => {
+      var ref = jasmine.createSpyObj([
+        'endAt',
+        'endBefore',
+        'limit',
+        'orderBy',
+        'startAt',
+        'startAfter',
+        'where'
+      ]);
+      ref.endAt.and.returnValue(ref);
+      ref.endBefore.and.returnValue(ref);
+      ref.limit.and.returnValue(ref);
+      ref.orderBy.and.returnValue(ref);
+      ref.startAt.and.returnValue(ref);
+      ref.where.and.returnValue(ref);
+      ref.startAfter.and.returnValue(ref);
+      const query = ref => {
+        return ref
+          .endAt({})
+          .startAt({})
+          .where('key', '==', 'value')
+          .limit(5)
+          .orderBy('key')
+          .endBefore({})
+          .startAfter({});
+      };
+      utils._addFirestoreQuery(ref, query);
+      expect(ref.endAt).toHaveBeenCalledWith({});
+      expect(ref.startAt).toHaveBeenCalledWith({});
+      expect(ref.endBefore).toHaveBeenCalledWith({});
+      expect(ref.startAfter).toHaveBeenCalledWith({});
+      expect(ref.where).toHaveBeenCalledWith('key', '==', 'value');
+      expect(ref.orderBy).toHaveBeenCalledWith('key');
+      expect(ref.limit).toHaveBeenCalledWith(5);
+    });
+  });
+
   describe('_firebaseRefsMixin', () => {
     it('should add ref to refs', () => {
       var refs = mockRefs();
