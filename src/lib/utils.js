@@ -222,6 +222,33 @@ const _addListener = function _addListener(
   );
 };
 
+const _addFirestoreListener = function _addFirestoreListener(
+  id,
+  invoker,
+  options,
+  ref,
+  listeners
+) {
+  ref = _addQueries(ref, options.queries);
+  listeners.set(
+    id,
+    ref.onSnapshot(snapshot => {
+      if (snapshot.exists) {
+        const newState = options.state
+          ? { [options.state]: snapshot.data() }
+          : snapshot.data();
+        options.reactSetState.call(options.context, function(currentState) {
+          return Object.assign(currentState, newState);
+        });
+      }
+      if (options.then && options.then.called === false) {
+        options.then.call(options.context);
+        options.then.called = true;
+      }
+    })
+  );
+};
+
 export {
   _createHash,
   _addQueries,

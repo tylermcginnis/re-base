@@ -4,7 +4,8 @@ const {
   mockRefs,
   mockListeners,
   mockRef,
-  mockSync
+  mockSync,
+  mockCollection
 } = require('../helpers');
 
 describe('utils', () => {
@@ -496,7 +497,6 @@ describe('utils', () => {
 
   describe('_addListener', () => {
     it('should add a listener for a given id', () => {
-      id, invoker, options, ref, listeners;
       var listeners = mockListeners();
       spyOn(listeners, 'set').and.callThrough();
       var id = 1234;
@@ -506,6 +506,22 @@ describe('utils', () => {
       };
       var ref = mockRef();
       utils._addListener(id, invoker, options, ref, listeners);
+      expect(listeners.set.calls.count()).toEqual(1);
+      expect(listeners.size).toEqual(1);
+    });
+  });
+
+  describe('_addFirestoreListener', () => {
+    it('should add a listener for a given id', () => {
+      var listeners = mockListeners();
+      spyOn(listeners, 'set').and.callThrough();
+      var id = 1234;
+      var invoker = 'bindToCollection';
+      var options = {
+        context: {}
+      };
+      var ref = mockCollection();
+      utils._addFirestoreListener(id, invoker, options, ref, listeners);
       expect(listeners.set.calls.count()).toEqual(1);
       expect(listeners.size).toEqual(1);
     });
