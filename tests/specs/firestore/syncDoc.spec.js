@@ -39,6 +39,7 @@ describe('syncDoc()', function() {
   });
 
   afterEach(done => {
+    ReactDOM.unmountComponentAtNode(document.body);
     Promise.all([
       collectionRef.get().then(docs => {
         const deleteOps = [];
@@ -301,7 +302,7 @@ describe('syncDoc()', function() {
         });
     });
 
-    it('syncDoc() syncs its local state with Firebase', done => {
+    it('syncDoc() syncs its local state with Firestore', done => {
       class TestComponent extends React.Component {
         constructor(props) {
           super(props);
