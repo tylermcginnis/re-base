@@ -18,6 +18,7 @@ import _fsSync from './lib/fsSync';
 import _fsRemoveBinding from './lib/fsRemoveBinding';
 import _fsBind from './lib/fsBind';
 import _fsGet from './lib/fsGet';
+import _fsRemoveDoc from './lib/fsRemoveDoc';
 
 module.exports = (function() {
   function init(db) {
@@ -126,7 +127,9 @@ module.exports = (function() {
           get(path, options) {
             return _fsGet.call(this, path, options, db);
           },
-          removeDoc() {},
+          removeDoc(path) {
+            return _fsRemoveDoc(path, db);
+          },
           removeCollection() {},
           removeBinding(binding) {
             _fsRemoveBinding(binding, {
