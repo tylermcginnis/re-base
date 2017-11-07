@@ -109,9 +109,9 @@ describe('createClass()', function() {
       jasmine.any(Function),
       'Public API: removeDoc() not exposed'
     );
-    expect(base.removeCollection).toEqual(
+    expect(base.removeFromCollection).toEqual(
       jasmine.any(Function),
-      'Public API: removeCollection() not exposed'
+      'Public API: removeFromCollection() not exposed'
     );
     expect(base.removeBinding).toEqual(
       jasmine.any(Function),
