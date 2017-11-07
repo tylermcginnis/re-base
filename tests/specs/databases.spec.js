@@ -58,7 +58,7 @@ describe('Firebase/Firestore Interop', function() {
       .then(done);
   });
 
-  fit('both databases can be used side by side', done => {
+  it('both databases can be used side by side', done => {
     class TestComponent extends React.Component {
       constructor(props) {
         super(props);
