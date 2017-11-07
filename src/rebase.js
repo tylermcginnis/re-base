@@ -21,6 +21,7 @@ import _fsGet from './lib/fsGet';
 import _fsRemoveDoc from './lib/fsRemoveDoc';
 import _fsAddToCollection from './lib/fsAddToCollection';
 import _fsRemoveFromCollection from './lib/fsRemoveFromCollection';
+import _fsUpdateDoc from './lib/fsUpdateDoc';
 
 module.exports = (function() {
   function init(db) {
@@ -127,7 +128,9 @@ module.exports = (function() {
           addToCollection(path, doc, key) {
             return _fsAddToCollection.call(this, path, doc, db, key);
           },
-          updateDoc(path, doc, key) {},
+          updateDoc(path, doc, options) {
+            return _fsUpdateDoc.call(this, path, doc, db);
+          },
           get(path, options) {
             return _fsGet.call(this, path, options, db);
           },
