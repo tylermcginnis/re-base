@@ -120,7 +120,7 @@ const _addFirestoreQuery = function(ref, query) {
 
 const _createHash = function(endpoint, invoker) {
   var hash = 0;
-  var str = endpoint + invoker + Date.now();
+  var str = endpoint + invoker + Math.random();
   if (str.length == 0) return hash;
   for (var i = 0; i < str.length; i++) {
     var char = str.charCodeAt(i);
@@ -271,7 +271,7 @@ const _addFirestoreListener = function _addFirestoreListener(
           }
         }
         if (invoker === 'listenToCollection') {
-          if (snapshot.exists) {
+          if (!snapshot.empty) {
             let newState = _fsPrepareData(snapshot, options, true);
             return options.then.call(options.context, newState);
           }
@@ -329,9 +329,7 @@ const _fsPrepareData = function(snapshot, options, isCollection = false) {
     if (options.withIds) meta.id = doc.id;
     collection.push(Object.assign({}, doc.data(), meta));
   });
-  return {
-    [options.state]: collection
-  };
+  return options.state ? { [options.state]: collection } : collection;
 };
 
 export {
