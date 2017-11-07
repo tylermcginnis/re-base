@@ -17,6 +17,7 @@ import _remove from './lib/remove';
 import _fsSync from './lib/fsSync';
 import _fsRemoveBinding from './lib/fsRemoveBinding';
 import _fsBind from './lib/fsBind';
+import _fsGet from './lib/fsGet';
 
 module.exports = (function() {
   function init(db) {
@@ -122,7 +123,9 @@ module.exports = (function() {
           },
           addToCollection() {},
           updateDoc() {},
-          get() {},
+          get(path, options) {
+            return _fsGet.call(this, path, options, db);
+          },
           removeDoc() {},
           removeCollection() {},
           removeBinding(binding) {
