@@ -25,6 +25,10 @@ export default function _fsBind(path, options, invoker, state) {
     _validateDocumentPath(path);
     optionValidators.then(options);
   }
+  if (invoker === 'listenToCollection') {
+    _validateCollectionPath(path);
+    optionValidators.then(options);
+  }
 
   options.then && (options.then.called = false);
 

@@ -113,7 +113,13 @@ module.exports = (function() {
               listeners
             });
           },
-          listenToCollection() {},
+          listenToCollection(path, options) {
+            return _fsBind.call(this, path, options, 'listenToCollection', {
+              db,
+              refs,
+              listeners
+            });
+          },
           addToCollection() {},
           updateDoc() {},
           get() {},
