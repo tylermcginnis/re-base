@@ -52,6 +52,13 @@ describe('utils', () => {
       expect(result.length).toEqual(1);
       expect(result[0]).toEqual({ key1: { nKey1: 'value' }, key: 'key1' });
     });
+
+    it('should return an array from a snapshot that is a scalar value', () => {
+      var snapshot = mockSnapshot(5);
+      var result = utils._toArray(snapshot);
+      expect(result.length).toEqual(1);
+      expect(result[0]).toEqual(5);
+    });
   });
 
   describe('_isValid', () => {
@@ -145,6 +152,18 @@ describe('utils', () => {
           }
         }
       };
+      var result = utils._getNestedObject(fakeObj, 'foo.bar.nope');
+      expect(result).toBeUndefined();
+    });
+
+    it('should be a noop if not a nested path', () => {
+      var fakeObj = {};
+      var result = utils._getNestedObject(fakeObj, 'foo');
+      expect(result).toBeUndefined();
+    });
+
+    it('should be a noop if not a nested obj', () => {
+      var fakeObj = {};
       var result = utils._getNestedObject(fakeObj, 'foo.bar.nope');
       expect(result).toBeUndefined();
     });
@@ -413,7 +432,8 @@ describe('utils', () => {
         'orderByChild',
         'startAt',
         'endAt',
-        'equalTo'
+        'equalTo',
+        'orderByPriority'
       ]);
       ref.limitToFirst.and.returnValue(ref);
       ref.limitToLast.and.returnValue(ref);
@@ -427,7 +447,8 @@ describe('utils', () => {
         startAt: 4,
         endAt: 1,
         orderByChild: 'value',
-        limitToFirst: 3
+        limitToFirst: 3,
+        orderByPriority: true
       };
       utils._addQueries(ref, queries);
       expect(ref.limitToLast).toHaveBeenCalledWith(10);

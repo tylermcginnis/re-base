@@ -100,6 +100,7 @@ const _addQueries = function(ref, queries) {
   };
 
   for (var key in queries) {
+    /* istanbul ignore else */
     if (queries.hasOwnProperty(key)) {
       if (needArgs[key]) {
         ref = ref[key](queries[key]);

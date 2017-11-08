@@ -3,10 +3,20 @@ exports.mockSnapshot = object => {
   var snapshot = {
     data: object,
     forEach(fn) {
-      Object.keys(this.data).forEach(key => {
+      var values;
+      if (typeof this.data === 'object') {
+        values = Object.keys(this.data);
+      } else {
+        values = Array.isArray(this.data) ? this.data : [this.data];
+      }
+      values.forEach(key => {
         fn({
           val: () => {
-            return { [key]: this.data[key] };
+            if (this.data[key]) {
+              return { [key]: this.data[key] };
+            } else {
+              return key;
+            }
           },
           key: key
         });

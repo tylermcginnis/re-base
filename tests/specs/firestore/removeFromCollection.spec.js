@@ -94,4 +94,18 @@ describe('removeCollection()', function() {
       })
       .catch(err => done.fail(err));
   });
+
+  it('is a noop if no documents match query', done => {
+    base
+      .removeFromCollection(collectionPath, {
+        query: ref => ref.where('id', '>', 5).orderBy('id')
+      })
+      .then(() => {
+        collectionRef.get().then(snapshot => {
+          expect(snapshot.empty).toBe(false);
+          expect(snapshot.docs.length).toBe(5);
+          done();
+        });
+      });
+  });
 });

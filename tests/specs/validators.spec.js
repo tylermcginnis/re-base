@@ -252,6 +252,16 @@ describe('Validators', () => {
   });
 
   describe('_validateDocumentPath', () => {
+    it('should not throw if argument is not a string', () => {
+      expect(() => {
+        _validateDocumentPath();
+      }).toThrow();
+    });
+    it('should throw if path does not have an even number of segments', () => {
+      expect(() => {
+        _validateDocumentPath('collectionName');
+      }).toThrow();
+    });
     it('should throw if path does not have an even number of segments', () => {
       expect(() => {
         _validateDocumentPath('collectionName');
@@ -270,6 +280,11 @@ describe('Validators', () => {
   });
 
   describe('_validateCollectionPath', () => {
+    it('should not throw if argument is not a string', () => {
+      expect(() => {
+        _validateCollectionPath();
+      }).toThrow();
+    });
     it('should throw if path does not have an odd number of segments', () => {
       expect(() => {
         _validateCollectionPath('collectionName/document');
