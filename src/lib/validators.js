@@ -103,10 +103,7 @@ const _validateDatabase = function(db) {
   var errorMsg;
   if (typeof db !== 'object' || (!db.ref && !db.collection)) {
     errorMsg = `${defaultError} Expected an initialized firebase or firestore database object.`;
-  } else if (!db || arguments.length > 1) {
-    errorMsg = `${defaultError} expects 1 argument.`;
   }
-
   if (typeof errorMsg !== 'undefined') {
     _throwError(errorMsg, 'INVALID_CONFIG');
   }
