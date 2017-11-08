@@ -22,6 +22,7 @@ import _fsRemoveDoc from './lib/fsRemoveDoc';
 import _fsAddToCollection from './lib/fsAddToCollection';
 import _fsRemoveFromCollection from './lib/fsRemoveFromCollection';
 import _fsUpdateDoc from './lib/fsUpdateDoc';
+import _fsReset from './lib/fsReset';
 
 module.exports = (function() {
   function init(db) {
@@ -148,7 +149,7 @@ module.exports = (function() {
             });
           },
           reset() {
-            return _reset({
+            return _fsReset({
               refs,
               listeners,
               syncs
