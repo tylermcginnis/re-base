@@ -472,7 +472,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _createHash = function _createHash(endpoint, invoker) {
 	  var hash = 0;
 	  var str = endpoint + invoker + Math.random();
-	  if (str.length == 0) return hash;
 	  for (var i = 0; i < str.length; i++) {
 	    var char = str.charCodeAt(i);
 	    hash = (hash << 5) - hash + char;

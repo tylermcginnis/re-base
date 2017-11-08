@@ -794,4 +794,17 @@ describe('utils', () => {
       expect(listeners.size).toEqual(1);
     });
   });
+
+  describe('_createHash', () => {
+    it('should return a hash of the endpoint, the invoker, and a random number', () => {
+      const result = utils._createHash('endpoint', 'bindToState');
+      expect(result).toEqual(jasmine.any(Number));
+    });
+
+    it('results should be unique', () => {
+      const result1 = utils._createHash('endpoint', 'bindToState');
+      const result2 = utils._createHash('endpoint', 'bindToState');
+      expect(result1).not.toEqual(result2);
+    });
+  });
 });
