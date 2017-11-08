@@ -135,9 +135,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _fsUpdateDoc3 = _interopRequireDefault(_fsUpdateDoc2);
 
+	var _fsReset2 = __webpack_require__(21);
+
+	var _fsReset3 = _interopRequireDefault(_fsReset2);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	//firestore
+	//database
+	//helpers
 	module.exports = function () {
 	  function init(db) {
 	    return function () {
@@ -263,7 +268,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 	          },
 	          reset: function reset() {
-	            return (0, _reset3.default)({
+	            return (0, _fsReset3.default)({
 	              refs: refs,
 	              listeners: listeners,
 	              syncs: syncs
@@ -283,8 +288,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	}();
 
-	//database
-	//helpers
+	//firestore
 
 /***/ }),
 /* 2 */
@@ -451,6 +455,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  for (var key in queries) {
+	    /* istanbul ignore else */
 	    if (queries.hasOwnProperty(key)) {
 	      if (needArgs[key]) {
 	        ref = ref[key](queries[key]);
@@ -711,6 +716,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var idx = currentSyncs.findIndex(function (item, index) {
 	          return item.id === id;
 	        });
+	        /*istanbul ignore else */
 	        if (idx !== -1) {
 	          currentSyncs.splice(idx, 1);
 	          syncs.set(context, currentSyncs);
@@ -748,6 +754,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var idx = currentSyncs.findIndex(function (item, index) {
 	          return item.id === id;
 	        });
+	        /*istanbul ignore else */
 	        if (idx !== -1) {
 	          currentSyncs.splice(idx, 1);
 	          syncs.set(context, currentSyncs);
@@ -848,10 +855,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var errorMsg;
 	  if ((typeof db === 'undefined' ? 'undefined' : _typeof(db)) !== 'object' || !db.ref && !db.collection) {
 	    errorMsg = defaultError + ' Expected an initialized firebase or firestore database object.';
-	  } else if (!db || arguments.length > 1) {
-	    errorMsg = defaultError + ' expects 1 argument.';
 	  }
-
 	  if (typeof errorMsg !== 'undefined') {
 	    (0, _utils._throwError)(errorMsg, 'INVALID_CONFIG');
 	  }
@@ -986,7 +990,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _validators.optionValidators.defaultValue(options);
 	  options.queries && _validators.optionValidators.query(options);
 	  options.then && (options.then.called = false);
-	  options.onFailure = options.onFailure ? options.onFailure.bind(options.context) : function () {};
+	  options.onFailure = options.onFailure ? options.onFailure.bind(options.context) : null;
 	  options.keepKeys = options.keepKeys && options.asArray;
 
 	  //store reference to react's setState
@@ -1415,6 +1419,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _fsUpdateDoc(document, data, db) {
 	  (0, _validators._validateDocumentPath)(document);
 	  return db.doc(document).update(data);
+	}
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = _fsReset;
+	function _fsReset(state) {
+	  state.listeners.forEach(function (unsubscribe, id) {
+	    unsubscribe();
+	  });
+	  state.listeners = new Map();
+	  state.refs = new Map();
+	  state.syncs = new WeakMap();
+	  return null;
 	}
 
 /***/ })

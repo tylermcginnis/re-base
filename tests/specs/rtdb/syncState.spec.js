@@ -419,6 +419,76 @@ describe('syncState()', function() {
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
+    it('syncState() works with setState as a function', done => {
+      class TestComponent extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            user: {}
+          };
+        }
+        componentWillMount() {
+          this.ref = base.syncState(`${testEndpoint}/userData`, {
+            context: this,
+            state: 'user'
+          });
+        }
+        componentDidMount() {
+          this.setState(currentState => {
+            return Object.assign(currentState, {
+              user: { name: 'Tyler' }
+            });
+          });
+          setTimeout(() => {
+            ref.child(`${testEndpoint}/userData`).once('value', snapshot => {
+              var data = snapshot.val();
+              expect(data).toEqual(this.state.user);
+              expect(data).toEqual({ name: 'Tyler' });
+              ReactDOM.unmountComponentAtNode(document.body);
+              done();
+            });
+          }, 500);
+        }
+        render() {
+          return <div>No Data</div>;
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
+
+    it('syncState() setState callback is called when setState is a function', done => {
+      const spy = jasmine.createSpy();
+      class TestComponent extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            user: {}
+          };
+        }
+        componentWillMount() {
+          this.ref = base.syncState(`${testEndpoint}/userData`, {
+            context: this,
+            state: 'user'
+          });
+        }
+        componentDidMount() {
+          this.setState(currentState => {
+            return Object.assign(currentState, {
+              user: { name: 'Tyler' }
+            });
+          }, spy);
+          setTimeout(() => {
+            expect(spy.calls.count()).toEqual(1);
+            done();
+          }, 100);
+        }
+        render() {
+          return <div>No Data</div>;
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
+
     it('syncState() syncs its local state with Firebase when the provided state string points to a nested object', done => {
       class TestComponent extends React.Component {
         constructor(props) {

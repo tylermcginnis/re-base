@@ -16,6 +16,7 @@ export default function _removeBinding(
         var idx = currentSyncs.findIndex((item, index) => {
           return item.id === id;
         });
+        /*istanbul ignore else */
         if (idx !== -1) {
           currentSyncs.splice(idx, 1);
           syncs.set(context, currentSyncs);

@@ -6,6 +6,7 @@ require('firebase/database');
 
 var invalidEndpoints = require('../../fixtures/invalidEndpoints');
 var dummyObjData = require('../../fixtures/dummyObjData');
+var dummyArrayOfObjects = require('../../fixtures/dummyArrayOfObjects');
 var invalidOptions = require('../../fixtures/invalidOptions');
 var dummyArrData = require('../../fixtures/dummyArrData');
 var firebaseConfig = require('../../fixtures/config');
@@ -435,6 +436,40 @@ describe('bindToState()', function() {
       ReactDOM.render(<TestComponent1 />, document.getElementById('div1'));
       ReactDOM.render(<TestComponent2 />, document.getElementById('div2'));
     });
+  });
+
+  it('works with queries', done => {
+    class TestComponent extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = {
+          data: []
+        };
+      }
+      componentWillMount() {
+        this.ref = base.bindToState(testEndpoint, {
+          context: this,
+          state: 'data',
+          asArray: true,
+          queries: {
+            limitToLast: 1,
+            orderByChild: 'name',
+            equalTo: 'Tyler'
+          }
+        });
+      }
+      componentDidMount() {
+        ref.child(testEndpoint).set(dummyArrayOfObjects);
+      }
+      componentDidUpdate() {
+        expect(this.state.data).toEqual([{ key: '0', name: 'Tyler' }]);
+        done();
+      }
+      render() {
+        return <div>No Data</div>;
+      }
+    }
+    ReactDOM.render(<TestComponent />, document.getElementById('mount'));
   });
 
   it('listeners are removed when component unmounts', done => {

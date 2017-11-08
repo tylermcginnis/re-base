@@ -341,6 +341,46 @@ describe('syncDoc()', function() {
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
+    it('syncDoc() works with setState as a function', done => {
+      class TestComponent extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            user: {},
+            other: 'state'
+          };
+        }
+        componentWillMount() {
+          base.syncDoc(`${collectionPath}/userData`, {
+            context: this,
+            state: 'user'
+          });
+        }
+        componentDidMount() {
+          this.setState(currentState =>
+            Object.assign(currentState, { user: { name: 'Tyler' } })
+          );
+        }
+
+        componentDidUpdate() {
+          const unsubscribe = collectionRef.doc('userData').onSnapshot(doc => {
+            if (doc.exists) {
+              const data = doc.data();
+              expect(data).toEqual(this.state.user);
+              expect(data).toEqual({ name: 'Tyler' });
+              ReactDOM.unmountComponentAtNode(document.body);
+              unsubscribe();
+              done();
+            }
+          });
+        }
+        render() {
+          return <div>No Data</div>;
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
+
     it('syncDoc invokes .then with correct context when the initial listener is set', done => {
       class TestComponent extends React.Component {
         constructor(props) {

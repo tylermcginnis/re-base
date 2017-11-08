@@ -7,6 +7,7 @@ require('firebase/database');
 var invalidEndpoints = require('../../fixtures/invalidEndpoints');
 var dummyObjData = require('../../fixtures/dummyObjData');
 var dummyNestedObjData = require('../../fixtures/dummyNestedObjData');
+var dummyArrayOfObjects = require('../../fixtures/dummyArrayOfObjects');
 var invalidOptions = require('../../fixtures/invalidOptions');
 var firebaseConfig = require('../../fixtures/config');
 var nestedObjArrResult = require('../../fixtures/nestedObjArrResult');
@@ -233,6 +234,47 @@ describe('fetch()', function() {
         }
         componentDidUpdate() {
           expect(this.state.friends).toEqual([25, 'Tyler McGinnis']);
+          done();
+        }
+        render() {
+          return <div>No Data</div>;
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
+
+    it('works with queries', done => {
+      class TestComponent extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            data: []
+          };
+        }
+        componentWillMount() {
+          this.ref = base.fetch(testEndpoint, {
+            context: this,
+            asArray: true,
+            queries: {
+              limitToLast: 1,
+              orderByChild: 'name',
+              equalTo: 'Tyler'
+            },
+            then(data) {
+              this.setState({
+                data: data
+              });
+            }
+          });
+        }
+        componentDidMount() {
+          app
+            .database()
+            .ref(testEndpoint)
+            .set(dummyArrayOfObjects);
+        }
+        componentDidUpdate() {
+          expect(this.state.data).toEqual([{ key: '0', name: 'Tyler' }]);
           done();
         }
         render() {
