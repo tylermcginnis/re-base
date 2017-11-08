@@ -1,4 +1,4 @@
-const Rebase = require('../../../src/rebase.js');
+const Rebase = require('../../../src/rebase');
 const React = require('react');
 const ReactDOM = require('react-dom');
 const firebase = require('firebase');

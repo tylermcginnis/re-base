@@ -203,7 +203,7 @@ describe('Validators', () => {
   describe('_validateEndpoint()', () => {
     it('should throw if endpoint is not a string', () => {
       expect(() => {
-        _validateEndpoint({});
+        _validateEndpoint(null);
       }).toThrow();
     });
     it('should throw if endpoint is empty string', () => {

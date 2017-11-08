@@ -1,4 +1,4 @@
-var Rebase = require('../../../dist/bundle');
+const Rebase = require('../../../src/rebase');
 var React = require('react');
 var ReactDOM = require('react-dom');
 var firebase = require('firebase');

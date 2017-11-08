@@ -1,4 +1,4 @@
-var Rebase = require('../../../dist/bundle');
+const Rebase = require('../../../src/rebase');
 var firebase = require('firebase');
 var firebaseConfig = require('../../fixtures/config');
 var dummyObjData = require('../../fixtures/dummyObjData');
