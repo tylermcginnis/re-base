@@ -171,6 +171,14 @@ describe('fetch()', function() {
         });
     });
 
+    it('fetch() calls onFailure callback if present', done => {
+      const spy = jasmine.createSpy();
+      base.fetch('/readFail', { context: {}, onFailure: spy }).then(() => {
+        expect(spy.calls.count()).toEqual(1);
+        done();
+      });
+    });
+
     it('fetch() correctly updates the state of the component with data from fetch', done => {
       var testApp = firebase.initializeApp(firebaseConfig, 'DB_CHECK');
       var ref = testApp.database().ref();
