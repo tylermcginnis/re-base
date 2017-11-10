@@ -71,6 +71,25 @@ describe('removeDoc()', function() {
         .catch(err => done.fail(err));
     });
 
+    it('accepts a document reference', done => {
+      const docRef = app
+        .firestore()
+        .collection('testCollection')
+        .doc('1');
+      base
+        .removeDoc(docRef)
+        .then(() => {
+          return collectionRef
+            .doc('1')
+            .get()
+            .then(snapshot => {
+              expect(snapshot.exists).toEqual(false);
+              done();
+            });
+        })
+        .catch(err => done.fail(err));
+    });
+
     it('rejects if you dont have write permissions', done => {
       base
         .removeDoc('writeFail/1')

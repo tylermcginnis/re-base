@@ -1,6 +1,7 @@
 import { _validateDocumentPath } from './validators';
-
+import { _fsCreateRef } from './utils';
 export default function _fsUpdateDoc(document, data, db) {
   _validateDocumentPath(document);
-  return db.doc(document).update(data);
+  const ref = _fsCreateRef(document, db);
+  return ref.update(data);
 }

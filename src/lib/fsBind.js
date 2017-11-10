@@ -9,11 +9,12 @@ import {
   _firebaseRefsMixin,
   _addFirestoreListener,
   _fsSetUnmountHandler,
-  _getSegmentCount
+  _fsCreateRef
 } from './utils';
 
 export default function _fsBind(path, options, invoker, state) {
   optionValidators.context(options);
+  options.then && (options.then.called = false);
   if (invoker === 'bindDoc') {
     _validateDocumentPath(path);
   }
@@ -29,17 +30,8 @@ export default function _fsBind(path, options, invoker, state) {
     _validateCollectionPath(path);
     optionValidators.then(options);
   }
-
-  options.then && (options.then.called = false);
-
+  const ref = _fsCreateRef(path, state.db);
   var id = _createHash(path, invoker);
-  const segmentCount = _getSegmentCount(path);
-  var ref;
-  if (segmentCount % 2 === 0) {
-    ref = state.db.doc(path);
-  } else {
-    ref = state.db.collection(path);
-  }
   _firebaseRefsMixin(id, ref, state.refs);
   _addFirestoreListener(id, invoker, options, ref, state.listeners);
   _fsSetUnmountHandler(

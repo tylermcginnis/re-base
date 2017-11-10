@@ -1,17 +1,12 @@
-import { _addFirestoreQuery, _fsPrepareData, _getSegmentCount } from './utils';
+import { _addFirestoreQuery, _fsPrepareData, _fsCreateRef } from './utils';
 import { _validateEndpoint } from './validators';
 
 export default function _fsGet(endpoint, options = {}, db) {
   _validateEndpoint(endpoint);
-  const segmentCount = _getSegmentCount(endpoint);
-  const isCollection = segmentCount % 2 !== 0;
-  var ref;
-  if (isCollection) {
-    ref = db.collection(endpoint);
-    ref = _addFirestoreQuery(ref, options.query);
-  } else {
-    ref = db.doc(endpoint);
-  }
+  let ref = _fsCreateRef(endpoint, db);
+  //check if ref is a collection
+  const isCollection = !!ref.add;
+  ref = _addFirestoreQuery(ref, options.query);
   return ref.get().then(snapshot => {
     if (
       (isCollection && !snapshot.empty) ||

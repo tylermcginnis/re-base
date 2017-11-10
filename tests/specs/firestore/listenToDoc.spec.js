@@ -98,6 +98,34 @@ describe('listenToDoc()', function() {
       collectionRef.doc('testDoc').set(dummyCollection[0]);
     });
 
+    it("listenToDoc()'s .then method gets invoked when the document changes", done => {
+      const ref = base.listenToDoc(`${collectionPath}/testDoc`, {
+        context: {},
+        then(data) {
+          expect(data).toEqual(dummyCollection[0]);
+          base.removeBinding(ref);
+          done();
+        }
+      });
+      collectionRef.doc('testDoc').set(dummyCollection[0]);
+    });
+
+    it('listenToDoc() accepts a document reference', done => {
+      const docRef = app
+        .firestore()
+        .collection('testCollection')
+        .doc('testDoc');
+      const ref = base.listenToDoc(docRef, {
+        context: {},
+        then(data) {
+          expect(data).toEqual(dummyCollection[0]);
+          base.removeBinding(ref);
+          done();
+        }
+      });
+      collectionRef.doc('testDoc').set(dummyCollection[0]);
+    });
+
     it("listenToDoc's .onFailure method gets invoked in the component context with error if permissions do not allow read", done => {
       const ref = base.listenToDoc('/readFail/testDoc', {
         context: this,

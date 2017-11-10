@@ -8,9 +8,7 @@ import {
   _addSync,
   _addFirestoreListener,
   _fsUpdateSyncState,
-  _isNestedPath,
-  _getNestedObject,
-  _hasOwnNestedProperty
+  _fsCreateRef
 } from './utils';
 
 export default function _fsSync(document, options, state) {
@@ -27,7 +25,7 @@ export default function _fsSync(document, options, state) {
   options.reactSetState = _fsSync.reactSetState;
 
   const id = _createHash(document, 'syncDoc');
-  const ref = state.db.doc(document);
+  const ref = _fsCreateRef(document, state.db);
   _firebaseRefsMixin(id, ref, state.refs);
   _addFirestoreListener(id, 'syncDoc', options, ref, state.listeners);
   _fsSetUnmountHandler(

@@ -360,6 +360,7 @@ export {
   _isObject,
   _isNestedPath,
   _getNestedObject,
+  _getSegmentCount,
   _hasOwnNestedProperty,
   _addSync,
   _firebaseRefsMixin,

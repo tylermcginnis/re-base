@@ -80,6 +80,28 @@ describe('updateDoc()', function() {
       .catch(err => done.fail(err));
   });
 
+  it('accepts a document reference', done => {
+    const docRef = app
+      .firestore()
+      .collection('testCollection')
+      .doc('doc-1');
+    base
+      .updateDoc(docRef, {
+        name: 'Updated Document'
+      })
+      .then(() => {
+        collectionRef
+          .doc('doc-1')
+          .get()
+          .then(doc => {
+            const data = doc.data();
+            expect(data.name).toEqual('Updated Document');
+            done();
+          });
+      })
+      .catch(err => done.fail(err));
+  });
+
   it('errors on permission fail', done => {
     base
       .updateDoc(`readFail/doc-1`, {

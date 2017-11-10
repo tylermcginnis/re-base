@@ -199,6 +199,37 @@ describe('bindDoc()', function() {
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
+    it('bindDoc() accepts a document reference', done => {
+      const docRef = collectionRef.doc('testDoc');
+      docRef.set(dummyObjData).then(() => {
+        class TestComponent extends React.Component {
+          constructor(props) {
+            super(props);
+            this.state = {
+              data: {}
+            };
+          }
+          componentWillMount() {
+            base.bindDoc(docRef, {
+              context: this,
+              state: 'data'
+            });
+          }
+          componentDidMount() {
+            collectionRef.doc('testDoc').set(dummyObjData);
+          }
+          componentDidUpdate() {
+            expect(this.state.data).toEqual(dummyObjData);
+            done();
+          }
+          render() {
+            return <div>No Data</div>;
+          }
+        }
+        ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+      });
+    });
+
     it('bindDoc should allow multiple components to listen to changes on the same endpoint', done => {
       function cleanUp(done) {
         ReactDOM.unmountComponentAtNode(document.getElementById('div1'));
