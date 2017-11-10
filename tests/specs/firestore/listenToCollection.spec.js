@@ -122,6 +122,19 @@ describe('listenToCollection()', function() {
       });
     });
 
+    it('listenToCollection() accepts a collection reference', done => {
+      const testRef = app.firestore().collection('testCollection');
+      const ref = base.listenToCollection(testRef, {
+        context: {},
+        then(data) {
+          expect(data).toEqual([dummyCollection[0]]);
+          base.removeBinding(ref);
+          done();
+        }
+      });
+      collectionRef.doc('testDoc').set(dummyCollection[0]);
+    });
+
     it('listenToCollection embeds document reference if withRefs is true', done => {
       const ref = base.listenToCollection(`${collectionPath}`, {
         context: {},

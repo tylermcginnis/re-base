@@ -1,13 +1,13 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
+		module.exports = factory(require("firebase/app"));
 	else if(typeof define === 'function' && define.amd)
-		define([], factory);
+		define(["firebase/app"], factory);
 	else {
-		var a = factory();
+		var a = typeof exports === 'object' ? factory(require("firebase/app")) : factory(root["firebase/app"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(this, function() {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_6__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -67,31 +67,31 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _validators = __webpack_require__(5);
 
-	var _push2 = __webpack_require__(6);
+	var _push2 = __webpack_require__(7);
 
 	var _push3 = _interopRequireDefault(_push2);
 
-	var _fetch2 = __webpack_require__(7);
+	var _fetch2 = __webpack_require__(8);
 
 	var _fetch3 = _interopRequireDefault(_fetch2);
 
-	var _post2 = __webpack_require__(8);
+	var _post2 = __webpack_require__(9);
 
 	var _post3 = _interopRequireDefault(_post2);
 
-	var _sync2 = __webpack_require__(9);
+	var _sync2 = __webpack_require__(10);
 
 	var _sync3 = _interopRequireDefault(_sync2);
 
-	var _bind2 = __webpack_require__(10);
+	var _bind2 = __webpack_require__(11);
 
 	var _bind3 = _interopRequireDefault(_bind2);
 
-	var _update2 = __webpack_require__(11);
+	var _update2 = __webpack_require__(12);
 
 	var _update3 = _interopRequireDefault(_update2);
 
-	var _reset2 = __webpack_require__(12);
+	var _reset2 = __webpack_require__(13);
 
 	var _reset3 = _interopRequireDefault(_reset2);
 
@@ -99,11 +99,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _removeBinding3 = _interopRequireDefault(_removeBinding2);
 
-	var _remove2 = __webpack_require__(13);
+	var _remove2 = __webpack_require__(14);
 
 	var _remove3 = _interopRequireDefault(_remove2);
 
-	var _fsSync2 = __webpack_require__(14);
+	var _fsSync2 = __webpack_require__(15);
 
 	var _fsSync3 = _interopRequireDefault(_fsSync2);
 
@@ -111,31 +111,31 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _fsRemoveBinding3 = _interopRequireDefault(_fsRemoveBinding2);
 
-	var _fsBind2 = __webpack_require__(15);
+	var _fsBind2 = __webpack_require__(16);
 
 	var _fsBind3 = _interopRequireDefault(_fsBind2);
 
-	var _fsGet2 = __webpack_require__(16);
+	var _fsGet2 = __webpack_require__(17);
 
 	var _fsGet3 = _interopRequireDefault(_fsGet2);
 
-	var _fsRemoveDoc2 = __webpack_require__(17);
+	var _fsRemoveDoc2 = __webpack_require__(18);
 
 	var _fsRemoveDoc3 = _interopRequireDefault(_fsRemoveDoc2);
 
-	var _fsAddToCollection2 = __webpack_require__(18);
+	var _fsAddToCollection2 = __webpack_require__(19);
 
 	var _fsAddToCollection3 = _interopRequireDefault(_fsAddToCollection2);
 
-	var _fsRemoveFromCollection2 = __webpack_require__(19);
+	var _fsRemoveFromCollection2 = __webpack_require__(20);
 
 	var _fsRemoveFromCollection3 = _interopRequireDefault(_fsRemoveFromCollection2);
 
-	var _fsUpdateDoc2 = __webpack_require__(20);
+	var _fsUpdateDoc2 = __webpack_require__(21);
 
 	var _fsUpdateDoc3 = _interopRequireDefault(_fsUpdateDoc2);
 
-	var _fsReset2 = __webpack_require__(21);
+	var _fsReset2 = __webpack_require__(22);
 
 	var _fsReset3 = _interopRequireDefault(_fsReset2);
 
@@ -299,7 +299,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports._fsSetUnmountHandler = exports._setData = exports._handleError = exports._createNestedObject = exports._setUnmountHandler = exports._addFirestoreListener = exports._addListener = exports._fsUpdateSyncState = exports._updateSyncState = exports._firebaseRefsMixin = exports._addSync = exports._hasOwnNestedProperty = exports._getNestedObject = exports._isNestedPath = exports._isObject = exports._isValid = exports._toArray = exports._fsPrepareData = exports._prepareData = exports._throwError = exports._setState = exports._returnRef = exports._addFirestoreQuery = exports._addQueries = exports._getSegmentCount = exports._createHash = undefined;
+	exports._fsCreateRef = exports._fsSetUnmountHandler = exports._setData = exports._handleError = exports._createNestedObject = exports._setUnmountHandler = exports._addFirestoreListener = exports._addListener = exports._fsUpdateSyncState = exports._updateSyncState = exports._firebaseRefsMixin = exports._addSync = exports._hasOwnNestedProperty = exports._getSegmentCount = exports._getNestedObject = exports._isNestedPath = exports._isObject = exports._isValid = exports._toArray = exports._fsPrepareData = exports._prepareData = exports._throwError = exports._setState = exports._returnRef = exports._addFirestoreQuery = exports._addQueries = exports._createHash = undefined;
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
@@ -657,8 +657,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return options.state ? _defineProperty({}, options.state, collection) : collection;
 	};
 
+	var _fsCreateRef = function _fsCreateRef(pathOrRef, db) {
+	  if ((typeof pathOrRef === 'undefined' ? 'undefined' : _typeof(pathOrRef)) === 'object') {
+	    return pathOrRef;
+	  }
+	  var segmentCount = _getSegmentCount(pathOrRef);
+	  var ref;
+	  if (segmentCount % 2 === 0) {
+	    ref = db.doc(pathOrRef);
+	  } else {
+	    ref = db.collection(pathOrRef);
+	  }
+	  return ref;
+	};
+
 	exports._createHash = _createHash;
-	exports._getSegmentCount = _getSegmentCount;
 	exports._addQueries = _addQueries;
 	exports._addFirestoreQuery = _addFirestoreQuery;
 	exports._returnRef = _returnRef;
@@ -671,6 +684,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports._isObject = _isObject;
 	exports._isNestedPath = _isNestedPath;
 	exports._getNestedObject = _getNestedObject;
+	exports._getSegmentCount = _getSegmentCount;
 	exports._hasOwnNestedProperty = _hasOwnNestedProperty;
 	exports._addSync = _addSync;
 	exports._firebaseRefsMixin = _firebaseRefsMixin;
@@ -683,6 +697,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports._handleError = _handleError;
 	exports._setData = _setData;
 	exports._fsSetUnmountHandler = _fsSetUnmountHandler;
+	exports._fsCreateRef = _fsCreateRef;
 
 /***/ }),
 /* 3 */
@@ -779,6 +794,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils = __webpack_require__(2);
 
+	var _app = __webpack_require__(6);
+
+	var _app2 = _interopRequireDefault(_app);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 	var optionValidators = {
 	  notObject: function notObject(options) {
 	    if (!(0, _utils._isObject)(options)) {
@@ -833,6 +854,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	var _validateEndpoint = function _validateEndpoint(endpoint) {
+	  if (_app2.default.firestore) {
+	    var _firebase$firestore = _app2.default.firestore,
+	        DocumentReference = _firebase$firestore.DocumentReference,
+	        CollectionReference = _firebase$firestore.CollectionReference;
+
+	    if ((typeof endpoint === 'undefined' ? 'undefined' : _typeof(endpoint)) === 'object') {
+	      if (endpoint instanceof DocumentReference || endpoint instanceof CollectionReference) {
+	        return;
+	      }
+	    }
+	  }
 	  var defaultError = 'The Firebase endpoint you are trying to listen to';
 	  var errorMsg;
 	  if (typeof endpoint !== 'string') {
@@ -862,14 +894,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	var _validateDocumentPath = function _validateDocumentPath(path) {
-	  var defaultError = 'Invalid document path.';
+	  var DocumentReference = _app2.default.firestore.DocumentReference;
+
+	  if ((typeof path === 'undefined' ? 'undefined' : _typeof(path)) === 'object' && path instanceof DocumentReference) return;
+	  var defaultError = 'Invalid document path or reference.';
 	  if (typeof path !== 'string') (0, _utils._throwError)(defaultError, 'INVALID_ENDPOINT');
 	  var segmentCount = (0, _utils._getSegmentCount)(path);
 	  if (segmentCount % 2 !== 0) (0, _utils._throwError)(defaultError, 'INVALID_ENDPOINT');
 	};
 
 	var _validateCollectionPath = function _validateCollectionPath(path) {
-	  var defaultError = 'Invalid collection path.';
+	  var CollectionReference = _app2.default.firestore.CollectionReference;
+
+	  if ((typeof path === 'undefined' ? 'undefined' : _typeof(path)) === 'object' && path instanceof CollectionReference) return;
+	  var defaultError = 'Invalid collection path or reference.';
 	  if (typeof path !== 'string') (0, _utils._throwError)(defaultError, 'INVALID_ENDPOINT');
 	  var segmentCount = (0, _utils._getSegmentCount)(path);
 	  if (segmentCount % 2 === 0) (0, _utils._throwError)(defaultError, 'INVALID_ENDPOINT');
@@ -883,6 +921,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ }),
 /* 6 */
+/***/ (function(module, exports) {
+
+	module.exports = __WEBPACK_EXTERNAL_MODULE_6__;
+
+/***/ }),
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -908,7 +952,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -945,7 +989,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -969,7 +1013,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1071,7 +1115,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1103,7 +1147,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1127,7 +1171,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -1147,7 +1191,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports) {
 
 	"use strict";
@@ -1161,7 +1205,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1189,7 +1233,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  options.reactSetState = _fsSync.reactSetState;
 
 	  var id = (0, _utils._createHash)(document, 'syncDoc');
-	  var ref = state.db.doc(document);
+	  var ref = (0, _utils._fsCreateRef)(document, state.db);
 	  (0, _utils._firebaseRefsMixin)(id, ref, state.refs);
 	  (0, _utils._addFirestoreListener)(id, 'syncDoc', options, ref, state.listeners);
 	  (0, _utils._fsSetUnmountHandler)(options.context, id, state.refs, state.listeners, state.syncs);
@@ -1250,7 +1294,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1266,6 +1310,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _fsBind(path, options, invoker, state) {
 	  _validators.optionValidators.context(options);
+	  options.then && (options.then.called = false);
 	  if (invoker === 'bindDoc') {
 	    (0, _validators._validateDocumentPath)(path);
 	  }
@@ -1281,17 +1326,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    (0, _validators._validateCollectionPath)(path);
 	    _validators.optionValidators.then(options);
 	  }
-
-	  options.then && (options.then.called = false);
-
+	  var ref = (0, _utils._fsCreateRef)(path, state.db);
 	  var id = (0, _utils._createHash)(path, invoker);
-	  var segmentCount = (0, _utils._getSegmentCount)(path);
-	  var ref;
-	  if (segmentCount % 2 === 0) {
-	    ref = state.db.doc(path);
-	  } else {
-	    ref = state.db.collection(path);
-	  }
 	  (0, _utils._firebaseRefsMixin)(id, ref, state.refs);
 	  (0, _utils._addFirestoreListener)(id, invoker, options, ref, state.listeners);
 	  (0, _utils._fsSetUnmountHandler)(options.context, id, state.refs, state.listeners, state.syncs);
@@ -1299,7 +1335,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1318,15 +1354,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var db = arguments[2];
 
 	  (0, _validators._validateEndpoint)(endpoint);
-	  var segmentCount = (0, _utils._getSegmentCount)(endpoint);
-	  var isCollection = segmentCount % 2 !== 0;
-	  var ref;
-	  if (isCollection) {
-	    ref = db.collection(endpoint);
-	    ref = (0, _utils._addFirestoreQuery)(ref, options.query);
-	  } else {
-	    ref = db.doc(endpoint);
-	  }
+	  var ref = (0, _utils._fsCreateRef)(endpoint, db);
+	  //check if ref is a collection
+	  var isCollection = !!ref.add;
+	  ref = (0, _utils._addFirestoreQuery)(ref, options.query);
 	  return ref.get().then(function (snapshot) {
 	    if (isCollection && !snapshot.empty || !isCollection && snapshot.exists) {
 	      return (0, _utils._fsPrepareData)(snapshot, options, isCollection);
@@ -1334,20 +1365,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return Promise.reject(new Error('No Result'));
 	    }
 	  });
-	}
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = _fsRemoveDoc;
-	function _fsRemoveDoc(path, db) {
-	  return db.doc(path).delete();
 	}
 
 /***/ }),
@@ -1359,20 +1376,41 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.default = _fsAddToCollection;
+	exports.default = _fsRemoveDoc;
 
-	var _validators = __webpack_require__(5);
+	var _utils = __webpack_require__(2);
 
-	function _fsAddToCollection(path, doc, db, key) {
-	  (0, _validators._validateCollectionPath)(path);
-	  if (key) {
-	    return db.collection(path).doc(key).set(doc);
-	  }
-	  return db.collection(path).add(doc);
+	function _fsRemoveDoc(path, db) {
+	  var ref = (0, _utils._fsCreateRef)(path, db);
+	  return ref.delete();
 	}
 
 /***/ }),
 /* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = _fsAddToCollection;
+
+	var _validators = __webpack_require__(5);
+
+	var _utils = __webpack_require__(2);
+
+	function _fsAddToCollection(path, doc, db, key) {
+	  (0, _validators._validateCollectionPath)(path);
+	  var ref = (0, _utils._fsCreateRef)(path, db);
+	  if (key) {
+	    return ref.doc(key).set(doc);
+	  }
+	  return ref.add(doc);
+	}
+
+/***/ }),
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1390,7 +1428,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
 	  (0, _validators._validateCollectionPath)(path);
-	  var ref = db.collection(path);
+	  var ref = (0, _utils._fsCreateRef)(path, db);
 	  ref = (0, _utils._addFirestoreQuery)(ref, options.query);
 	  return ref.get().then(function (snapshot) {
 	    if (!snapshot.empty) {
@@ -1404,7 +1442,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1416,13 +1454,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _validators = __webpack_require__(5);
 
+	var _utils = __webpack_require__(2);
+
 	function _fsUpdateDoc(document, data, db) {
 	  (0, _validators._validateDocumentPath)(document);
-	  return db.doc(document).update(data);
+	  var ref = (0, _utils._fsCreateRef)(document, db);
+	  return ref.update(data);
 	}
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports) {
 
 	"use strict";

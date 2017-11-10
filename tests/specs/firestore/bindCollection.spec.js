@@ -194,6 +194,65 @@ describe('bindCollection()', function() {
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
+    it('bindCollection() properly updates the local state property when the collection changes', done => {
+      class TestComponent extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            data: []
+          };
+        }
+        componentWillMount() {
+          base.bindCollection(`${collectionPath}`, {
+            context: this,
+            state: 'data'
+          });
+        }
+        componentDidMount() {
+          seedCollection().then(() => {
+            setTimeout(() => {
+              expect(this.state.data.length).toEqual(5);
+              done();
+            }, 500);
+          });
+        }
+        render() {
+          return <div>No Data</div>;
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
+
+    it('bindCollection() accepts collection reference', done => {
+      const testRef = app.firestore().collection('testCollection');
+      class TestComponent extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            data: []
+          };
+        }
+        componentWillMount() {
+          base.bindCollection(testRef, {
+            context: this,
+            state: 'data'
+          });
+        }
+        componentDidMount() {
+          seedCollection().then(() => {
+            setTimeout(() => {
+              expect(this.state.data.length).toEqual(5);
+              done();
+            }, 500);
+          });
+        }
+        render() {
+          return <div>No Data</div>;
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
+
     it('bindCollection() returns documents with embedded refrence if options.withRefs is true', done => {
       class TestComponent extends React.Component {
         constructor(props) {

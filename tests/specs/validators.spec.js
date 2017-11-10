@@ -1,4 +1,4 @@
-fdescribe('Validators', () => {
+describe('Validators', () => {
   const {
     optionValidators,
     _validateEndpoint,

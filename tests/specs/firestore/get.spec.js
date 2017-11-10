@@ -159,6 +159,17 @@ describe('get()', function() {
         .catch(err => done.fail(err));
     });
 
+    it('get() accepts a collection reference', done => {
+      const testRef = app.firestore().collection('testCollection');
+      base
+        .get(testRef)
+        .then(data => {
+          expect(data[0].name).toEqual(dummyCollection[0].name);
+          done();
+        })
+        .catch(err => done.fail(err));
+    });
+
     it('get() rejects Promise when read fails or is denied', done => {
       base
         .get('/readFail')

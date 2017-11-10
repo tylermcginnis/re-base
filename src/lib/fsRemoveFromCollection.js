@@ -1,9 +1,9 @@
 import { _validateCollectionPath } from './validators';
-import { _addFirestoreQuery } from './utils';
+import { _addFirestoreQuery, _fsCreateRef } from './utils';
 
 export default function _fsRemoveFromCollection(path, db, options = {}) {
   _validateCollectionPath(path);
-  let ref = db.collection(path);
+  let ref = _fsCreateRef(path, db);
   ref = _addFirestoreQuery(ref, options.query);
   return ref.get().then(snapshot => {
     if (!snapshot.empty) {

@@ -95,6 +95,26 @@ describe('removeCollection()', function() {
       .catch(err => done.fail(err));
   });
 
+  it('accepts a collection reference', done => {
+    const testRef = app.firestore().collection('testCollection');
+    base
+      .removeFromCollection(testRef, {
+        query: ref =>
+          ref
+            .where('id', '<', 5)
+            .where('id', '>', 2)
+            .orderBy('id')
+      })
+      .then(() => {
+        collectionRef.get().then(snapshot => {
+          expect(snapshot.empty).toBe(false);
+          expect(snapshot.docs.length).toBe(3);
+          done();
+        });
+      })
+      .catch(err => done.fail(err));
+  });
+
   it('is a noop if no documents match query', done => {
     base
       .removeFromCollection(collectionPath, {

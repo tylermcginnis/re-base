@@ -82,13 +82,15 @@ const optionValidators = {
 };
 
 const _validateEndpoint = function(endpoint) {
-  const { DocumentReference, CollectionReference } = firebase.firestore;
-  if (typeof endpoint === 'object') {
-    if (
-      endpoint instanceof DocumentReference ||
-      endpoint instanceof CollectionReference
-    ) {
-      return;
+  if (firebase.firestore) {
+    const { DocumentReference, CollectionReference } = firebase.firestore;
+    if (typeof endpoint === 'object') {
+      if (
+        endpoint instanceof DocumentReference ||
+        endpoint instanceof CollectionReference
+      ) {
+        return;
+      }
     }
   }
   var defaultError = 'The Firebase endpoint you are trying to listen to';

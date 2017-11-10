@@ -79,6 +79,19 @@ describe('addToCollection()', function() {
       .catch(err => done.fail(err));
   });
 
+  it('accepts a collection reference', done => {
+    const testRef = app.firestore().collection('testCollection');
+    collectionRef.onSnapshot(snap => {
+      if (!snap.empty) {
+        expect(snap.docs[0].id).toEqual('my-id');
+        done();
+      }
+    });
+    base
+      .addToCollection(testRef, dummyCollection[0], 'my-id')
+      .catch(err => done.fail(err));
+  });
+
   it('rejects on permissions error', done => {
     base
       .addToCollection('writeFail', dummyCollection[0], 'my-id')
