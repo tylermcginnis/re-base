@@ -91,3 +91,10 @@ exports.mockDoc = unsubscribeSpy => ({
   add() {},
   doc() {}
 });
+
+exports.mockFirestore = (docSpy, collectionSpy) => {
+  return {
+    doc: docSpy,
+    collection: collectionSpy
+  };
+};

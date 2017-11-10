@@ -8,7 +8,8 @@ const {
   mockCollection,
   mockDoc,
   mockFirestoreDocumentSnapshot,
-  mockFirestoreQuerySnapshot
+  mockFirestoreQuerySnapshot,
+  mockFirestore
 } = require('../helpers');
 
 describe('utils', () => {
@@ -826,6 +827,42 @@ describe('utils', () => {
       const result1 = utils._createHash('endpoint', 'bindToState');
       const result2 = utils._createHash('endpoint', 'bindToState');
       expect(result1).not.toEqual(result2);
+    });
+  });
+
+  describe('_fsCreateRef', () => {
+    it('should create document reference when supplied a document path', () => {
+      const docSpy = jasmine.createSpy();
+      const collectionSpy = jasmine.createSpy();
+      const result = utils._fsCreateRef(
+        'testCollection/testDoc',
+        mockFirestore(docSpy, collectionSpy)
+      );
+      expect(docSpy.calls.count()).toEqual(1);
+      expect(collectionSpy.calls.count()).toEqual(0);
+    });
+
+    it('should create collection reference when supplied a collection path', () => {
+      const docSpy = jasmine.createSpy();
+      const collectionSpy = jasmine.createSpy();
+      const result = utils._fsCreateRef(
+        'testCollection',
+        mockFirestore(docSpy, collectionSpy)
+      );
+      expect(docSpy.calls.count()).toEqual(0);
+      expect(collectionSpy.calls.count()).toEqual(1);
+    });
+
+    it('should return the object if supplied an object', () => {
+      const docSpy = jasmine.createSpy();
+      const collectionSpy = jasmine.createSpy();
+      const result = utils._fsCreateRef(
+        {},
+        mockFirestore(docSpy, collectionSpy)
+      );
+      expect(docSpy.calls.count()).toEqual(0);
+      expect(collectionSpy.calls.count()).toEqual(0);
+      expect(result).toEqual({});
     });
   });
 });

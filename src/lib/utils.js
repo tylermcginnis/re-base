@@ -332,9 +332,22 @@ const _fsPrepareData = function(snapshot, options, isCollection = false) {
   return options.state ? { [options.state]: collection } : collection;
 };
 
+const _fsCreateRef = function(pathOrRef, db) {
+  if (typeof pathOrRef === 'object') {
+    return pathOrRef;
+  }
+  const segmentCount = _getSegmentCount(pathOrRef);
+  var ref;
+  if (segmentCount % 2 === 0) {
+    ref = db.doc(pathOrRef);
+  } else {
+    ref = db.collection(pathOrRef);
+  }
+  return ref;
+};
+
 export {
   _createHash,
-  _getSegmentCount,
   _addQueries,
   _addFirestoreQuery,
   _returnRef,
@@ -358,5 +371,6 @@ export {
   _createNestedObject,
   _handleError,
   _setData,
-  _fsSetUnmountHandler
+  _fsSetUnmountHandler,
+  _fsCreateRef
 };
