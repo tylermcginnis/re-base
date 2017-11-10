@@ -16,14 +16,22 @@ var externals = {
     }
   },
   firebase: {
-    'firebase': {
+    firebase: {
       root: 'firebase',
       commonjs2: 'firebase',
       commonjs: 'firebase',
       amd: 'firebase'
     }
+  },
+  firestore: {
+    'firebase/firestore': {
+      root: 'firebase/firestore',
+      commonjs2: 'firebase/firestore',
+      commonjs: 'firebase/firestore',
+      amd: 'firebase/firestore'
+    }
   }
-}
+};
 
 var loaders = [
   {
@@ -36,16 +44,16 @@ var loaders = [
   }
 ];
 
-module.exports = [{
-  entry: ['./src/rebase.js'],
-  output: {
-    filename: "dist/bundle.js",
-    libraryTarget: 'umd'
-  },
-  externals: [
-    externals.app, externals.database, externals.firebase
-  ],
-  module: {
-    loaders: loaders
+module.exports = [
+  {
+    entry: ['./src/rebase.js'],
+    output: {
+      filename: 'dist/bundle.js',
+      libraryTarget: 'umd'
+    },
+    externals: [externals.app, externals.database, externals.firebase],
+    module: {
+      loaders: loaders
+    }
   }
-}];
+];
