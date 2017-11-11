@@ -1,0 +1,7 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+   match /testCollection/{doc} {
+   		allow read, write;
+   }
+  }
+}
