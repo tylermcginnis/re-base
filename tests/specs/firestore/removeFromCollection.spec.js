@@ -115,6 +115,18 @@ describe('removeCollection()', function() {
       .catch(err => done.fail(err));
   });
 
+  it('rejects if you dont have write permissions', done => {
+    base
+      .removeFromCollection('writeFail')
+      .then(() => {
+        done.fail('promise should reject');
+      })
+      .catch(err => {
+        expect(err).not.toBeNull();
+        done();
+      });
+  });
+
   it('is a noop if no documents match query', done => {
     base
       .removeFromCollection(collectionPath, {
