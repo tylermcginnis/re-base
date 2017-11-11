@@ -180,12 +180,12 @@ describe('bindCollection()', function() {
           });
         }
         componentDidMount() {
-          seedCollection().then(() => {
-            setTimeout(() => {
-              expect(this.state.data.length).toEqual(5);
-              done();
-            }, 500);
-          });
+          seedCollection();
+        }
+        componentDidUpdate() {
+          if (this.state.data.length === 5) {
+            done();
+          }
         }
         render() {
           return <div>No Data</div>;
@@ -209,12 +209,12 @@ describe('bindCollection()', function() {
           });
         }
         componentDidMount() {
-          seedCollection().then(() => {
-            setTimeout(() => {
-              expect(this.state.data.length).toEqual(5);
-              done();
-            }, 500);
-          });
+          seedCollection();
+        }
+        componentDidUpdate() {
+          if (this.state.data.length === 5) {
+            done();
+          }
         }
         render() {
           return <div>No Data</div>;
@@ -239,12 +239,12 @@ describe('bindCollection()', function() {
           });
         }
         componentDidMount() {
-          seedCollection().then(() => {
-            setTimeout(() => {
-              expect(this.state.data.length).toEqual(5);
-              done();
-            }, 500);
-          });
+          seedCollection();
+        }
+        componentDidUpdate() {
+          if (this.state.data.length === 5) {
+            done();
+          }
         }
         render() {
           return <div>No Data</div>;
@@ -329,13 +329,13 @@ describe('bindCollection()', function() {
           });
         }
         componentDidMount() {
-          seedCollection().then(() => {
-            setTimeout(() => {
-              expect(this.state.data.length).toEqual(1);
-              expect(this.state.data[0].name).toEqual('Document 1');
-              done();
-            }, 500);
-          });
+          seedCollection();
+        }
+        componentDidUpdate() {
+          if (this.state.data.length === 1) {
+            expect(this.state.data[0].name).toEqual('Document 1');
+            done();
+          }
         }
         render() {
           return <div>No Data</div>;
@@ -364,14 +364,14 @@ describe('bindCollection()', function() {
           });
         }
         componentDidMount() {
-          seedCollection().then(() => {
-            setTimeout(() => {
-              expect(this.state.data.length).toEqual(2);
-              expect(this.state.data[0].name).toEqual('Document 3');
-              expect(this.state.data[1].name).toEqual('Document 4');
-              done();
-            }, 500);
-          });
+          seedCollection();
+        }
+        componentDidUpdate() {
+          if (this.state.data.length === 2) {
+            expect(this.state.data[0].name).toEqual('Document 3');
+            expect(this.state.data[1].name).toEqual('Document 4');
+            done();
+          }
         }
         render() {
           return <div>No Data</div>;
@@ -441,15 +441,15 @@ describe('bindCollection()', function() {
           });
         }
         componentDidMount() {
-          seedCollection().then(() => {
-            setTimeout(() => {
-              expect(this.state.data.length).toEqual(5);
-              component2DidUpdate = true;
-              if (component1DidUpdate && component2DidUpdate) {
-                cleanUp(done);
-              }
-            }, 200);
-          });
+          seedCollection();
+        }
+        componentDidUpdate() {
+          if (this.state.data.length === 5) {
+            component2DidUpdate = true;
+            if (component1DidUpdate && component2DidUpdate) {
+              cleanUp(done);
+            }
+          }
         }
         render() {
           return <div />;
