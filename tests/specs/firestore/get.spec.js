@@ -135,16 +135,6 @@ describe('get()', function() {
         .catch(err => done.fail(err));
     });
 
-    it('get() resolves with a document', done => {
-      base
-        .get(`${collectionPath}/doc-1`)
-        .then(data => {
-          expect(data.name).toEqual(dummyCollection[0].name);
-          done();
-        })
-        .catch(err => done.fail(err));
-    });
-
     it('get() accepts a document reference', done => {
       const docRef = app
         .firestore()
