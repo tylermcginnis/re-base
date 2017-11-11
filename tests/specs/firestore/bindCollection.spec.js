@@ -431,7 +431,7 @@ describe('bindCollection()', function() {
         constructor(props) {
           super(props);
           this.state = {
-            data: {}
+            data: []
           };
         }
         componentWillMount() {
