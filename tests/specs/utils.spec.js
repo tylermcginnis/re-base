@@ -4,7 +4,12 @@ const {
   mockRefs,
   mockListeners,
   mockRef,
-  mockSync
+  mockSync,
+  mockCollection,
+  mockDoc,
+  mockFirestoreDocumentSnapshot,
+  mockFirestoreQuerySnapshot,
+  mockFirestore
 } = require('../helpers');
 
 describe('utils', () => {
@@ -47,6 +52,13 @@ describe('utils', () => {
       var result = utils._toArray(snapshot);
       expect(result.length).toEqual(1);
       expect(result[0]).toEqual({ key1: { nKey1: 'value' }, key: 'key1' });
+    });
+
+    it('should return an array from a snapshot that is a scalar value', () => {
+      var snapshot = mockSnapshot(5);
+      var result = utils._toArray(snapshot);
+      expect(result.length).toEqual(1);
+      expect(result[0]).toEqual(5);
     });
   });
 
@@ -144,6 +156,18 @@ describe('utils', () => {
       var result = utils._getNestedObject(fakeObj, 'foo.bar.nope');
       expect(result).toBeUndefined();
     });
+
+    it('should be a noop if not a nested path', () => {
+      var fakeObj = {};
+      var result = utils._getNestedObject(fakeObj, 'foo');
+      expect(result).toBeUndefined();
+    });
+
+    it('should be a noop if not a nested obj', () => {
+      var fakeObj = {};
+      var result = utils._getNestedObject(fakeObj, 'foo.bar.nope');
+      expect(result).toBeUndefined();
+    });
   });
 
   describe('_hasOwnNestedProperty', () => {
@@ -229,6 +253,130 @@ describe('utils', () => {
     });
   });
 
+  describe('_fsPrepareData()', () => {
+    it('should return object keyed with options.state', () => {
+      var snapshot = mockFirestoreDocumentSnapshot({
+        key1: 'value',
+        key2: 'value',
+        key3: 'value'
+      });
+      var options = {
+        state: 'prop'
+      };
+      var result = utils._fsPrepareData(snapshot, options);
+      expect(result.hasOwnProperty('prop')).toBe(true);
+      expect(result.prop).toEqual({
+        key1: 'value',
+        key2: 'value',
+        key3: 'value'
+      });
+    });
+
+    it('should return object with embedded ref if options.withRefs is true', () => {
+      var snapshot = mockFirestoreDocumentSnapshot({
+        key1: 'value',
+        key2: 'value',
+        key3: 'value'
+      });
+      var options = {
+        state: 'prop',
+        withRefs: true
+      };
+      var result = utils._fsPrepareData(snapshot, options);
+      expect(result.hasOwnProperty('prop')).toBe(true);
+      expect(result.prop).toEqual({
+        key1: 'value',
+        key2: 'value',
+        key3: 'value',
+        ref: { _id: 'something' }
+      });
+    });
+
+    it('should return object with embedded id if options.withIds is true', () => {
+      var snapshot = mockFirestoreDocumentSnapshot({
+        key1: 'value',
+        key2: 'value',
+        key3: 'value'
+      });
+      var options = {
+        state: 'prop',
+        withIds: true
+      };
+      var result = utils._fsPrepareData(snapshot, options);
+      expect(result.hasOwnProperty('prop')).toBe(true);
+      expect(result.prop).toEqual({
+        key1: 'value',
+        key2: 'value',
+        key3: 'value',
+        id: '12345'
+      });
+    });
+
+    it('should return an object with collection keyed with options.state if isCollection is true', () => {
+      var snapshot = mockFirestoreQuerySnapshot([
+        mockFirestoreDocumentSnapshot({
+          key1: 'value',
+          key2: 'value',
+          key3: 'value'
+        })
+      ]);
+      var options = {
+        state: 'prop'
+      };
+      var result = utils._fsPrepareData(snapshot, options, true);
+      expect(result.prop.length).toEqual(1);
+      expect(result.prop[0]).toEqual({
+        key1: 'value',
+        key2: 'value',
+        key3: 'value'
+      });
+    });
+
+    it('should return collection of documents with embedded ref if options.withRefs is true', () => {
+      var snapshot = mockFirestoreQuerySnapshot([
+        mockFirestoreDocumentSnapshot({
+          key1: 'value',
+          key2: 'value',
+          key3: 'value'
+        })
+      ]);
+      var options = {
+        state: 'prop',
+        withRefs: true
+      };
+      var result = utils._fsPrepareData(snapshot, options, true);
+      expect(result.prop.length).toEqual(1);
+      expect(result.prop[0]).toEqual({
+        key1: 'value',
+        key2: 'value',
+        key3: 'value',
+        ref: { _id: 'something' }
+      });
+    });
+
+    it('should return collection of documents with embedded id if options.withIds is true', () => {
+      var snapshot = mockFirestoreQuerySnapshot([
+        mockFirestoreDocumentSnapshot({
+          key1: 'value',
+          key2: 'value',
+          key3: 'value'
+        })
+      ]);
+      var options = {
+        state: 'prop',
+        withIds: true
+      };
+      var result = utils._fsPrepareData(snapshot, options, true);
+      expect(result.prop.length).toEqual(1);
+      expect(result.prop[0]).toEqual({
+        key1: 'value',
+        key2: 'value',
+        key3: 'value',
+        id: '12345'
+      });
+    });
+  });
+
   describe('_addSync', () => {
     it('should add a new sync to list of syncs for that context', () => {
       var syncs = mockSyncs();
@@ -285,7 +433,8 @@ describe('utils', () => {
         'orderByChild',
         'startAt',
         'endAt',
-        'equalTo'
+        'equalTo',
+        'orderByPriority'
       ]);
       ref.limitToFirst.and.returnValue(ref);
       ref.limitToLast.and.returnValue(ref);
@@ -299,7 +448,8 @@ describe('utils', () => {
         startAt: 4,
         endAt: 1,
         orderByChild: 'value',
-        limitToFirst: 3
+        limitToFirst: 3,
+        orderByPriority: true
       };
       utils._addQueries(ref, queries);
       expect(ref.limitToLast).toHaveBeenCalledWith(10);
@@ -308,6 +458,45 @@ describe('utils', () => {
       expect(ref.limitToFirst).toHaveBeenCalledWith(3);
       expect(ref.startAt).toHaveBeenCalledWith(4);
       expect(ref.endAt).toHaveBeenCalledWith(1);
+    });
+  });
+
+  describe('_addFirestoreQuery', () => {
+    it('should add valid queries to the ref', () => {
+      var ref = jasmine.createSpyObj([
+        'endAt',
+        'endBefore',
+        'limit',
+        'orderBy',
+        'startAt',
+        'startAfter',
+        'where'
+      ]);
+      ref.endAt.and.returnValue(ref);
+      ref.endBefore.and.returnValue(ref);
+      ref.limit.and.returnValue(ref);
+      ref.orderBy.and.returnValue(ref);
+      ref.startAt.and.returnValue(ref);
+      ref.where.and.returnValue(ref);
+      ref.startAfter.and.returnValue(ref);
+      const query = ref => {
+        return ref
+          .endAt({})
+          .startAt({})
+          .where('key', '==', 'value')
+          .limit(5)
+          .orderBy('key')
+          .endBefore({})
+          .startAfter({});
+      };
+      utils._addFirestoreQuery(ref, query);
+      expect(ref.endAt).toHaveBeenCalledWith({});
+      expect(ref.startAt).toHaveBeenCalledWith({});
+      expect(ref.endBefore).toHaveBeenCalledWith({});
+      expect(ref.startAfter).toHaveBeenCalledWith({});
+      expect(ref.where).toHaveBeenCalledWith('key', '==', 'value');
+      expect(ref.orderBy).toHaveBeenCalledWith('key');
+      expect(ref.limit).toHaveBeenCalledWith(5);
     });
   });
 
@@ -419,6 +608,108 @@ describe('utils', () => {
     });
   });
 
+  describe('_fsSetUnmountHandler', () => {
+    it('should call supplied componentWillUnmount in the correct context', () => {
+      var cleanUpSpy = jasmine.createSpy('cleanUp');
+      var listeners = mockListeners();
+      var refs = mockRefs();
+      var syncs = mockSyncs();
+      var id = 1234;
+      var context = {
+        componentWillUnmount() {
+          cleanUpSpy(this.value);
+        },
+        value: 10
+      };
+      utils._fsSetUnmountHandler(context, id, refs, listeners, syncs);
+      context.componentWillUnmount();
+      expect(cleanUpSpy).toHaveBeenCalledWith(10);
+    });
+
+    it('should call listener unsubscribe 3 times when the component unmounts', () => {
+      var cleanUpSpy = jasmine.createSpy('cleanUpOne');
+      var unsubscribeSpy = jasmine.createSpy();
+      var listeners = mockListeners([
+        [1234, unsubscribeSpy],
+        [2345, unsubscribeSpy],
+        [3456, unsubscribeSpy]
+      ]);
+      var refs = mockRefs();
+      var syncs = mockSyncs();
+      var ids = [1234, 2345, 3456];
+      var context = {
+        componentWillUnmount() {
+          cleanUpSpy(this.value);
+        }
+      };
+      utils._fsSetUnmountHandler(context, ids[0], refs, listeners, syncs);
+      utils._fsSetUnmountHandler(context, ids[1], refs, listeners, syncs);
+      utils._fsSetUnmountHandler(context, ids[2], refs, listeners, syncs);
+      context.componentWillUnmount();
+      expect(cleanUpSpy.calls.count()).toEqual(1);
+      expect(unsubscribeSpy.calls.count()).toEqual(3);
+    });
+
+    it('should call listeners.delete 3 times when the component unmounts', () => {
+      var unsubscribeSpy = jasmine.createSpy();
+      var mockedDoc = mockDoc(unsubscribeSpy);
+      var listeners = mockListeners([
+        [1234, unsubscribeSpy],
+        [2345, unsubscribeSpy],
+        [3456, unsubscribeSpy]
+      ]);
+      spyOn(listeners, 'delete');
+      var refs = mockRefs([
+        [1234, mockedDoc],
+        [2345, mockedDoc],
+        [3456, mockedDoc]
+      ]);
+      var syncs = mockSyncs();
+      var ids = [1234, 2345, 3456];
+      var context = {};
+      utils._fsSetUnmountHandler(context, ids[0], refs, listeners, syncs);
+      utils._fsSetUnmountHandler(context, ids[1], refs, listeners, syncs);
+      utils._fsSetUnmountHandler(context, ids[2], refs, listeners, syncs);
+      context.componentWillUnmount();
+      expect(listeners.delete.calls.count()).toEqual(3);
+    });
+
+    it('should remove syncs when the component unmounts', () => {
+      const unsubscribeSpy = jasmine.createSpy();
+      var listeners = mockListeners([
+        [1234, unsubscribeSpy],
+        [2345, unsubscribeSpy],
+        [3456, unsubscribeSpy]
+      ]);
+      var mockedDoc = mockDoc();
+      var refs = mockRefs([
+        [1234, mockedDoc],
+        [2345, mockedDoc],
+        [3456, mockedDoc]
+      ]);
+      var context = {};
+      var syncs = mockSyncs([
+        [
+          context,
+          [
+            mockSync({ id: 1234, updateFirebase: () => {}, state: 'stateOne' }),
+            mockSync({ id: 2345, updateFirebase: () => {}, state: 'stateTwo' }),
+            mockSync({
+              id: 3456,
+              updateFirebase: () => {},
+              state: 'stateThree'
+            })
+          ]
+        ]
+      ]);
+      utils._fsSetUnmountHandler(context, 1234, refs, listeners, syncs);
+      utils._fsSetUnmountHandler(context, 2345, refs, listeners, syncs);
+      utils._fsSetUnmountHandler(context, 3456, refs, listeners, syncs);
+      context.componentWillUnmount();
+      expect(syncs.get(context).length).toEqual(0);
+    });
+  });
+
   describe('_setData ', () => {
     it('should call ref.set with the supplied data', () => {
       var ref = mockRef();
@@ -496,7 +787,6 @@ describe('utils', () => {
 
   describe('_addListener', () => {
     it('should add a listener for a given id', () => {
-      id, invoker, options, ref, listeners;
       var listeners = mockListeners();
       spyOn(listeners, 'set').and.callThrough();
       var id = 1234;
@@ -508,6 +798,71 @@ describe('utils', () => {
       utils._addListener(id, invoker, options, ref, listeners);
       expect(listeners.set.calls.count()).toEqual(1);
       expect(listeners.size).toEqual(1);
+    });
+  });
+
+  describe('_addFirestoreListener', () => {
+    it('should add a listener for a given id', () => {
+      var listeners = mockListeners();
+      spyOn(listeners, 'set').and.callThrough();
+      var id = 1234;
+      var invoker = 'bindToCollection';
+      var options = {
+        context: {}
+      };
+      var ref = mockCollection();
+      utils._addFirestoreListener(id, invoker, options, ref, listeners);
+      expect(listeners.set.calls.count()).toEqual(1);
+      expect(listeners.size).toEqual(1);
+    });
+  });
+
+  describe('_createHash', () => {
+    it('should return a hash of the endpoint, the invoker, and a random number', () => {
+      const result = utils._createHash('endpoint', 'bindToState');
+      expect(result).toEqual(jasmine.any(Number));
+    });
+
+    it('results should be unique', () => {
+      const result1 = utils._createHash('endpoint', 'bindToState');
+      const result2 = utils._createHash('endpoint', 'bindToState');
+      expect(result1).not.toEqual(result2);
+    });
+  });
+
+  describe('_fsCreateRef', () => {
+    it('should create document reference when supplied a document path', () => {
+      const docSpy = jasmine.createSpy();
+      const collectionSpy = jasmine.createSpy();
+      const result = utils._fsCreateRef(
+        'testCollection/testDoc',
+        mockFirestore(docSpy, collectionSpy)
+      );
+      expect(docSpy.calls.count()).toEqual(1);
+      expect(collectionSpy.calls.count()).toEqual(0);
+    });
+
+    it('should create collection reference when supplied a collection path', () => {
+      const docSpy = jasmine.createSpy();
+      const collectionSpy = jasmine.createSpy();
+      const result = utils._fsCreateRef(
+        'testCollection',
+        mockFirestore(docSpy, collectionSpy)
+      );
+      expect(docSpy.calls.count()).toEqual(0);
+      expect(collectionSpy.calls.count()).toEqual(1);
+    });
+
+    it('should return the object if supplied an object', () => {
+      const docSpy = jasmine.createSpy();
+      const collectionSpy = jasmine.createSpy();
+      const result = utils._fsCreateRef(
+        {},
+        mockFirestore(docSpy, collectionSpy)
+      );
+      expect(docSpy.calls.count()).toEqual(0);
+      expect(collectionSpy.calls.count()).toEqual(0);
+      expect(result).toEqual({});
     });
   });
 });

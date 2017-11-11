@@ -1,16 +1,16 @@
-var Rebase = require('../../dist/bundle');
+const Rebase = require('../../../src/rebase');
 var firebase = require('firebase');
 var React = require('react');
 var ReactDOM = require('react-dom');
-var firebaseConfig = require('../fixtures/config');
-var dummyObjData = require('../fixtures/dummyObjData');
+var firebaseConfig = require('../../fixtures/config');
+var dummyObjData = require('../../fixtures/dummyObjData');
 var database = require('firebase/database');
 
-describe('reset()', function() {
+describe('removeBinding()', function() {
   var base;
   var ref;
   var testApp;
-  var testEndpoint = 'test/reset';
+  var testEndpoint = 'test/removeBinding';
   var app;
 
   beforeAll(() => {
@@ -29,15 +29,17 @@ describe('reset()', function() {
 
   beforeEach(() => {
     app = firebase.initializeApp(firebaseConfig);
-    var db = firebase.database(app);
+    var db = firebase.database(db);
     base = Rebase.createClass(db);
   });
 
   afterEach(done => {
-    firebase.Promise
-      .all([ref.child(testEndpoint).set(null), app.delete()])
-      .then(done)
-      .catch(done.fail);
+    ref
+      .child(testEndpoint)
+      .set(null)
+      .then(() => {
+        app.delete().then(done);
+      });
   });
 
   it('should remove listeners set by the app', done => {
@@ -53,9 +55,9 @@ describe('reset()', function() {
           context: this,
           state: 'user'
         });
-        base.reset();
+        base.removeBinding(this.ref);
         ref
-          .child(testEndpoint)
+          .child(`${testEndpoint}`)
           .set({ user: 'abcdef' })
           .then(() => {
             setTimeout(done, 500);
@@ -84,9 +86,41 @@ describe('reset()', function() {
           context: this,
           state: 'user'
         });
-        base.reset();
+        base.removeBinding(this.ref);
         ref
-          .child(testEndpoint)
+          .child(`${testEndpoint}`)
+          .set({ user: 'abcdef' })
+          .then(() => {
+            setTimeout(done, 500);
+          });
+      }
+      componentDidUpdate() {
+        done.fail('Sync should have been removed');
+      }
+      render() {
+        return <div>No Data</div>;
+      }
+    }
+    ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+  });
+
+  it('it should be a noop if listener is already removed', done => {
+    class TestComponent extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = {
+          user: {}
+        };
+      }
+      componentDidMount() {
+        this.ref = base.syncState(`${testEndpoint}`, {
+          context: this,
+          state: 'user'
+        });
+        base.removeBinding(this.ref);
+        base.removeBinding(this.ref);
+        ref
+          .child(`${testEndpoint}`)
           .set({ user: 'abcdef' })
           .then(() => {
             setTimeout(done, 500);

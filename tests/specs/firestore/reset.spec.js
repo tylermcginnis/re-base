@@ -1,24 +1,29 @@
-var Rebase = require('../../dist/bundle');
-var firebase = require('firebase');
-var React = require('react');
-var ReactDOM = require('react-dom');
-var firebaseConfig = require('../fixtures/config');
-var dummyObjData = require('../fixtures/dummyObjData');
-var database = require('firebase/database');
+const Rebase = require('../../../src/rebase');
+const React = require('react');
+const ReactDOM = require('react-dom');
+const firebase = require('firebase');
+require('firebase/firestore');
 
-describe('removeBinding()', function() {
+var invalidEndpoints = require('../../fixtures/invalidEndpoints');
+var dummyObjData = require('../../fixtures/dummyObjData');
+var dummyArrayOfObjects = require('../../fixtures/dummyArrayOfObjects');
+var invalidOptions = require('../../fixtures/invalidOptions');
+var dummyArrData = require('../../fixtures/dummyArrData');
+var firebaseConfig = require('../../fixtures/config');
+
+describe('reset()', function() {
   var base;
-  var ref;
   var testApp;
-  var testEndpoint = 'test/removeBinding';
+  var collectionPath = 'testCollection';
+  var collectionRef;
   var app;
 
   beforeAll(() => {
+    testApp = firebase.initializeApp(firebaseConfig, 'DB_CHECK');
+    collectionRef = testApp.firestore().collection(collectionPath);
     var mountNode = document.createElement('div');
     mountNode.setAttribute('id', 'mount');
     document.body.appendChild(mountNode);
-    testApp = firebase.initializeApp(firebaseConfig, 'DB_CHECK');
-    ref = testApp.database().ref();
   });
 
   afterAll(done => {
@@ -29,17 +34,24 @@ describe('removeBinding()', function() {
 
   beforeEach(() => {
     app = firebase.initializeApp(firebaseConfig);
-    var db = firebase.database(db);
+    var db = firebase.firestore(app);
     base = Rebase.createClass(db);
   });
 
   afterEach(done => {
-    ref
-      .child(testEndpoint)
-      .set(null)
-      .then(() => {
-        app.delete().then(done);
-      });
+    ReactDOM.unmountComponentAtNode(document.body);
+    Promise.all([
+      collectionRef.get().then(docs => {
+        const deleteOps = [];
+        docs.forEach(doc => {
+          deleteOps.push(doc.ref.delete());
+        });
+        return Promise.all(deleteOps);
+      }),
+      app.delete()
+    ])
+      .then(done)
+      .catch(err => done.fail(err));
   });
 
   it('should remove listeners set by the app', done => {
@@ -51,13 +63,13 @@ describe('removeBinding()', function() {
         };
       }
       componentDidMount() {
-        this.ref = base.bindToState(`${testEndpoint}`, {
+        this.ref = base.bindCollection(`${collectionPath}`, {
           context: this,
           state: 'user'
         });
-        base.removeBinding(this.ref);
-        ref
-          .child(`${testEndpoint}`)
+        base.reset();
+        collectionRef
+          .doc('testDoc')
           .set({ user: 'abcdef' })
           .then(() => {
             setTimeout(done, 500);
@@ -82,45 +94,13 @@ describe('removeBinding()', function() {
         };
       }
       componentDidMount() {
-        this.ref = base.syncState(`${testEndpoint}`, {
+        this.ref = base.syncDoc(`${collectionPath}/testDoc`, {
           context: this,
           state: 'user'
         });
-        base.removeBinding(this.ref);
-        ref
-          .child(`${testEndpoint}`)
-          .set({ user: 'abcdef' })
-          .then(() => {
-            setTimeout(done, 500);
-          });
-      }
-      componentDidUpdate() {
-        done.fail('Sync should have been removed');
-      }
-      render() {
-        return <div>No Data</div>;
-      }
-    }
-    ReactDOM.render(<TestComponent />, document.getElementById('mount'));
-  });
-
-  it('it should be a noop if listener is already removed', done => {
-    class TestComponent extends React.Component {
-      constructor(props) {
-        super(props);
-        this.state = {
-          user: {}
-        };
-      }
-      componentDidMount() {
-        this.ref = base.syncState(`${testEndpoint}`, {
-          context: this,
-          state: 'user'
-        });
-        base.removeBinding(this.ref);
-        base.removeBinding(this.ref);
-        ref
-          .child(`${testEndpoint}`)
+        base.reset();
+        collectionRef
+          .doc('testDoc')
           .set({ user: 'abcdef' })
           .then(() => {
             setTimeout(done, 500);

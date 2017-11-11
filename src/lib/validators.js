@@ -1,4 +1,5 @@
-import { _isObject, _isValid, _throwError } from './utils';
+import { _isObject, _isValid, _throwError, _getSegmentCount } from './utils';
+import firebase from 'firebase/app';
 
 const optionValidators = {
   notObject(options) {
@@ -53,7 +54,9 @@ const optionValidators = {
     for (var key in queries) {
       if (queries.hasOwnProperty(key) && validQueries.indexOf(key) === -1) {
         _throwError(
-          `The query field must contain valid Firebase queries.  Expected one of [${validQueries.join(', ')}]. Instead, got ${key}`,
+          `The query field must contain valid Firebase queries.  Expected one of [${validQueries.join(
+            ', '
+          )}]. Instead, got ${key}`,
           'INVALID_OPTIONS'
         );
       }
@@ -79,6 +82,17 @@ const optionValidators = {
 };
 
 const _validateEndpoint = function(endpoint) {
+  if (firebase.firestore) {
+    const { DocumentReference, CollectionReference } = firebase.firestore;
+    if (typeof endpoint === 'object') {
+      if (
+        endpoint instanceof DocumentReference ||
+        endpoint instanceof CollectionReference
+      ) {
+        return;
+      }
+    }
+  }
   var defaultError = 'The Firebase endpoint you are trying to listen to';
   var errorMsg;
   if (typeof endpoint !== 'string') {
@@ -99,15 +113,36 @@ const _validateEndpoint = function(endpoint) {
 const _validateDatabase = function(db) {
   var defaultError = 'Rebase.createClass failed.';
   var errorMsg;
-  if (typeof db !== 'object' || !db.ref) {
-    errorMsg = `${defaultError} Expected an initialized firebase database object.`;
-  } else if (!db || arguments.length > 1) {
-    errorMsg = `${defaultError} expects 1 argument.`;
+  if (typeof db !== 'object' || (!db.ref && !db.collection)) {
+    errorMsg = `${defaultError} Expected an initialized firebase or firestore database object.`;
   }
-
   if (typeof errorMsg !== 'undefined') {
     _throwError(errorMsg, 'INVALID_CONFIG');
   }
 };
 
-export { optionValidators, _validateDatabase, _validateEndpoint };
+const _validateDocumentPath = function(path) {
+  const { DocumentReference } = firebase.firestore;
+  if (typeof path === 'object' && path instanceof DocumentReference) return;
+  var defaultError = 'Invalid document path or reference.';
+  if (typeof path !== 'string') _throwError(defaultError, 'INVALID_ENDPOINT');
+  const segmentCount = _getSegmentCount(path);
+  if (segmentCount % 2 !== 0) _throwError(defaultError, 'INVALID_ENDPOINT');
+};
+
+const _validateCollectionPath = function(path) {
+  const { CollectionReference } = firebase.firestore;
+  if (typeof path === 'object' && path instanceof CollectionReference) return;
+  var defaultError = 'Invalid collection path or reference.';
+  if (typeof path !== 'string') _throwError(defaultError, 'INVALID_ENDPOINT');
+  const segmentCount = _getSegmentCount(path);
+  if (segmentCount % 2 === 0) _throwError(defaultError, 'INVALID_ENDPOINT');
+};
+
+export {
+  optionValidators,
+  _validateDatabase,
+  _validateEndpoint,
+  _validateDocumentPath,
+  _validateCollectionPath
+};

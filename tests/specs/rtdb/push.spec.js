@@ -1,17 +1,17 @@
-var Rebase = require('../../dist/bundle');
+const Rebase = require('../../../src/rebase');
 var React = require('react');
 var ReactDOM = require('react-dom');
 var firebase = require('firebase');
 var database = require('firebase/database');
 
-var invalidEndpoints = require('../fixtures/invalidEndpoints');
-var dummyObjData = require('../fixtures/dummyObjData');
-var invalidOptions = require('../fixtures/invalidOptions');
-var firebaseConfig = require('../fixtures/config');
+var invalidEndpoints = require('../../fixtures/invalidEndpoints');
+var dummyObjData = require('../../fixtures/dummyObjData');
+var invalidOptions = require('../../fixtures/invalidOptions');
+var firebaseConfig = require('../../fixtures/config');
 
-describe('post()', function() {
+describe('push()', function() {
   var base;
-  var testEndpoint = 'test/post';
+  var testEndpoint = 'test/push';
   var app;
 
   beforeEach(done => {
@@ -34,10 +34,10 @@ describe('post()', function() {
       .catch(err => done.fail(err));
   });
 
-  it('post() throws an error given a invalid endpoint', function() {
+  it('push() throws an error given a invalid endpoint', function() {
     invalidEndpoints.forEach(endpoint => {
       try {
-        base.post(endpoint, {
+        base.push(endpoint, {
           data: dummyObjData
         });
       } catch (err) {
@@ -46,48 +46,40 @@ describe('post()', function() {
     });
   });
 
-  it('post() throws an error given an invalid options object', function() {
+  it('push() throws an error given an invalid options object', function() {
     invalidOptions.forEach(option => {
       try {
-        base.post(testEndpoint, option);
+        base.push(testEndpoint, option);
       } catch (err) {
         expect(err.code).toEqual('INVALID_OPTIONS');
       }
     });
   });
 
-  it('post() updates Firebase correctly', done => {
-    base.post(testEndpoint, {
+  it('push() returns a Firebase reference for the generated location', function() {
+    var returnedRef = base.push(testEndpoint, {
+      data: dummyObjData
+    });
+    var endpointBaseUrl = returnedRef.parent.toString();
+    expect(endpointBaseUrl).toEqual(
+      `${firebaseConfig.databaseURL}/${testEndpoint}`
+    );
+    expect(returnedRef.key).toEqual(jasmine.any(String));
+  });
+
+  it('push() updates Firebase correctly', done => {
+    base.push(testEndpoint, {
       data: dummyObjData,
       then() {
         var testApp = firebase.initializeApp(firebaseConfig, 'DB_CHECK');
         var ref = testApp.database().ref();
         ref.child(testEndpoint).once('value', snapshot => {
-          var data = snapshot.val();
+          var keyedData = snapshot.val();
+          var data = keyedData[Object.keys(keyedData)[0]];
           expect(data).toEqual(dummyObjData);
           testApp.delete().then(done);
         });
       }
     });
-  });
-
-  it('post() returns a Promise that resolves on successful write', done => {
-    base
-      .post(testEndpoint, {
-        data: dummyObjData
-      })
-      .then(() => {
-        var testApp = firebase.initializeApp(firebaseConfig, 'DB_CHECK');
-        var ref = testApp.database().ref();
-        return ref.child(testEndpoint).once('value', snapshot => {
-          var data = snapshot.val();
-          expect(data).toEqual(dummyObjData);
-          testApp.delete().then(done);
-        });
-      })
-      .catch(err => {
-        console.log(err.message);
-        done.fail('Promise rejected');
-      });
   });
 });

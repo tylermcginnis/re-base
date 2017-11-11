@@ -1,8 +1,8 @@
-var Rebase = require('../../dist/bundle');
+const Rebase = require('../../../src/rebase');
 var firebase = require('firebase');
 var database = require('firebase/database');
 
-var firebaseConfig = require('../fixtures/config');
+var firebaseConfig = require('../../fixtures/config');
 
 describe('Firebase Server Info', function() {
   var base;

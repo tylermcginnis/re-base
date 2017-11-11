@@ -1,4 +1,5 @@
 import _removeBinding from './removeBinding';
+import _fsRemoveBinding from './fsRemoveBinding';
 
 const _isObject = function(obj) {
   return Object.prototype.toString.call(obj) === '[object Object]'
@@ -99,6 +100,7 @@ const _addQueries = function(ref, queries) {
   };
 
   for (var key in queries) {
+    /* istanbul ignore else */
     if (queries.hasOwnProperty(key)) {
       if (needArgs[key]) {
         ref = ref[key](queries[key]);
@@ -110,10 +112,16 @@ const _addQueries = function(ref, queries) {
   return ref;
 };
 
+const _addFirestoreQuery = function(ref, query) {
+  if (query) {
+    return query(ref);
+  }
+  return ref;
+};
+
 const _createHash = function(endpoint, invoker) {
   var hash = 0;
-  var str = endpoint + invoker + Date.now();
-  if (str.length == 0) return hash;
+  var str = endpoint + invoker + Math.random();
   for (var i = 0; i < str.length; i++) {
     var char = str.charCodeAt(i);
     hash = (hash << 5) - hash + char;
@@ -135,6 +143,19 @@ const _handleError = function(onFailure, err) {
 const _setUnmountHandler = function(context, id, refs, listeners, syncs) {
   var removeListeners = () => {
     _removeBinding({ context, id }, { refs, listeners, syncs });
+  };
+  if (typeof context.componentWillUnmount === 'function') {
+    var unmount = context.componentWillUnmount;
+  }
+  context.componentWillUnmount = function() {
+    removeListeners();
+    if (unmount) unmount.call(context);
+  };
+};
+
+const _fsSetUnmountHandler = function(context, id, refs, listeners, syncs) {
+  var removeListeners = () => {
+    _fsRemoveBinding({ context, id }, { refs, listeners, syncs });
   };
   if (typeof context.componentWillUnmount === 'function') {
     var unmount = context.componentWillUnmount;
@@ -175,6 +196,10 @@ const _updateSyncState = function(ref, onFailure, keepKeys, data) {
   }
 };
 
+const _fsUpdateSyncState = function(ref, data) {
+  ref.set(data);
+};
+
 const _addListener = function _addListener(
   id,
   invoker,
@@ -183,9 +208,10 @@ const _addListener = function _addListener(
   listeners
 ) {
   ref = _addQueries(ref, options.queries);
-  const boundOnFailure = typeof options.onFailure === 'function'
-    ? options.onFailure.bind(options.context)
-    : null;
+  const boundOnFailure =
+    typeof options.onFailure === 'function'
+      ? options.onFailure.bind(options.context)
+      : null;
   listeners.set(
     id,
     ref.on(
@@ -222,25 +248,130 @@ const _addListener = function _addListener(
   );
 };
 
+const _addFirestoreListener = function _addFirestoreListener(
+  id,
+  invoker,
+  options,
+  ref,
+  listeners
+) {
+  ref = _addFirestoreQuery(ref, options.query);
+  const boundOnFailure =
+    typeof options.onFailure === 'function'
+      ? options.onFailure.bind(options.context)
+      : undefined;
+  listeners.set(
+    id,
+    ref.onSnapshot(snapshot => {
+      if (invoker.match(/^listenTo/)) {
+        if (invoker === 'listenToDoc') {
+          if (snapshot.exists) {
+            let newState = _fsPrepareData(snapshot, options);
+            return options.then.call(options.context, newState);
+          }
+        }
+        if (invoker === 'listenToCollection') {
+          if (!snapshot.empty) {
+            let newState = _fsPrepareData(snapshot, options, true);
+            return options.then.call(options.context, newState);
+          }
+        }
+      } else {
+        if (invoker === 'syncDoc') {
+          if (snapshot.exists) {
+            let newState = _fsPrepareData(snapshot, options);
+            options.reactSetState.call(options.context, function(currentState) {
+              return Object.assign(currentState, newState);
+            });
+          }
+        } else if (invoker === 'bindDoc') {
+          if (snapshot.exists) {
+            let newState = _fsPrepareData(snapshot, options);
+            _setState.call(options.context, function(currentState) {
+              return Object.assign(currentState, newState);
+            });
+          }
+        } else if (invoker === 'bindCollection') {
+          if (!snapshot.empty) {
+            let newState = _fsPrepareData(snapshot, options, true);
+            _setState.call(options.context, function(currentState) {
+              return Object.assign(currentState, newState);
+            });
+          }
+        }
+        if (options.then && options.then.called === false) {
+          options.then.call(options.context);
+          options.then.called = true;
+        }
+      }
+    }, boundOnFailure)
+  );
+};
+
+const _getSegmentCount = function(path) {
+  return path.match(/^\//)
+    ? path.split('/').slice(1).length
+    : path.split('/').length;
+};
+
+const _fsPrepareData = function(snapshot, options, isCollection = false) {
+  let meta = {};
+  if (!isCollection) {
+    if (options.withRefs) meta.ref = snapshot.ref;
+    if (options.withIds) meta.id = snapshot.id;
+    return options.state
+      ? { [options.state]: Object.assign({}, snapshot.data(), meta) }
+      : Object.assign({}, snapshot.data(), meta);
+  }
+  const collection = [];
+  snapshot.forEach(doc => {
+    if (options.withRefs) meta.ref = doc.ref;
+    if (options.withIds) meta.id = doc.id;
+    collection.push(Object.assign({}, doc.data(), meta));
+  });
+  return options.state ? { [options.state]: collection } : collection;
+};
+
+const _fsCreateRef = function(pathOrRef, db) {
+  if (typeof pathOrRef === 'object') {
+    return pathOrRef;
+  }
+  const segmentCount = _getSegmentCount(pathOrRef);
+  var ref;
+  if (segmentCount % 2 === 0) {
+    ref = db.doc(pathOrRef);
+  } else {
+    ref = db.collection(pathOrRef);
+  }
+  return ref;
+};
+
 export {
   _createHash,
   _addQueries,
+  _addFirestoreQuery,
   _returnRef,
   _setState,
   _throwError,
   _prepareData,
+  _fsPrepareData,
   _toArray,
   _isValid,
   _isObject,
   _isNestedPath,
   _getNestedObject,
+  _getSegmentCount,
   _hasOwnNestedProperty,
   _addSync,
   _firebaseRefsMixin,
   _updateSyncState,
+  _fsUpdateSyncState,
   _addListener,
+  _addFirestoreListener,
   _setUnmountHandler,
   _createNestedObject,
   _handleError,
-  _setData
+  _setData,
+  _fsSetUnmountHandler,
+  _fsCreateRef
 };

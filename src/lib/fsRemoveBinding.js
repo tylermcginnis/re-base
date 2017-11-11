@@ -1,13 +1,10 @@
-import { _throwError } from './utils';
-
-export default function _removeBinding(
+export default function _fsRemoveBinding(
   { id, context },
   { refs, listeners, syncs }
 ) {
-  var ref = refs.get(id);
-  var listener = listeners.get(id);
-  if (typeof ref !== 'undefined') {
-    ref.off('value', listener);
+  var unsubscribe = listeners.get(id);
+  if (typeof unsubscribe === 'function') {
+    unsubscribe();
     refs.delete(id);
     listeners.delete(id);
     if (syncs) {

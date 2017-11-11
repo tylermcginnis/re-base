@@ -1,15 +1,15 @@
-var Rebase = require('../../dist/bundle');
+const Rebase = require('../../../src/rebase');
 var React = require('react');
 var ReactDOM = require('react-dom');
 var firebase = require('firebase');
 require('firebase/database');
 
-var invalidEndpoints = require('../fixtures/invalidEndpoints');
-var dummyObjData = require('../fixtures/dummyObjData');
-var dummyArrayOfObjects = require('../fixtures/dummyArrayOfObjects');
-var invalidOptions = require('../fixtures/invalidOptions');
-var dummyArrData = require('../fixtures/dummyArrData');
-var firebaseConfig = require('../fixtures/config');
+var invalidEndpoints = require('../../fixtures/invalidEndpoints');
+var dummyObjData = require('../../fixtures/dummyObjData');
+var dummyArrayOfObjects = require('../../fixtures/dummyArrayOfObjects');
+var invalidOptions = require('../../fixtures/invalidOptions');
+var dummyArrData = require('../../fixtures/dummyArrData');
+var firebaseConfig = require('../../fixtures/config');
 
 describe('syncState()', function() {
   var base;
@@ -411,6 +411,76 @@ describe('syncState()', function() {
             ReactDOM.unmountComponentAtNode(document.body);
             done();
           });
+        }
+        render() {
+          return <div>No Data</div>;
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
+
+    it('syncState() works with setState as a function', done => {
+      class TestComponent extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            user: {}
+          };
+        }
+        componentWillMount() {
+          this.ref = base.syncState(`${testEndpoint}/userData`, {
+            context: this,
+            state: 'user'
+          });
+        }
+        componentDidMount() {
+          this.setState(currentState => {
+            return Object.assign(currentState, {
+              user: { name: 'Tyler' }
+            });
+          });
+          setTimeout(() => {
+            ref.child(`${testEndpoint}/userData`).once('value', snapshot => {
+              var data = snapshot.val();
+              expect(data).toEqual(this.state.user);
+              expect(data).toEqual({ name: 'Tyler' });
+              ReactDOM.unmountComponentAtNode(document.body);
+              done();
+            });
+          }, 500);
+        }
+        render() {
+          return <div>No Data</div>;
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
+
+    it('syncState() setState callback is called when setState is a function', done => {
+      const spy = jasmine.createSpy();
+      class TestComponent extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            user: {}
+          };
+        }
+        componentWillMount() {
+          this.ref = base.syncState(`${testEndpoint}/userData`, {
+            context: this,
+            state: 'user'
+          });
+        }
+        componentDidMount() {
+          this.setState(currentState => {
+            return Object.assign(currentState, {
+              user: { name: 'Tyler' }
+            });
+          }, spy);
+          setTimeout(() => {
+            expect(spy.calls.count()).toEqual(1);
+            done();
+          }, 100);
         }
         render() {
           return <div>No Data</div>;

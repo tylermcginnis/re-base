@@ -1,14 +1,18 @@
 describe('Validators', () => {
-  var optionValidators;
-  var _validateEndpoint;
-  var _validateDatabase;
-  var invalidEndpoints;
-  beforeAll(() => {
-    optionValidators = require('../../src/lib/validators').optionValidators;
-    _validateEndpoint = require('../../src/lib/validators')._validateEndpoint;
-    _validateDatabase = require('../../src/lib/validators')._validateDatabase;
-    invalidEndpoints = require('../fixtures/invalidEndpoints');
-  });
+  const {
+    optionValidators,
+    _validateEndpoint,
+    _validateDatabase,
+    _validateCollectionPath,
+    _validateDocumentPath
+  } = require('../../src/lib/validators');
+  const invalidEndpoints = require('../fixtures/invalidEndpoints');
+  const firebaseConfig = require('../fixtures/config');
+
+  //firebase and firestore should be globally available
+  const firebase = require('firebase');
+  require('firebase/firestore');
+
   describe('optionValidators', () => {
     describe('notObject()', () => {
       it('should throw on non object', () => {
@@ -204,7 +208,7 @@ describe('Validators', () => {
   describe('_validateEndpoint()', () => {
     it('should throw if endpoint is not a string', () => {
       expect(() => {
-        _validateEndpoint({});
+        _validateEndpoint(null);
       }).toThrow();
     });
     it('should throw if endpoint is empty string', () => {
@@ -225,6 +229,25 @@ describe('Validators', () => {
         }).toThrow();
       });
     });
+    it('should not throw if endpoint is a document reference', done => {
+      expect(() => {
+        const app = firebase.initializeApp(firebaseConfig);
+        const docRef = app
+          .firestore()
+          .collection('testCollection')
+          .doc('testDoc');
+        _validateEndpoint(docRef);
+        app.delete().then(done);
+      }).not.toThrow();
+    });
+    it('should not throw if endpoint is a collection reference', done => {
+      expect(() => {
+        const app = firebase.initializeApp(firebaseConfig);
+        const collectionRef = app.firestore().collection('testCollection');
+        _validateEndpoint(collectionRef);
+        app.delete().then(done);
+      }).not.toThrow();
+    });
   });
 
   describe('_validateDatabase()', () => {
@@ -239,9 +262,87 @@ describe('Validators', () => {
       }).toThrow();
     });
 
-    it('should not throw if argument is valid', () => {
+    it('should not throw if argument is valid RTDB object', () => {
       expect(() => {
         _validateDatabase({ ref: () => {} });
+      }).not.toThrow();
+    });
+
+    it('should not throw if argument is valid Firestore DB object', () => {
+      expect(() => {
+        _validateDatabase({ collection: () => {} });
+      }).not.toThrow();
+    });
+  });
+
+  describe('_validateDocumentPath', () => {
+    it('should throw if argument is undefined', () => {
+      expect(() => {
+        _validateDocumentPath();
+      }).toThrow();
+    });
+    it('should throw if path does not have an even number of segments', () => {
+      expect(() => {
+        _validateDocumentPath('collectionName');
+      }).toThrow();
+    });
+    it('should throw if path does not have an even number of segments', () => {
+      expect(() => {
+        _validateDocumentPath('collectionName');
+      }).toThrow();
+    });
+    it('should not throw if argument is valid', () => {
+      expect(() => {
+        _validateDocumentPath('collectionName/document');
+      }).not.toThrow();
+    });
+    it('should not throw if argument is valid with leading slash', () => {
+      expect(() => {
+        _validateDocumentPath('/collectionName/document');
+      }).not.toThrow();
+    });
+    it('should not throw if argument a document reference', done => {
+      expect(() => {
+        const app = firebase.initializeApp(firebaseConfig);
+        const docRef = firebase.firestore().doc('testCollection/testDoc');
+        _validateDocumentPath(docRef);
+        app.delete().then(done);
+      }).not.toThrow();
+    });
+  });
+
+  describe('_validateCollectionPath', () => {
+    it('should throw if argument is undefined', () => {
+      expect(() => {
+        _validateCollectionPath();
+      }).toThrow();
+    });
+    it('should throw if path does not have an odd number of segments', () => {
+      expect(() => {
+        _validateCollectionPath('collectionName/document');
+      }).toThrow();
+    });
+    it('should not throw if argument is valid', () => {
+      expect(() => {
+        _validateCollectionPath('collectionName');
+      }).not.toThrow();
+    });
+    it('should not throw if argument is valid', () => {
+      expect(() => {
+        _validateCollectionPath('collectionName/document/subCollection');
+      }).not.toThrow();
+    });
+    it('should not throw if argument is valid with leading slash', () => {
+      expect(() => {
+        _validateCollectionPath('/collectionName/document/subCollection');
+      }).not.toThrow();
+    });
+    it('should not throw if argument a collection reference', done => {
+      expect(() => {
+        const app = firebase.initializeApp(firebaseConfig);
+        const collectionRef = firebase.firestore().collection('testCollection');
+        _validateCollectionPath(collectionRef);
+        app.delete().then(done);
       }).not.toThrow();
     });
   });

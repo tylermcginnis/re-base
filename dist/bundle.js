@@ -1,13 +1,13 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
+		module.exports = factory(require("firebase/app"));
 	else if(typeof define === 'function' && define.amd)
-		define([], factory);
+		define(["firebase/app"], factory);
 	else {
-		var a = factory();
+		var a = typeof exports === 'object' ? factory(require("firebase/app")) : factory(root["firebase/app"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(this, function() {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_6__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -65,33 +65,33 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils = __webpack_require__(2);
 
-	var _validators = __webpack_require__(4);
+	var _validators = __webpack_require__(5);
 
-	var _push2 = __webpack_require__(5);
+	var _push2 = __webpack_require__(7);
 
 	var _push3 = _interopRequireDefault(_push2);
 
-	var _fetch2 = __webpack_require__(6);
+	var _fetch2 = __webpack_require__(8);
 
 	var _fetch3 = _interopRequireDefault(_fetch2);
 
-	var _post2 = __webpack_require__(7);
+	var _post2 = __webpack_require__(9);
 
 	var _post3 = _interopRequireDefault(_post2);
 
-	var _sync2 = __webpack_require__(8);
+	var _sync2 = __webpack_require__(10);
 
 	var _sync3 = _interopRequireDefault(_sync2);
 
-	var _bind2 = __webpack_require__(9);
+	var _bind2 = __webpack_require__(11);
 
 	var _bind3 = _interopRequireDefault(_bind2);
 
-	var _update2 = __webpack_require__(10);
+	var _update2 = __webpack_require__(12);
 
 	var _update3 = _interopRequireDefault(_update2);
 
-	var _reset2 = __webpack_require__(11);
+	var _reset2 = __webpack_require__(13);
 
 	var _reset3 = _interopRequireDefault(_reset2);
 
@@ -99,76 +99,184 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _removeBinding3 = _interopRequireDefault(_removeBinding2);
 
-	var _remove2 = __webpack_require__(12);
+	var _remove2 = __webpack_require__(14);
 
 	var _remove3 = _interopRequireDefault(_remove2);
 
+	var _fsSync2 = __webpack_require__(15);
+
+	var _fsSync3 = _interopRequireDefault(_fsSync2);
+
+	var _fsRemoveBinding2 = __webpack_require__(4);
+
+	var _fsRemoveBinding3 = _interopRequireDefault(_fsRemoveBinding2);
+
+	var _fsBind2 = __webpack_require__(16);
+
+	var _fsBind3 = _interopRequireDefault(_fsBind2);
+
+	var _fsGet2 = __webpack_require__(17);
+
+	var _fsGet3 = _interopRequireDefault(_fsGet2);
+
+	var _fsRemoveDoc2 = __webpack_require__(18);
+
+	var _fsRemoveDoc3 = _interopRequireDefault(_fsRemoveDoc2);
+
+	var _fsAddToCollection2 = __webpack_require__(19);
+
+	var _fsAddToCollection3 = _interopRequireDefault(_fsAddToCollection2);
+
+	var _fsRemoveFromCollection2 = __webpack_require__(20);
+
+	var _fsRemoveFromCollection3 = _interopRequireDefault(_fsRemoveFromCollection2);
+
+	var _fsUpdateDoc2 = __webpack_require__(21);
+
+	var _fsUpdateDoc3 = _interopRequireDefault(_fsUpdateDoc2);
+
+	var _fsReset2 = __webpack_require__(22);
+
+	var _fsReset3 = _interopRequireDefault(_fsReset2);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	//database
+	//helpers
 	module.exports = function () {
 	  function init(db) {
 	    return function () {
-	      var firebaseRefs = new Map();
-	      var firebaseListeners = new Map();
+	      var refs = new Map();
+	      var listeners = new Map();
 	      var syncs = new WeakMap();
 
-	      return {
-	        initializedApp: db.app,
-	        listenTo: function listenTo(endpoint, options) {
-	          return _bind3.default.call(this, endpoint, options, 'listenTo', {
-	            db: db,
-	            refs: firebaseRefs,
-	            listeners: firebaseListeners,
-	            syncs: syncs
-	          });
-	        },
-	        bindToState: function bindToState(endpoint, options) {
-	          return _bind3.default.call(this, endpoint, options, 'bindToState', {
-	            db: db,
-	            refs: firebaseRefs,
-	            listeners: firebaseListeners
-	          });
-	        },
-	        syncState: function syncState(endpoint, options) {
-	          return _sync3.default.call(this, endpoint, options, {
-	            db: db,
-	            refs: firebaseRefs,
-	            listeners: firebaseListeners,
-	            syncs: syncs
-	          });
-	        },
-	        fetch: function fetch(endpoint, options) {
-	          return (0, _fetch3.default)(endpoint, options, db);
-	        },
-	        post: function post(endpoint, options) {
-	          return (0, _post3.default)(endpoint, options, db);
-	        },
-	        update: function update(endpoint, options) {
-	          return (0, _update3.default)(endpoint, options, {
-	            db: db
-	          });
-	        },
-	        push: function push(endpoint, options) {
-	          return (0, _push3.default)(endpoint, options, db);
-	        },
-	        removeBinding: function removeBinding(binding) {
-	          (0, _removeBinding3.default)(binding, {
-	            refs: firebaseRefs,
-	            listeners: firebaseListeners,
-	            syncs: syncs
-	          });
-	        },
-	        remove: function remove(endpoint, fn) {
-	          return (0, _remove3.default)(endpoint, db, fn);
-	        },
-	        reset: function reset() {
-	          return (0, _reset3.default)({
-	            refs: firebaseRefs,
-	            listeners: firebaseListeners,
-	            syncs: syncs
-	          });
-	        }
-	      };
+	      if (typeof db.ref === 'function') {
+	        var rebase = {
+	          initializedApp: db.app,
+	          listenTo: function listenTo(endpoint, options) {
+	            return _bind3.default.call(this, endpoint, options, 'listenTo', {
+	              db: db,
+	              refs: refs,
+	              listeners: listeners,
+	              syncs: syncs
+	            });
+	          },
+	          bindToState: function bindToState(endpoint, options) {
+	            return _bind3.default.call(this, endpoint, options, 'bindToState', {
+	              db: db,
+	              refs: refs,
+	              listeners: listeners
+	            });
+	          },
+	          syncState: function syncState(endpoint, options) {
+	            return _sync3.default.call(this, endpoint, options, {
+	              db: db,
+	              refs: refs,
+	              listeners: listeners,
+	              syncs: syncs
+	            });
+	          },
+	          fetch: function fetch(endpoint, options) {
+	            return (0, _fetch3.default)(endpoint, options, db);
+	          },
+	          post: function post(endpoint, options) {
+	            return (0, _post3.default)(endpoint, options, db);
+	          },
+	          update: function update(endpoint, options) {
+	            return (0, _update3.default)(endpoint, options, { db: db });
+	          },
+	          push: function push(endpoint, options) {
+	            return (0, _push3.default)(endpoint, options, db);
+	          },
+	          removeBinding: function removeBinding(binding) {
+	            (0, _removeBinding3.default)(binding, {
+	              refs: refs,
+	              listeners: listeners,
+	              syncs: syncs
+	            });
+	          },
+	          remove: function remove(endpoint, fn) {
+	            return (0, _remove3.default)(endpoint, db, fn);
+	          },
+	          reset: function reset() {
+	            return (0, _reset3.default)({
+	              refs: refs,
+	              listeners: listeners,
+	              syncs: syncs
+	            });
+	          }
+	        };
+	      } else {
+	        var rebase = {
+	          initializedApp: db.app,
+	          bindDoc: function bindDoc(path, options) {
+	            return _fsBind3.default.call(this, path, options, 'bindDoc', {
+	              db: db,
+	              refs: refs,
+	              listeners: listeners
+	            });
+	          },
+	          bindCollection: function bindCollection(path, options) {
+	            return _fsBind3.default.call(this, path, options, 'bindCollection', {
+	              db: db,
+	              refs: refs,
+	              listeners: listeners
+	            });
+	          },
+	          syncDoc: function syncDoc(doc, options) {
+	            return _fsSync3.default.call(this, doc, options, {
+	              db: db,
+	              refs: refs,
+	              listeners: listeners,
+	              syncs: syncs
+	            });
+	          },
+	          listenToDoc: function listenToDoc(doc, options) {
+	            return _fsBind3.default.call(this, doc, options, 'listenToDoc', {
+	              db: db,
+	              refs: refs,
+	              listeners: listeners
+	            });
+	          },
+	          listenToCollection: function listenToCollection(path, options) {
+	            return _fsBind3.default.call(this, path, options, 'listenToCollection', {
+	              db: db,
+	              refs: refs,
+	              listeners: listeners
+	            });
+	          },
+	          addToCollection: function addToCollection(path, doc, key) {
+	            return _fsAddToCollection3.default.call(this, path, doc, db, key);
+	          },
+	          updateDoc: function updateDoc(path, doc, options) {
+	            return _fsUpdateDoc3.default.call(this, path, doc, db);
+	          },
+	          get: function get(path, options) {
+	            return _fsGet3.default.call(this, path, options, db);
+	          },
+	          removeDoc: function removeDoc(path) {
+	            return (0, _fsRemoveDoc3.default)(path, db);
+	          },
+	          removeFromCollection: function removeFromCollection(path, options) {
+	            return (0, _fsRemoveFromCollection3.default)(path, db, options);
+	          },
+	          removeBinding: function removeBinding(binding) {
+	            (0, _fsRemoveBinding3.default)(binding, {
+	              refs: refs,
+	              listeners: listeners,
+	              syncs: syncs
+	            });
+	          },
+	          reset: function reset() {
+	            return (0, _fsReset3.default)({
+	              refs: refs,
+	              listeners: listeners,
+	              syncs: syncs
+	            });
+	          }
+	        };
+	      }
+	      return rebase;
 	    }();
 	  }
 
@@ -180,8 +288,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	}();
 
-	//database
-	//helpers
+	//firestore
 
 /***/ }),
 /* 2 */
@@ -192,13 +299,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports._setData = exports._handleError = exports._createNestedObject = exports._setUnmountHandler = exports._addListener = exports._updateSyncState = exports._firebaseRefsMixin = exports._addSync = exports._hasOwnNestedProperty = exports._getNestedObject = exports._isNestedPath = exports._isObject = exports._isValid = exports._toArray = exports._prepareData = exports._throwError = exports._setState = exports._returnRef = exports._addQueries = exports._createHash = undefined;
+	exports._fsCreateRef = exports._fsSetUnmountHandler = exports._setData = exports._handleError = exports._createNestedObject = exports._setUnmountHandler = exports._addFirestoreListener = exports._addListener = exports._fsUpdateSyncState = exports._updateSyncState = exports._firebaseRefsMixin = exports._addSync = exports._hasOwnNestedProperty = exports._getSegmentCount = exports._getNestedObject = exports._isNestedPath = exports._isObject = exports._isValid = exports._toArray = exports._fsPrepareData = exports._prepareData = exports._throwError = exports._setState = exports._returnRef = exports._addFirestoreQuery = exports._addQueries = exports._createHash = undefined;
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	var _removeBinding2 = __webpack_require__(3);
 
 	var _removeBinding3 = _interopRequireDefault(_removeBinding2);
+
+	var _fsRemoveBinding2 = __webpack_require__(4);
+
+	var _fsRemoveBinding3 = _interopRequireDefault(_fsRemoveBinding2);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -344,6 +455,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  for (var key in queries) {
+	    /* istanbul ignore else */
 	    if (queries.hasOwnProperty(key)) {
 	      if (needArgs[key]) {
 	        ref = ref[key](queries[key]);
@@ -355,10 +467,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return ref;
 	};
 
+	var _addFirestoreQuery = function _addFirestoreQuery(ref, query) {
+	  if (query) {
+	    return query(ref);
+	  }
+	  return ref;
+	};
+
 	var _createHash = function _createHash(endpoint, invoker) {
 	  var hash = 0;
-	  var str = endpoint + invoker + Date.now();
-	  if (str.length == 0) return hash;
+	  var str = endpoint + invoker + Math.random();
 	  for (var i = 0; i < str.length; i++) {
 	    var char = str.charCodeAt(i);
 	    hash = (hash << 5) - hash + char;
@@ -380,6 +498,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _setUnmountHandler = function _setUnmountHandler(context, id, refs, listeners, syncs) {
 	  var removeListeners = function removeListeners() {
 	    (0, _removeBinding3.default)({ context: context, id: id }, { refs: refs, listeners: listeners, syncs: syncs });
+	  };
+	  if (typeof context.componentWillUnmount === 'function') {
+	    var unmount = context.componentWillUnmount;
+	  }
+	  context.componentWillUnmount = function () {
+	    removeListeners();
+	    if (unmount) unmount.call(context);
+	  };
+	};
+
+	var _fsSetUnmountHandler = function _fsSetUnmountHandler(context, id, refs, listeners, syncs) {
+	  var removeListeners = function removeListeners() {
+	    (0, _fsRemoveBinding3.default)({ context: context, id: id }, { refs: refs, listeners: listeners, syncs: syncs });
 	  };
 	  if (typeof context.componentWillUnmount === 'function') {
 	    var unmount = context.componentWillUnmount;
@@ -420,6 +551,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
+	var _fsUpdateSyncState = function _fsUpdateSyncState(ref, data) {
+	  ref.set(data);
+	};
+
 	var _addListener = function _addListener(id, invoker, options, ref, listeners) {
 	  ref = _addQueries(ref, options.queries);
 	  var boundOnFailure = typeof options.onFailure === 'function' ? options.onFailure.bind(options.context) : null;
@@ -452,26 +587,117 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, boundOnFailure));
 	};
 
+	var _addFirestoreListener = function _addFirestoreListener(id, invoker, options, ref, listeners) {
+	  ref = _addFirestoreQuery(ref, options.query);
+	  var boundOnFailure = typeof options.onFailure === 'function' ? options.onFailure.bind(options.context) : undefined;
+	  listeners.set(id, ref.onSnapshot(function (snapshot) {
+	    if (invoker.match(/^listenTo/)) {
+	      if (invoker === 'listenToDoc') {
+	        if (snapshot.exists) {
+	          var newState = _fsPrepareData(snapshot, options);
+	          return options.then.call(options.context, newState);
+	        }
+	      }
+	      if (invoker === 'listenToCollection') {
+	        if (!snapshot.empty) {
+	          var _newState2 = _fsPrepareData(snapshot, options, true);
+	          return options.then.call(options.context, _newState2);
+	        }
+	      }
+	    } else {
+	      if (invoker === 'syncDoc') {
+	        if (snapshot.exists) {
+	          var _newState3 = _fsPrepareData(snapshot, options);
+	          options.reactSetState.call(options.context, function (currentState) {
+	            return Object.assign(currentState, _newState3);
+	          });
+	        }
+	      } else if (invoker === 'bindDoc') {
+	        if (snapshot.exists) {
+	          var _newState4 = _fsPrepareData(snapshot, options);
+	          _setState.call(options.context, function (currentState) {
+	            return Object.assign(currentState, _newState4);
+	          });
+	        }
+	      } else if (invoker === 'bindCollection') {
+	        if (!snapshot.empty) {
+	          var _newState5 = _fsPrepareData(snapshot, options, true);
+	          _setState.call(options.context, function (currentState) {
+	            return Object.assign(currentState, _newState5);
+	          });
+	        }
+	      }
+	      if (options.then && options.then.called === false) {
+	        options.then.call(options.context);
+	        options.then.called = true;
+	      }
+	    }
+	  }, boundOnFailure));
+	};
+
+	var _getSegmentCount = function _getSegmentCount(path) {
+	  return path.match(/^\//) ? path.split('/').slice(1).length : path.split('/').length;
+	};
+
+	var _fsPrepareData = function _fsPrepareData(snapshot, options) {
+	  var isCollection = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+	  var meta = {};
+	  if (!isCollection) {
+	    if (options.withRefs) meta.ref = snapshot.ref;
+	    if (options.withIds) meta.id = snapshot.id;
+	    return options.state ? _defineProperty({}, options.state, Object.assign({}, snapshot.data(), meta)) : Object.assign({}, snapshot.data(), meta);
+	  }
+	  var collection = [];
+	  snapshot.forEach(function (doc) {
+	    if (options.withRefs) meta.ref = doc.ref;
+	    if (options.withIds) meta.id = doc.id;
+	    collection.push(Object.assign({}, doc.data(), meta));
+	  });
+	  return options.state ? _defineProperty({}, options.state, collection) : collection;
+	};
+
+	var _fsCreateRef = function _fsCreateRef(pathOrRef, db) {
+	  if ((typeof pathOrRef === 'undefined' ? 'undefined' : _typeof(pathOrRef)) === 'object') {
+	    return pathOrRef;
+	  }
+	  var segmentCount = _getSegmentCount(pathOrRef);
+	  var ref;
+	  if (segmentCount % 2 === 0) {
+	    ref = db.doc(pathOrRef);
+	  } else {
+	    ref = db.collection(pathOrRef);
+	  }
+	  return ref;
+	};
+
 	exports._createHash = _createHash;
 	exports._addQueries = _addQueries;
+	exports._addFirestoreQuery = _addFirestoreQuery;
 	exports._returnRef = _returnRef;
 	exports._setState = _setState;
 	exports._throwError = _throwError;
 	exports._prepareData = _prepareData;
+	exports._fsPrepareData = _fsPrepareData;
 	exports._toArray = _toArray;
 	exports._isValid = _isValid;
 	exports._isObject = _isObject;
 	exports._isNestedPath = _isNestedPath;
 	exports._getNestedObject = _getNestedObject;
+	exports._getSegmentCount = _getSegmentCount;
 	exports._hasOwnNestedProperty = _hasOwnNestedProperty;
 	exports._addSync = _addSync;
 	exports._firebaseRefsMixin = _firebaseRefsMixin;
 	exports._updateSyncState = _updateSyncState;
+	exports._fsUpdateSyncState = _fsUpdateSyncState;
 	exports._addListener = _addListener;
+	exports._addFirestoreListener = _addFirestoreListener;
 	exports._setUnmountHandler = _setUnmountHandler;
 	exports._createNestedObject = _createNestedObject;
 	exports._handleError = _handleError;
 	exports._setData = _setData;
+	exports._fsSetUnmountHandler = _fsSetUnmountHandler;
+	exports._fsCreateRef = _fsCreateRef;
 
 /***/ }),
 /* 3 */
@@ -505,6 +731,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var idx = currentSyncs.findIndex(function (item, index) {
 	          return item.id === id;
 	        });
+	        /*istanbul ignore else */
 	        if (idx !== -1) {
 	          currentSyncs.splice(idx, 1);
 	          syncs.set(context, currentSyncs);
@@ -516,6 +743,44 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ }),
 /* 4 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = _fsRemoveBinding;
+	function _fsRemoveBinding(_ref, _ref2) {
+	  var id = _ref.id,
+	      context = _ref.context;
+	  var refs = _ref2.refs,
+	      listeners = _ref2.listeners,
+	      syncs = _ref2.syncs;
+
+	  var unsubscribe = listeners.get(id);
+	  if (typeof unsubscribe === 'function') {
+	    unsubscribe();
+	    refs.delete(id);
+	    listeners.delete(id);
+	    if (syncs) {
+	      var currentSyncs = syncs.get(context);
+	      if (currentSyncs && currentSyncs.length > 0) {
+	        var idx = currentSyncs.findIndex(function (item, index) {
+	          return item.id === id;
+	        });
+	        /*istanbul ignore else */
+	        if (idx !== -1) {
+	          currentSyncs.splice(idx, 1);
+	          syncs.set(context, currentSyncs);
+	        }
+	      }
+	    }
+	  }
+	}
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -523,11 +788,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports._validateEndpoint = exports._validateDatabase = exports.optionValidators = undefined;
+	exports._validateCollectionPath = exports._validateDocumentPath = exports._validateEndpoint = exports._validateDatabase = exports.optionValidators = undefined;
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	var _utils = __webpack_require__(2);
+
+	var _app = __webpack_require__(6);
+
+	var _app2 = _interopRequireDefault(_app);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var optionValidators = {
 	  notObject: function notObject(options) {
@@ -583,6 +854,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	var _validateEndpoint = function _validateEndpoint(endpoint) {
+	  if (_app2.default.firestore) {
+	    var _firebase$firestore = _app2.default.firestore,
+	        DocumentReference = _firebase$firestore.DocumentReference,
+	        CollectionReference = _firebase$firestore.CollectionReference;
+
+	    if ((typeof endpoint === 'undefined' ? 'undefined' : _typeof(endpoint)) === 'object') {
+	      if (endpoint instanceof DocumentReference || endpoint instanceof CollectionReference) {
+	        return;
+	      }
+	    }
+	  }
 	  var defaultError = 'The Firebase endpoint you are trying to listen to';
 	  var errorMsg;
 	  if (typeof endpoint !== 'string') {
@@ -603,23 +885,48 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _validateDatabase = function _validateDatabase(db) {
 	  var defaultError = 'Rebase.createClass failed.';
 	  var errorMsg;
-	  if ((typeof db === 'undefined' ? 'undefined' : _typeof(db)) !== 'object' || !db.ref) {
-	    errorMsg = defaultError + ' Expected an initialized firebase database object.';
-	  } else if (!db || arguments.length > 1) {
-	    errorMsg = defaultError + ' expects 1 argument.';
+	  if ((typeof db === 'undefined' ? 'undefined' : _typeof(db)) !== 'object' || !db.ref && !db.collection) {
+	    errorMsg = defaultError + ' Expected an initialized firebase or firestore database object.';
 	  }
-
 	  if (typeof errorMsg !== 'undefined') {
 	    (0, _utils._throwError)(errorMsg, 'INVALID_CONFIG');
 	  }
 	};
 
+	var _validateDocumentPath = function _validateDocumentPath(path) {
+	  var DocumentReference = _app2.default.firestore.DocumentReference;
+
+	  if ((typeof path === 'undefined' ? 'undefined' : _typeof(path)) === 'object' && path instanceof DocumentReference) return;
+	  var defaultError = 'Invalid document path or reference.';
+	  if (typeof path !== 'string') (0, _utils._throwError)(defaultError, 'INVALID_ENDPOINT');
+	  var segmentCount = (0, _utils._getSegmentCount)(path);
+	  if (segmentCount % 2 !== 0) (0, _utils._throwError)(defaultError, 'INVALID_ENDPOINT');
+	};
+
+	var _validateCollectionPath = function _validateCollectionPath(path) {
+	  var CollectionReference = _app2.default.firestore.CollectionReference;
+
+	  if ((typeof path === 'undefined' ? 'undefined' : _typeof(path)) === 'object' && path instanceof CollectionReference) return;
+	  var defaultError = 'Invalid collection path or reference.';
+	  if (typeof path !== 'string') (0, _utils._throwError)(defaultError, 'INVALID_ENDPOINT');
+	  var segmentCount = (0, _utils._getSegmentCount)(path);
+	  if (segmentCount % 2 === 0) (0, _utils._throwError)(defaultError, 'INVALID_ENDPOINT');
+	};
+
 	exports.optionValidators = optionValidators;
 	exports._validateDatabase = _validateDatabase;
 	exports._validateEndpoint = _validateEndpoint;
+	exports._validateDocumentPath = _validateDocumentPath;
+	exports._validateCollectionPath = _validateCollectionPath;
 
 /***/ }),
-/* 5 */
+/* 6 */
+/***/ (function(module, exports) {
+
+	module.exports = __WEBPACK_EXTERNAL_MODULE_6__;
+
+/***/ }),
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -629,7 +936,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _push;
 
-	var _validators = __webpack_require__(4);
+	var _validators = __webpack_require__(5);
 
 	function _push(endpoint, options, db) {
 	  (0, _validators._validateEndpoint)(endpoint);
@@ -645,7 +952,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -655,7 +962,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _fetch;
 
-	var _validators = __webpack_require__(4);
+	var _validators = __webpack_require__(5);
 
 	var _utils = __webpack_require__(2);
 
@@ -682,7 +989,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -692,7 +999,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _post;
 
-	var _validators = __webpack_require__(4);
+	var _validators = __webpack_require__(5);
 
 	function _post(endpoint, options, db) {
 	  (0, _validators._validateEndpoint)(endpoint);
@@ -706,7 +1013,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -716,7 +1023,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _sync;
 
-	var _validators = __webpack_require__(4);
+	var _validators = __webpack_require__(5);
 
 	var _utils = __webpack_require__(2);
 
@@ -727,7 +1034,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _validators.optionValidators.defaultValue(options);
 	  options.queries && _validators.optionValidators.query(options);
 	  options.then && (options.then.called = false);
-	  options.onFailure = options.onFailure ? options.onFailure.bind(options.context) : function () {};
+	  options.onFailure = options.onFailure ? options.onFailure.bind(options.context) : null;
 	  options.keepKeys = options.keepKeys && options.asArray;
 
 	  //store reference to react's setState
@@ -808,7 +1115,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -818,7 +1125,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _bind;
 
-	var _validators = __webpack_require__(4);
+	var _validators = __webpack_require__(5);
 
 	var _utils = __webpack_require__(2);
 
@@ -840,7 +1147,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -850,7 +1157,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = _update;
 
-	var _validators = __webpack_require__(4);
+	var _validators = __webpack_require__(5);
 
 	function _update(endpoint, options, state) {
 	  (0, _validators._validateEndpoint)(endpoint);
@@ -864,7 +1171,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -884,7 +1191,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, exports) {
 
 	"use strict";
@@ -896,6 +1203,284 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = function (endpoint, db, fn) {
 	  return db.ref().child(endpoint).remove(fn);
 	};
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = _fsSync;
+
+	var _validators = __webpack_require__(5);
+
+	var _utils = __webpack_require__(2);
+
+	function _fsSync(document, options, state) {
+	  //validate arguments
+	  (0, _validators._validateDocumentPath)(document);
+	  _validators.optionValidators.context(options);
+	  _validators.optionValidators.state(options);
+	  options.then && (options.then.called = false);
+	  //store reference to react's setState
+	  if (_fsSync.called !== true) {
+	    _fsSync.reactSetState = options.context.setState;
+	    _fsSync.called = true;
+	  }
+	  options.reactSetState = _fsSync.reactSetState;
+
+	  var id = (0, _utils._createHash)(document, 'syncDoc');
+	  var ref = (0, _utils._fsCreateRef)(document, state.db);
+	  (0, _utils._firebaseRefsMixin)(id, ref, state.refs);
+	  (0, _utils._addFirestoreListener)(id, 'syncDoc', options, ref, state.listeners);
+	  (0, _utils._fsSetUnmountHandler)(options.context, id, state.refs, state.listeners, state.syncs);
+	  var sync = {
+	    id: id,
+	    updateFirebase: _utils._fsUpdateSyncState.bind(null, ref),
+	    stateKey: options.state
+	  };
+	  (0, _utils._addSync)(options.context, sync, state.syncs);
+	  options.context.setState = function (data, cb) {
+	    //if setState is a function, call it first before syncing to fb
+	    if (typeof data === 'function') {
+	      return _fsSync.reactSetState.call(options.context, data, function () {
+	        if (cb) cb.call(options.context);
+	        return options.context.setState.call(options.context, options.context.state);
+	      });
+	    }
+	    //if callback is supplied, call setState first before syncing to fb
+	    if (typeof cb === 'function') {
+	      return _fsSync.reactSetState.call(options.context, data, function () {
+	        cb();
+	        return options.context.setState.call(options.context, data);
+	      });
+	    }
+	    var syncsToCall = state.syncs.get(this);
+	    //if sync does not exist, call original Component.setState
+	    if (!syncsToCall || syncsToCall.length === 0) {
+	      return _fsSync.reactSetState.call(this, data, cb);
+	    }
+	    //send the update of synced keys to firestore
+	    var syncedKeys = syncsToCall.map(function (sync) {
+	      return {
+	        key: sync.stateKey,
+	        update: sync.updateFirebase
+	      };
+	    });
+	    syncedKeys.forEach(function (syncedKey) {
+	      if (data[syncedKey.key]) {
+	        syncedKey.update(data[syncedKey.key]);
+	      }
+	    });
+	    //send the update of all other keys through setState
+	    var allKeys = Object.keys(data);
+	    allKeys.forEach(function (key) {
+	      var absent = !syncedKeys.find(function (syncedKey) {
+	        return syncedKey.key === key;
+	      });
+	      if (absent) {
+	        var update = {};
+	        update[key] = data[key];
+	        _fsSync.reactSetState.call(options.context, function (currentState) {
+	          return Object.assign(currentState, update);
+	        }, cb);
+	      }
+	    });
+	  };
+	  return (0, _utils._returnRef)(document, 'syncDoc', id, options.context);
+	}
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = _fsBind;
+
+	var _validators = __webpack_require__(5);
+
+	var _utils = __webpack_require__(2);
+
+	function _fsBind(path, options, invoker, state) {
+	  _validators.optionValidators.context(options);
+	  options.then && (options.then.called = false);
+	  if (invoker === 'bindDoc') {
+	    (0, _validators._validateDocumentPath)(path);
+	  }
+	  if (invoker === 'bindCollection') {
+	    _validators.optionValidators.state(options);
+	    (0, _validators._validateCollectionPath)(path);
+	  }
+	  if (invoker === 'listenToDoc') {
+	    (0, _validators._validateDocumentPath)(path);
+	    _validators.optionValidators.then(options);
+	  }
+	  if (invoker === 'listenToCollection') {
+	    (0, _validators._validateCollectionPath)(path);
+	    _validators.optionValidators.then(options);
+	  }
+	  var ref = (0, _utils._fsCreateRef)(path, state.db);
+	  var id = (0, _utils._createHash)(path, invoker);
+	  (0, _utils._firebaseRefsMixin)(id, ref, state.refs);
+	  (0, _utils._addFirestoreListener)(id, invoker, options, ref, state.listeners);
+	  (0, _utils._fsSetUnmountHandler)(options.context, id, state.refs, state.listeners, state.syncs);
+	  return (0, _utils._returnRef)(path, invoker, id, options.context);
+	}
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = _fsGet;
+
+	var _utils = __webpack_require__(2);
+
+	var _validators = __webpack_require__(5);
+
+	function _fsGet(endpoint) {
+	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	  var db = arguments[2];
+
+	  (0, _validators._validateEndpoint)(endpoint);
+	  var ref = (0, _utils._fsCreateRef)(endpoint, db);
+	  //check if ref is a collection
+	  var isCollection = !!ref.add;
+	  ref = (0, _utils._addFirestoreQuery)(ref, options.query);
+	  return ref.get().then(function (snapshot) {
+	    if (isCollection && !snapshot.empty || !isCollection && snapshot.exists) {
+	      return (0, _utils._fsPrepareData)(snapshot, options, isCollection);
+	    } else {
+	      return Promise.reject(new Error('No Result'));
+	    }
+	  });
+	}
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = _fsRemoveDoc;
+
+	var _utils = __webpack_require__(2);
+
+	function _fsRemoveDoc(path, db) {
+	  var ref = (0, _utils._fsCreateRef)(path, db);
+	  return ref.delete();
+	}
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = _fsAddToCollection;
+
+	var _validators = __webpack_require__(5);
+
+	var _utils = __webpack_require__(2);
+
+	function _fsAddToCollection(path, doc, db, key) {
+	  (0, _validators._validateCollectionPath)(path);
+	  var ref = (0, _utils._fsCreateRef)(path, db);
+	  if (key) {
+	    return ref.doc(key).set(doc);
+	  }
+	  return ref.add(doc);
+	}
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = _fsRemoveFromCollection;
+
+	var _validators = __webpack_require__(5);
+
+	var _utils = __webpack_require__(2);
+
+	function _fsRemoveFromCollection(path, db) {
+	  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+	  (0, _validators._validateCollectionPath)(path);
+	  var ref = (0, _utils._fsCreateRef)(path, db);
+	  ref = (0, _utils._addFirestoreQuery)(ref, options.query);
+	  return ref.get().then(function (snapshot) {
+	    if (!snapshot.empty) {
+	      var batch = db.batch();
+	      snapshot.forEach(function (doc) {
+	        batch.delete(doc.ref);
+	      });
+	      return batch.commit();
+	    }
+	  });
+	}
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = _fsUpdateDoc;
+
+	var _validators = __webpack_require__(5);
+
+	var _utils = __webpack_require__(2);
+
+	function _fsUpdateDoc(document, data, db) {
+	  (0, _validators._validateDocumentPath)(document);
+	  var ref = (0, _utils._fsCreateRef)(document, db);
+	  return ref.update(data);
+	}
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = _fsReset;
+	function _fsReset(state) {
+	  state.listeners.forEach(function (unsubscribe, id) {
+	    unsubscribe();
+	  });
+	  state.listeners = new Map();
+	  state.refs = new Map();
+	  state.syncs = new WeakMap();
+	  return null;
+	}
 
 /***/ })
 /******/ ])

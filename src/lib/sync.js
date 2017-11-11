@@ -22,7 +22,7 @@ export default function _sync(endpoint, options, state) {
   options.then && (options.then.called = false);
   options.onFailure = options.onFailure
     ? options.onFailure.bind(options.context)
-    : () => {};
+    : null;
   options.keepKeys = options.keepKeys && options.asArray;
 
   //store reference to react's setState
