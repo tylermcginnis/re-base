@@ -259,7 +259,7 @@ describe('listenToCollection()', function() {
 
   it('listeners are removed when component unmounts', done => {
     spyOn(console, 'error');
-    var componentWillMountSpy = jasmine.createSpy('componentWillMountSpy');
+    var componentWillUnmountSpy = jasmine.createSpy('componentWillMountSpy');
     class ChildComponent extends React.Component {
       constructor(props) {
         super(props);
@@ -290,7 +290,7 @@ describe('listenToCollection()', function() {
       }
 
       componentWillUnmount() {
-        componentWillMountSpy('additional clean up performed');
+        componentWillUnmountSpy('additional clean up performed');
       }
 
       render() {
@@ -312,7 +312,7 @@ describe('listenToCollection()', function() {
           collectionRef.doc('testDoc2').set(dummyCollection[1]),
           collectionRef.doc('testDoc3').set(dummyCollection[2])
         ]).then(() => {
-          setTimeout(cb, 200);
+          setTimeout(cb, 500);
         });
       }
 
@@ -324,7 +324,7 @@ describe('listenToCollection()', function() {
           () => {
             this.setData(() => {
               expect(console.error).not.toHaveBeenCalled();
-              expect(componentWillMountSpy).toHaveBeenCalledWith(
+              expect(componentWillUnmountSpy).toHaveBeenCalledWith(
                 'additional clean up performed'
               );
               done();

@@ -236,27 +236,26 @@ describe('syncDoc()', function() {
               key2: firebase.firestore.FieldValue.serverTimestamp
             }
           });
-          setTimeout(() => {
-            this.checkDone();
-          }, 300);
         }
 
-        checkDone() {
-          expect(this.state.one).toEqual({
-            key1: 'one',
-            key2: 'value'
-          });
-          expect(this.state.two).toEqual({
-            key1: 'two',
-            key2: 'value'
-          });
-          expect(this.state.three).toEqual({
-            key1: 'three',
-            key2: firebase.firestore.FieldValue.serverTimestamp
-          });
-          done();
+        componentDidUpdate() {
+          const { one, two, three } = this.state;
+          if (one.key1 && two.key1 && two.key1) {
+            expect(this.state.one).toEqual({
+              key1: 'one',
+              key2: 'value'
+            });
+            expect(this.state.two).toEqual({
+              key1: 'two',
+              key2: 'value'
+            });
+            expect(this.state.three).toEqual({
+              key1: 'three',
+              key2: firebase.firestore.FieldValue.serverTimestamp
+            });
+            done();
+          }
         }
-
         render() {
           return <div>No Data</div>;
         }
@@ -763,7 +762,7 @@ describe('syncDoc()', function() {
             data: dummyObjData
           },
           () => {
-            setTimeout(cb, 50);
+            setTimeout(cb, 100);
           }
         );
       }
