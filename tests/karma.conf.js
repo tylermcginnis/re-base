@@ -11,7 +11,6 @@ module.exports = function(config) {
     preprocessors: {
       'specs/**/*.spec.js': ['webpack']
     },
-    clearContext: false,
     webpack: {
       module: {
         loaders: [

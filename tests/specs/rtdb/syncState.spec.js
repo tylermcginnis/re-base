@@ -39,8 +39,7 @@ describe('syncState()', function() {
   });
 
   afterEach(done => {
-    firebase.Promise
-      .all([ref.child(testEndpoint).set(null), app.delete()])
+    Promise.all([ref.child(testEndpoint).set(null), app.delete()])
       .then(done)
       .catch(err => done.fail(err));
   });
@@ -80,6 +79,10 @@ describe('syncState()', function() {
   });
 
   describe('Async tests', function() {
+    afterEach(done => {
+      ReactDOM.unmountComponentAtNode(document.getElementById('mount'));
+      done();
+    });
     it('syncState() supports syncing of multiple keys', done => {
       var counter = 0;
       class TestComponent extends React.Component {
@@ -160,7 +163,6 @@ describe('syncState()', function() {
         }
         checkDone() {
           if (counter === 6) {
-            ReactDOM.unmountComponentAtNode(document.getElementById('mount'));
             done();
           }
         }
@@ -189,13 +191,13 @@ describe('syncState()', function() {
         }
 
         componentDidMount() {
-          this.refOne = base.syncState(`${testEndpoint}/one`, {
+          this.refOne = base.syncState(`${testEndpoint}/one1`, {
             context: this,
             state: 'one',
             then() {}
           });
 
-          this.refTwo = base.syncState(`${testEndpoint}/two`, {
+          this.refTwo = base.syncState(`${testEndpoint}/two2`, {
             context: this,
             state: 'two',
             then() {}
@@ -205,19 +207,15 @@ describe('syncState()', function() {
             two: { key1: null, key2: 'value' },
             three: { key1: null, key2: 'value' }
           });
-          setTimeout(() => {
-            this.checkDone();
-          }, 500);
-        }
-        checkDone() {
-          expect(this.state.one).toEqual(1);
-          expect(this.state.two.key1).toBeUndefined();
-          expect(this.state.three.key1).toBeNull();
-          done();
         }
 
         componentDidUpdate() {
-          this.checkDone();
+          const { one, two, three } = this.state;
+          if (one && two.key2 && three.key2) {
+            expect(this.state.two.key1).toBeUndefined();
+            expect(this.state.three.key1).toBeNull();
+            done();
+          }
         }
 
         render() {
@@ -246,7 +244,6 @@ describe('syncState()', function() {
         }
         componentDidUpdate() {
           expect(this.state.data).toEqual({});
-          ReactDOM.unmountComponentAtNode(document.body);
           done();
         }
         render() {
@@ -276,7 +273,6 @@ describe('syncState()', function() {
         }
         componentDidUpdate() {
           expect(this.state.data).toEqual(true);
-          ReactDOM.unmountComponentAtNode(document.body);
           done();
         }
         render() {
@@ -307,7 +303,6 @@ describe('syncState()', function() {
         }
         componentDidUpdate() {
           expect(this.state.data).toBeNull();
-          ReactDOM.unmountComponentAtNode(document.body);
           done();
         }
         render() {
@@ -344,7 +339,6 @@ describe('syncState()', function() {
             }
             componentDidUpdate() {
               expect(this.state.data).toEqual(dummyArrData);
-              ReactDOM.unmountComponentAtNode(document.body);
               done();
             }
             render() {
@@ -393,7 +387,7 @@ describe('syncState()', function() {
           };
         }
         componentWillMount() {
-          this.ref = base.syncState(`${testEndpoint}/userData`, {
+          this.ref = base.syncState(`${testEndpoint}/userData1`, {
             context: this,
             state: 'user'
           });
@@ -404,11 +398,10 @@ describe('syncState()', function() {
           });
         }
         componentDidUpdate() {
-          ref.child(`${testEndpoint}/userData`).once('value', snapshot => {
+          ref.child(`${testEndpoint}/userData1`).once('value', snapshot => {
             var data = snapshot.val();
             expect(data).toEqual(this.state.user);
             expect(data).toEqual({ name: 'Tyler' });
-            ReactDOM.unmountComponentAtNode(document.body);
             done();
           });
         }
@@ -428,7 +421,7 @@ describe('syncState()', function() {
           };
         }
         componentWillMount() {
-          this.ref = base.syncState(`${testEndpoint}/userData`, {
+          this.ref = base.syncState(`${testEndpoint}/userData2`, {
             context: this,
             state: 'user'
           });
@@ -439,15 +432,14 @@ describe('syncState()', function() {
               user: { name: 'Tyler' }
             });
           });
-          setTimeout(() => {
-            ref.child(`${testEndpoint}/userData`).once('value', snapshot => {
-              var data = snapshot.val();
+          ref.child(`${testEndpoint}/userData2`).on('value', snapshot => {
+            var data = snapshot.val();
+            if (data) {
               expect(data).toEqual(this.state.user);
               expect(data).toEqual({ name: 'Tyler' });
-              ReactDOM.unmountComponentAtNode(document.body);
               done();
-            });
-          }, 500);
+            }
+          });
         }
         render() {
           return <div>No Data</div>;
@@ -466,7 +458,7 @@ describe('syncState()', function() {
           };
         }
         componentWillMount() {
-          this.ref = base.syncState(`${testEndpoint}/userData`, {
+          base.syncState(`${testEndpoint}/userData3`, {
             context: this,
             state: 'user'
           });
@@ -477,10 +469,12 @@ describe('syncState()', function() {
               user: { name: 'Tyler' }
             });
           }, spy);
-          setTimeout(() => {
-            expect(spy.calls.count()).toEqual(1);
-            done();
-          }, 100);
+          ref.child(`${testEndpoint}/userData3`).on('value', snapshot => {
+            if (snapshot.val()) {
+              expect(spy.calls.count()).toEqual(1);
+              done();
+            }
+          });
         }
         render() {
           return <div>No Data</div>;
@@ -502,7 +496,7 @@ describe('syncState()', function() {
           };
         }
         componentWillMount() {
-          this.ref = base.syncState(`${testEndpoint}/userData`, {
+          this.ref = base.syncState(`${testEndpoint}/userData4`, {
             context: this,
             state: 'users.foo.bar'
           });
@@ -513,12 +507,13 @@ describe('syncState()', function() {
           });
         }
         componentDidUpdate() {
-          ref.child(`${testEndpoint}/userData`).once('value', snapshot => {
+          ref.child(`${testEndpoint}/userData4`).on('value', snapshot => {
             var data = snapshot.val();
-            expect(data).toEqual(this.state.users.foo.bar);
-            expect(data).toEqual({ name: 'Tyler' });
-            ReactDOM.unmountComponentAtNode(document.body);
-            done();
+            if (data) {
+              expect(data).toEqual(this.state.users.foo.bar);
+              expect(data).toEqual({ name: 'Tyler' });
+              done();
+            }
           });
         }
         render() {
@@ -542,7 +537,7 @@ describe('syncState()', function() {
           };
         }
         componentWillMount() {
-          this.ref = base.syncState(`${testEndpoint}/userData`, {
+          this.ref = base.syncState(`${testEndpoint}/userData5`, {
             context: this,
             state: 'users.foo.a'
           });
@@ -551,15 +546,14 @@ describe('syncState()', function() {
           this.setState({
             users: { foo: { a: { name: 'Tyler' } } }
           });
-        }
-        componentDidUpdate() {
-          ref.child(`${testEndpoint}/userData`).once('value', snapshot => {
+          ref.child(`${testEndpoint}/userData5`).on('value', snapshot => {
             var data = snapshot.val();
-            expect(data).toEqual({ name: 'Tyler' });
-            expect(data).toEqual(this.state.users.foo.a);
-            expect('bar').toEqual(this.state.users.foo.b);
-            ReactDOM.unmountComponentAtNode(document.body);
-            done();
+            if (data) {
+              expect(data).toEqual({ name: 'Tyler' });
+              expect(data).toEqual(this.state.users.foo.a);
+              expect('bar').toEqual(this.state.users.foo.b);
+              done();
+            }
           });
         }
         render() {
@@ -580,7 +574,7 @@ describe('syncState()', function() {
         }
         componentDidMount() {
           var context = this;
-          this.ref = base.syncState(`${testEndpoint}/userData`, {
+          base.syncState(`${testEndpoint}/userData6`, {
             context: this,
             state: 'user',
             then() {
@@ -591,7 +585,6 @@ describe('syncState()', function() {
                 () => {
                   expect(this.state.loading).toEqual(false);
                   expect(this).toEqual(context);
-                  ReactDOM.unmountComponentAtNode(document.body);
                   done();
                 }
               );
@@ -688,7 +681,6 @@ describe('syncState()', function() {
             if (data !== null) {
               expect(data).toEqual(this.state.friends);
               expect(data).toEqual(dummyArrData);
-              ReactDOM.unmountComponentAtNode(document.body);
               done();
             }
           });
@@ -718,7 +710,7 @@ describe('syncState()', function() {
           };
         }
         componentWillMount() {
-          this.ref = base.syncState(`${testEndpoint}/userData`, {
+          this.ref = base.syncState(`${testEndpoint}/userData7`, {
             context: this,
             state: 'user'
           });
@@ -729,12 +721,11 @@ describe('syncState()', function() {
           });
         }
         componentDidUpdate() {
-          ref.child(`${testEndpoint}/userData`).on('value', snapshot => {
+          ref.child(`${testEndpoint}/userData7`).on('value', snapshot => {
             var data = snapshot.val();
-            if (data !== null) {
+            if (data) {
               expect(data).toEqual(this.state.user);
               expect(data).toEqual(nestedObj);
-              ReactDOM.unmountComponentAtNode(document.body);
               done();
             }
           });
@@ -818,7 +809,6 @@ describe('syncState()', function() {
             expectedOutput.forEach((user, index) => {
               expect(this.state.users[index].name).toEqual(user.name);
             });
-            ReactDOM.unmountComponentAtNode(document.body);
             done();
           }
         }
@@ -831,16 +821,15 @@ describe('syncState()', function() {
 
     it('syncState() keeps generated keys when asArray and keepKeys options are true', done => {
       //set up
-      firebase.Promise
-        .all(
-          dummyArrayOfObjects.map(item => {
-            return ref.child(`${testEndpoint}/users`).push(
-              Object.assign(item, {
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-              })
-            );
-          })
-        )
+      Promise.all(
+        dummyArrayOfObjects.map(item => {
+          return ref.child(`${testEndpoint}/users1`).push(
+            Object.assign(item, {
+              timestamp: firebase.database.ServerValue.TIMESTAMP
+            })
+          );
+        })
+      )
         .then(() => {
           class TestComponent extends React.Component {
             constructor(props) {
@@ -851,7 +840,7 @@ describe('syncState()', function() {
               };
             }
             componentWillMount() {
-              this.ref = base.syncState(`${testEndpoint}/users`, {
+              this.ref = base.syncState(`${testEndpoint}/users1`, {
                 context: this,
                 state: 'users',
                 asArray: true,
@@ -871,7 +860,6 @@ describe('syncState()', function() {
                 expect(this.state.users[0].timestamp).toEqual(
                   jasmine.any(Number)
                 );
-                ReactDOM.unmountComponentAtNode(document.body);
                 done();
               }
             }
@@ -889,7 +877,7 @@ describe('syncState()', function() {
     it('syncState() will not attempt to keep keys if the objects in the array do not have a key property when asArray and keepKeys options are true', done => {
       //set up
       ref
-        .child(`${testEndpoint}/users`)
+        .child(`${testEndpoint}/users3`)
         .set(dummyArrData)
         .then(() => {
           class TestComponent extends React.Component {
@@ -900,8 +888,8 @@ describe('syncState()', function() {
                 hasUpdated: false
               };
             }
-            componentWillMount() {
-              this.ref = base.syncState(`${testEndpoint}/users`, {
+            componentDidMount() {
+              this.ref = base.syncState(`${testEndpoint}/users3`, {
                 context: this,
                 state: 'users',
                 asArray: true
@@ -916,7 +904,6 @@ describe('syncState()', function() {
                 });
               } else {
                 expect(this.state.users[0].key).toBeUndefined();
-                ReactDOM.unmountComponentAtNode(document.body);
                 done();
               }
             }
@@ -941,7 +928,7 @@ describe('syncState()', function() {
           };
         }
         componentWillMount() {
-          this.ref = base.syncState(`${testEndpoint}/users`, {
+          this.ref = base.syncState(`${testEndpoint}/users4`, {
             context: this,
             state: 'users'
           });
@@ -960,7 +947,6 @@ describe('syncState()', function() {
           if (!this.state.hasUpdated) this.setState({ hasUpdated: true });
           if (this.state.hasUpdated) {
             expect(this.state.users[0].timestamp).toEqual(jasmine.any(Number));
-            ReactDOM.unmountComponentAtNode(document.body);
             done();
           }
         }
@@ -981,7 +967,7 @@ describe('syncState()', function() {
           };
         }
         componentWillMount() {
-          this.ref = base.syncState(`${testEndpoint}/user`, {
+          this.ref = base.syncState(`${testEndpoint}/user3`, {
             context: this,
             state: 'user'
           });
@@ -998,7 +984,6 @@ describe('syncState()', function() {
           if (!this.state.hasUpdated) this.setState({ hasUpdated: true });
           if (this.state.hasUpdated) {
             expect(this.state.user.timestamp).toEqual(jasmine.any(Number));
-            ReactDOM.unmountComponentAtNode(document.body);
             done();
           }
         }
@@ -1036,7 +1021,7 @@ describe('syncState()', function() {
           };
         }
         componentDidMount() {
-          this.ref = base.syncState(`${testEndpoint}/myFriends`, {
+          this.ref = base.syncState(`${testEndpoint}/myFriends2`, {
             context: this,
             state: 'friends',
             asArray: true
@@ -1046,7 +1031,7 @@ describe('syncState()', function() {
           });
         }
         componentDidUpdate() {
-          ref.child(`${testEndpoint}/myFriends`).on('value', snapshot => {
+          ref.child(`${testEndpoint}/myFriends2`).on('value', snapshot => {
             var data = snapshot.val();
             if (data) {
               expect(data).toEqual(this.state.friends);
@@ -1075,7 +1060,7 @@ describe('syncState()', function() {
           };
         }
         componentDidMount() {
-          this.ref = base.syncState(`${testEndpoint}/myFriends`, {
+          this.ref = base.syncState(`${testEndpoint}/myFriends3`, {
             context: this,
             state: 'friends',
             asArray: true
@@ -1085,7 +1070,7 @@ describe('syncState()', function() {
           });
         }
         componentDidUpdate() {
-          ref.child(`${testEndpoint}/myFriends`).on('value', snapshot => {
+          ref.child(`${testEndpoint}/myFriends3`).on('value', snapshot => {
             var data = snapshot.val();
             if (data) {
               expect(data).toEqual(this.state.friends);
@@ -1119,7 +1104,7 @@ describe('syncState()', function() {
           };
         }
         componentDidMount() {
-          this.ref = base.syncState(`${testEndpoint}/myFriends`, {
+          this.ref = base.syncState(`${testEndpoint}/myFriends4`, {
             context: this,
             state: 'friends',
             asArray: true
@@ -1139,7 +1124,7 @@ describe('syncState()', function() {
             var data = snapshot.val();
             if (data) {
               expect(data).toEqual(dummyArrData);
-              ref.child(`${testEndpoint}/myFriends`).on('value', snapshot => {
+              ref.child(`${testEndpoint}/myFriends4`).on('value', snapshot => {
                 var data1 = snapshot.val();
                 expect(data1).toEqual(null);
                 done();
@@ -1168,7 +1153,7 @@ describe('syncState()', function() {
           };
         }
         componentDidMount() {
-          this.ref = base.syncState(`${testEndpoint}/myFriends`, {
+          this.ref = base.syncState(`${testEndpoint}/myFriends5`, {
             context: this,
             state: 'friends',
             asArray: true
@@ -1320,7 +1305,7 @@ describe('syncState()', function() {
       }
 
       componentWillMount() {
-        base.syncState(testEndpoint, {
+        base.syncState(`${testEndpoint}/userData8`, {
           context: this,
           state: 'data'
         });
@@ -1328,25 +1313,20 @@ describe('syncState()', function() {
 
       componentDidMount() {
         this.setState(
-          (prevState, props) => ({
+          prevState => ({
             data: prevState.data + 1
           }),
           () => {
             expect(this.state.data).toEqual(6);
-            setTimeout(() => {
-              ref
-                .child(testEndpoint)
-                .once('value')
-                .then(snapshot => {
-                  var val = snapshot.val();
-                  expect(val).toEqual(6);
-                  done();
-                });
-            }, 1000);
           }
         );
+        ref.child(`${testEndpoint}/userData8`).on('value', snapshot => {
+          var val = snapshot.val();
+          if (val === 6) {
+            done();
+          }
+        });
       }
-
       render() {
         return <div>{this.state.data}</div>;
       }
