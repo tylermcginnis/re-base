@@ -54,6 +54,10 @@ describe('createClass()', function() {
       jasmine.any(Object),
       'Public API: initializedApp not exposed'
     );
+    expect(base.timestamp).toEqual(
+      { '.sv': 'timestamp' },
+      'Public API: timestamp not exposed'
+    );
     done();
 
     //clean up
@@ -124,6 +128,10 @@ describe('createClass()', function() {
     expect(base.initializedApp).toEqual(
       jasmine.any(Object),
       'Public API: initializedApp not exposed'
+    );
+    expect(base.timestamp).toEqual(
+      firebase.firestore.FieldValue.serverTimestamp(),
+      'Public API: timestamp not exposed'
     );
     done();
 
