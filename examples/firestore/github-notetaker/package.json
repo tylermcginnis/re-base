@@ -1,0 +1,34 @@
+{
+  "name": "github-notetaker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack && http-server public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tylermcginnis/github-notetaker-egghead"
+  },
+  "author": "Tyler McGinnis <tylermcginnis33@gmail.com> (http://tylermcginnis.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tylermcginnis/github-notetaker-egghead/issues"
+  },
+  "homepage": "https://github.com/tylermcginnis/github-notetaker-egghead",
+  "dependencies": {
+    "axios": "^0.13.1",
+    "prop-types": "^15.6.0",
+    "re-base": "^3.1.0",
+    "react": "^16.1.0",
+    "react-dom": "^16.1.0",
+    "react-router-dom": "^4.2.2"
+  },
+  "devDependencies": {
+    "babel-core": "^5.8.38",
+    "babel-loader": "^5.4.2",
+    "http-server": "^0.9.0",
+    "webpack": "^1.13.1"
+  }
+}
