@@ -134,37 +134,6 @@ describe('bindCollection()', function() {
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
-    it('bindCollection() returns no data if the collection does not exist', done => {
-      class TestComponent extends React.Component {
-        constructor(props) {
-          super(props);
-          this.state = {
-            emptyObj: {
-              value: {}
-            },
-            kickOffUpdate: false
-          };
-        }
-        componentDidMount() {
-          base.bindCollection(`${collectionPath}`, {
-            context: this,
-            state: 'emptyObj',
-            then() {
-              this.forceUpdate();
-            }
-          });
-        }
-        componentDidUpdate() {
-          expect(this.state.emptyObj.value).toEqual({});
-          done();
-        }
-        render() {
-          return <div>No Data</div>;
-        }
-      }
-      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
-    });
-
     it('bindCollection() properly updates the local state property when the collection changes', done => {
       class TestComponent extends React.Component {
         constructor(props) {
@@ -245,6 +214,32 @@ describe('bindCollection()', function() {
           if (this.state.data.length === 5) {
             done();
           }
+        }
+        render() {
+          return <div>No Data</div>;
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
+
+    it('bindCollection() returns empty array if collection is empty', done => {
+      const testRef = app.firestore().collection('testCollection');
+      class TestComponent extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            data: []
+          };
+        }
+        componentWillMount() {
+          base.bindCollection(testRef, {
+            context: this,
+            state: 'data'
+          });
+        }
+        componentDidUpdate() {
+          expect(this.state.data).toEqual([]);
+          done();
         }
         render() {
           return <div>No Data</div>;

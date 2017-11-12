@@ -70,6 +70,31 @@ describe('bindDoc()', function() {
   });
 
   describe('Async tests', function() {
+    it('bindDoc() returns empty object if doc does exist', done => {
+      class TestComponent extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            user: null
+          };
+        }
+        componentDidMount() {
+          this.ref = base.bindDoc(`${collectionPath}/userData`, {
+            context: this,
+            state: 'user'
+          });
+        }
+        componentDidUpdate() {
+          expect(this.state.user).toEqual({});
+          done();
+        }
+        render() {
+          return <div>No Data</div>;
+        }
+      }
+      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+    });
+
     it('bindDoc() invokes .then when the initial listener is set', done => {
       class TestComponent extends React.Component {
         constructor(props) {
@@ -131,37 +156,22 @@ describe('bindDoc()', function() {
       ReactDOM.render(<TestComponent />, document.getElementById('mount'));
     });
 
-    it('bindDoc() returns no data if the document does not exist', done => {
+    it('bindDoc() returns empty object if the document does not exist', done => {
       class TestComponent extends React.Component {
         constructor(props) {
           super(props);
           this.state = {
-            emptyObj: {
-              value: {}
-            },
-            emptyArr: {
-              value: []
-            },
-            kickOffUpdate: false
+            doc1: {}
           };
         }
         componentDidMount() {
           base.bindDoc(`${collectionPath}/testDoc1`, {
             context: this,
-            state: 'emptyObj'
-          });
-
-          base.bindDoc(`${collectionPath}/testDoce2`, {
-            context: this,
-            state: 'emptyArr',
-            then() {
-              this.forceUpdate();
-            }
+            state: 'doc1'
           });
         }
         componentDidUpdate() {
-          expect(this.state.emptyObj.value).toEqual({});
-          expect(this.state.emptyArr.value).toEqual([]);
+          expect(this.state.doc1).toEqual({});
           done();
         }
         render() {
@@ -189,8 +199,10 @@ describe('bindDoc()', function() {
           collectionRef.doc('testDoc').set(dummyObjData);
         }
         componentDidUpdate() {
-          expect(this.state.data).toEqual(dummyObjData);
-          done();
+          if (this.state.data.name) {
+            expect(this.state.data).toEqual(dummyObjData);
+            done();
+          }
         }
         render() {
           return <div>No Data</div>;
@@ -219,8 +231,10 @@ describe('bindDoc()', function() {
             collectionRef.doc('testDoc').set(dummyObjData);
           }
           componentDidUpdate() {
-            expect(this.state.data).toEqual(dummyObjData);
-            done();
+            if (this.state.data.name) {
+              expect(this.state.data).toEqual(dummyObjData);
+              done();
+            }
           }
           render() {
             return <div>No Data</div>;
@@ -264,10 +278,12 @@ describe('bindDoc()', function() {
           });
         }
         componentDidUpdate() {
-          expect(this.state.data).toEqual(dummyObjData);
-          component1DidUpdate = true;
-          if (component1DidUpdate && component2DidUpdate) {
-            cleanUp(done);
+          if (this.state.data.name) {
+            expect(this.state.data).toEqual(dummyObjData);
+            component1DidUpdate = true;
+            if (component1DidUpdate && component2DidUpdate) {
+              cleanUp(done);
+            }
           }
         }
         render() {
@@ -297,10 +313,12 @@ describe('bindDoc()', function() {
           collectionRef.doc('testDoc').set(dummyObjData);
         }
         componentDidUpdate() {
-          expect(this.state.data).toEqual(dummyObjData);
-          component2DidUpdate = true;
-          if (component1DidUpdate && component2DidUpdate) {
-            cleanUp(done);
+          if (this.state.data.name) {
+            expect(this.state.data).toEqual(dummyObjData);
+            component2DidUpdate = true;
+            if (component1DidUpdate && component2DidUpdate) {
+              cleanUp(done);
+            }
           }
         }
         render() {

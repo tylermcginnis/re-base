@@ -90,21 +90,11 @@ describe('listenToDoc()', function() {
       const ref = base.listenToDoc(`${collectionPath}/testDoc`, {
         context: {},
         then(data) {
-          expect(data).toEqual(dummyCollection[0]);
-          base.removeBinding(ref);
-          done();
-        }
-      });
-      collectionRef.doc('testDoc').set(dummyCollection[0]);
-    });
-
-    it("listenToDoc()'s .then method gets invoked when the document changes", done => {
-      const ref = base.listenToDoc(`${collectionPath}/testDoc`, {
-        context: {},
-        then(data) {
-          expect(data).toEqual(dummyCollection[0]);
-          base.removeBinding(ref);
-          done();
+          if (Object.keys(data).length) {
+            expect(data).toEqual(dummyCollection[0]);
+            base.removeBinding(ref);
+            done();
+          }
         }
       });
       collectionRef.doc('testDoc').set(dummyCollection[0]);
@@ -118,9 +108,11 @@ describe('listenToDoc()', function() {
       const ref = base.listenToDoc(docRef, {
         context: {},
         then(data) {
-          expect(data).toEqual(dummyCollection[0]);
-          base.removeBinding(ref);
-          done();
+          if (Object.keys(data).length) {
+            expect(data).toEqual(dummyCollection[0]);
+            base.removeBinding(ref);
+            done();
+          }
         }
       });
       collectionRef.doc('testDoc').set(dummyCollection[0]);
@@ -148,11 +140,13 @@ describe('listenToDoc()', function() {
         context: {},
         withRefs: true,
         then(data) {
-          expect(data.ref).toEqual(
-            jasmine.any(firebase.firestore.DocumentReference)
-          );
-          base.removeBinding(ref);
-          done();
+          if (Object.keys(data).length) {
+            expect(data.ref).toEqual(
+              jasmine.any(firebase.firestore.DocumentReference)
+            );
+            base.removeBinding(ref);
+            done();
+          }
         }
       });
       collectionRef.doc('testDoc').set(dummyCollection[0]);
@@ -163,9 +157,11 @@ describe('listenToDoc()', function() {
         context: {},
         withIds: true,
         then(data) {
-          expect(data.id).toEqual(jasmine.any(String));
-          base.removeBinding(ref);
-          done();
+          if (Object.keys(data).length) {
+            expect(data.id).toEqual(jasmine.any(String));
+            base.removeBinding(ref);
+            done();
+          }
         }
       });
       collectionRef.doc('testDoc').set(dummyCollection[0]);
@@ -176,11 +172,13 @@ describe('listenToDoc()', function() {
       const ref1 = base.listenToDoc(`${collectionPath}/testDoc`, {
         context: {},
         then(data) {
-          updateCount++;
-          expect(data).toEqual(dummyCollection[0]);
-          base.removeBinding(ref1);
-          if (updateCount === 2) {
-            done();
+          if (Object.keys(data).length) {
+            updateCount++;
+            expect(data).toEqual(dummyCollection[0]);
+            base.removeBinding(ref1);
+            if (updateCount === 2) {
+              done();
+            }
           }
         }
       });
@@ -188,11 +186,13 @@ describe('listenToDoc()', function() {
       const ref2 = base.listenToDoc(`${collectionPath}/testDoc`, {
         context: {},
         then(data) {
-          updateCount++;
-          expect(data).toEqual(dummyCollection[0]);
-          base.removeBinding(ref2);
-          if (updateCount === 2) {
-            done();
+          if (Object.keys(data).length) {
+            updateCount++;
+            expect(data).toEqual(dummyCollection[0]);
+            base.removeBinding(ref2);
+            if (updateCount === 2) {
+              done();
+            }
           }
         }
       });
