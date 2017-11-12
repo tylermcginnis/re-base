@@ -35,7 +35,7 @@ exports.mockFirestoreDocumentSnapshot = object => {
     data() {
       return object;
     },
-    exists: true,
+    exists: !!object,
     id: '12345',
     ref: { _id: 'something' }
   };
@@ -48,7 +48,7 @@ exports.mockFirestoreQuerySnapshot = collection => {
     forEach(cb) {
       return collection.forEach(cb);
     },
-    empty: collection.length
+    empty: !collection
   };
   return snapshot;
 };

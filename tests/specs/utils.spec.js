@@ -375,6 +375,26 @@ describe('utils', () => {
         id: '12345'
       });
     });
+
+    it('should return an empty array if collection snapshot is empty', () => {
+      var snapshot = mockFirestoreQuerySnapshot();
+      var options = {
+        state: 'prop',
+        withIds: true
+      };
+      var result = utils._fsPrepareData(snapshot, options, true);
+      expect(result.prop).toEqual([]);
+    });
+
+    it('should return an empty object if document does not exist', () => {
+      var snapshot = mockFirestoreDocumentSnapshot();
+      var options = {
+        state: 'prop',
+        withIds: true
+      };
+      var result = utils._fsPrepareData(snapshot, options);
+      expect(result.prop).toEqual({});
+    });
   });
 
   describe('_addSync', () => {

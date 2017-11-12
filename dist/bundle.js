@@ -593,39 +593,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	  listeners.set(id, ref.onSnapshot(function (snapshot) {
 	    if (invoker.match(/^listenTo/)) {
 	      if (invoker === 'listenToDoc') {
-	        if (snapshot.exists) {
-	          var newState = _fsPrepareData(snapshot, options);
-	          return options.then.call(options.context, newState);
-	        }
+	        var newState = _fsPrepareData(snapshot, options);
+	        return options.then.call(options.context, newState);
 	      }
 	      if (invoker === 'listenToCollection') {
-	        if (!snapshot.empty) {
-	          var _newState2 = _fsPrepareData(snapshot, options, true);
-	          return options.then.call(options.context, _newState2);
-	        }
+	        var _newState2 = _fsPrepareData(snapshot, options, true);
+	        return options.then.call(options.context, _newState2);
 	      }
 	    } else {
 	      if (invoker === 'syncDoc') {
-	        if (snapshot.exists) {
-	          var _newState3 = _fsPrepareData(snapshot, options);
-	          options.reactSetState.call(options.context, function (currentState) {
-	            return Object.assign(currentState, _newState3);
-	          });
-	        }
+	        var _newState3 = _fsPrepareData(snapshot, options);
+	        options.reactSetState.call(options.context, function (currentState) {
+	          return Object.assign(currentState, _newState3);
+	        });
 	      } else if (invoker === 'bindDoc') {
-	        if (snapshot.exists) {
-	          var _newState4 = _fsPrepareData(snapshot, options);
-	          _setState.call(options.context, function (currentState) {
-	            return Object.assign(currentState, _newState4);
-	          });
-	        }
+	        var _newState4 = _fsPrepareData(snapshot, options);
+	        _setState.call(options.context, function (currentState) {
+	          return Object.assign(currentState, _newState4);
+	        });
 	      } else if (invoker === 'bindCollection') {
-	        if (!snapshot.empty) {
-	          var _newState5 = _fsPrepareData(snapshot, options, true);
-	          _setState.call(options.context, function (currentState) {
-	            return Object.assign(currentState, _newState5);
-	          });
-	        }
+	        var _newState5 = _fsPrepareData(snapshot, options, true);
+	        _setState.call(options.context, function (currentState) {
+	          return Object.assign(currentState, _newState5);
+	        });
 	      }
 	      if (options.then && options.then.called === false) {
 	        options.then.call(options.context);
@@ -644,16 +634,24 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  var meta = {};
 	  if (!isCollection) {
-	    if (options.withRefs) meta.ref = snapshot.ref;
-	    if (options.withIds) meta.id = snapshot.id;
-	    return options.state ? _defineProperty({}, options.state, Object.assign({}, snapshot.data(), meta)) : Object.assign({}, snapshot.data(), meta);
+	    var data = {};
+	    if (snapshot.exists) {
+	      if (options.withRefs) meta.ref = snapshot.ref;
+	      if (options.withIds) meta.id = snapshot.id;
+	      data = snapshot.data();
+	    } else {
+	      data = {};
+	    }
+	    return options.state ? _defineProperty({}, options.state, Object.assign({}, data, meta)) : Object.assign({}, data, meta);
 	  }
 	  var collection = [];
-	  snapshot.forEach(function (doc) {
-	    if (options.withRefs) meta.ref = doc.ref;
-	    if (options.withIds) meta.id = doc.id;
-	    collection.push(Object.assign({}, doc.data(), meta));
-	  });
+	  if (!snapshot.empty) {
+	    snapshot.forEach(function (doc) {
+	      if (options.withRefs) meta.ref = doc.ref;
+	      if (options.withIds) meta.id = doc.id;
+	      collection.push(Object.assign({}, doc.data(), meta));
+	    });
+	  }
 	  return options.state ? _defineProperty({}, options.state, collection) : collection;
 	};
 

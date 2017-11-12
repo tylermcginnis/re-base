@@ -97,9 +97,11 @@ describe('listenToCollection()', function() {
       const ref = base.listenToCollection(`${collectionPath}`, {
         context: {},
         then(data) {
-          expect(data).toEqual([dummyCollection[0]]);
-          base.removeBinding(ref);
-          done();
+          if (data.length) {
+            expect(data).toEqual([dummyCollection[0]]);
+            base.removeBinding(ref);
+            done();
+          }
         }
       });
       collectionRef.doc('testDoc').set(dummyCollection[0]);
@@ -140,11 +142,13 @@ describe('listenToCollection()', function() {
         context: {},
         withRefs: true,
         then(data) {
-          expect(data[0].ref).toEqual(
-            jasmine.any(firebase.firestore.DocumentReference)
-          );
-          base.removeBinding(ref);
-          done();
+          if (data.length) {
+            expect(data[0].ref).toEqual(
+              jasmine.any(firebase.firestore.DocumentReference)
+            );
+            base.removeBinding(ref);
+            done();
+          }
         }
       });
       collectionRef.doc('testDoc').set(dummyCollection[0]);
@@ -155,43 +159,44 @@ describe('listenToCollection()', function() {
         context: {},
         withIds: true,
         then(data) {
-          expect(data[0].id).toEqual(jasmine.any(String));
-          base.removeBinding(ref);
-          done();
+          if (data.length) {
+            expect(data[0].id).toEqual(jasmine.any(String));
+            base.removeBinding(ref);
+            done();
+          }
         }
       });
       collectionRef.doc('testDoc').set(dummyCollection[0]);
     });
 
     it('listenToCollection() can apply a simple query', done => {
-      class TestComponent extends React.Component {
-        constructor(props) {
-          super(props);
-          this.state = {
-            data: []
-          };
-        }
-        componentWillMount() {
-          base.listenToCollection(`${collectionPath}`, {
-            context: this,
-            query: ref => ref.where('name', '==', 'Document 1'),
-            then(data) {
-              if (data.length) {
-                expect(data.length).toEqual(1);
-                expect(data[0].name).toEqual('Document 1');
-                done();
+      seedCollection().then(() => {
+        class TestComponent extends React.Component {
+          constructor(props) {
+            super(props);
+            this.state = {
+              data: []
+            };
+          }
+          componentWillMount() {
+            base.listenToCollection(`${collectionPath}`, {
+              context: this,
+              query: ref => ref.where('name', '==', 'Document 1'),
+              then(data) {
+                if (data.length) {
+                  expect(data.length).toEqual(1);
+                  expect(data[0].name).toEqual('Document 1');
+                  done();
+                }
               }
-            }
-          });
+            });
+          }
+          render() {
+            return <div>No Data</div>;
+          }
         }
-        componentDidMount() {
-          seedCollection();
-        }
-        render() {
-          return <div>No Data</div>;
-        }
-      }
-      ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+        ReactDOM.render(<TestComponent />, document.getElementById('mount'));
+      });
     });
 
     it('listenToCollection() can apply a compound query', done => {
@@ -219,7 +224,6 @@ describe('listenToCollection()', function() {
               }
             });
           }
-          componentDidMount() {}
           render() {
             return <div>No Data</div>;
           }
@@ -233,11 +237,13 @@ describe('listenToCollection()', function() {
       const ref1 = base.listenToCollection(`${collectionPath}`, {
         context: {},
         then(data) {
-          updateCount++;
-          expect(data[0]).toEqual(dummyCollection[0]);
-          base.removeBinding(ref1);
-          if (updateCount === 2) {
-            done();
+          if (data.length) {
+            updateCount++;
+            expect(data[0]).toEqual(dummyCollection[0]);
+            base.removeBinding(ref1);
+            if (updateCount === 2) {
+              done();
+            }
           }
         }
       });
@@ -245,11 +251,13 @@ describe('listenToCollection()', function() {
       const ref2 = base.listenToCollection(`${collectionPath}`, {
         context: {},
         then(data) {
-          updateCount++;
-          expect(data[0]).toEqual(dummyCollection[0]);
-          base.removeBinding(ref2);
-          if (updateCount === 2) {
-            done();
+          if (data.length) {
+            updateCount++;
+            expect(data[0]).toEqual(dummyCollection[0]);
+            base.removeBinding(ref2);
+            if (updateCount === 2) {
+              done();
+            }
           }
         }
       });
