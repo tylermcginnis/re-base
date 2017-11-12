@@ -97,6 +97,13 @@ var base = Rebase.createClass(db);
 
 <br />
 
+### timestamp
+
+##### Purpose
+  This property contains the an object that you can use when adding data that will be converted to a timestamp by Firebase. See [the docs](https://firebase.google.com/docs/reference/js/firebase.database.ServerValue) for more info.
+
+<br />
+
 ### syncState(endpoint, options)
 
 ##### Purpose
@@ -583,6 +590,13 @@ var base = Rebase.createClass(db);
 
 ##### Purpose
   This property contains the initialized firebase app that was passed into re-base. You can access any of the firebase services that you are using off this object. For instance, if you are using the `auth` service and want to quickly access it off of re-base
+
+<br />
+
+### timestamp
+
+##### Purpose
+  This property contains the an object that you can use when adding data that will be converted to a timestamp by Firestore. See [the docs](https://firebase.google.com/docs/reference/js/firebase.firestore.FieldValue#.serverTimestamp) for more info.
 
 <br />
 

@@ -1,6 +1,7 @@
 //helpers
 import { throwError } from './lib/utils';
 import { _validateDatabase } from './lib/validators';
+import firebase from 'firebase/app';
 
 //database
 import _push from './lib/push';
@@ -34,6 +35,7 @@ module.exports = (function() {
       if (typeof db.ref === 'function') {
         var rebase = {
           initializedApp: db.app,
+          timestamp: firebase.database.ServerValue.TIMESTAMP,
           listenTo(endpoint, options) {
             return _bind.call(this, endpoint, options, 'listenTo', {
               db,
@@ -90,6 +92,7 @@ module.exports = (function() {
       } else {
         var rebase = {
           initializedApp: db.app,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
           bindDoc(path, options) {
             return _fsBind.call(this, path, options, 'bindDoc', {
               db,
