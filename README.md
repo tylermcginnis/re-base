@@ -100,7 +100,7 @@ var base = Rebase.createClass(db);
 ### timestamp
 
 ##### Purpose
-  This property contains the an object that you can use when adding data that will be converted to a timestamp by Firebase. See [the docs](https://firebase.google.com/docs/reference/js/firebase.database.ServerValue) for more info.
+  This property contains an object that you can use when adding data that will be converted to a timestamp by Firebase. See [the docs](https://firebase.google.com/docs/reference/js/firebase.database.ServerValue) for more info.
 
 <br />
 
