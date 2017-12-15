@@ -794,7 +794,7 @@ Add a new Document to a Collection.
   3. ID (String - optional) the id for the document. If omitted, the Firestore will generate an id for you.
 
 ##### Return Value
-  A Promise thats resolve when the write is complete or rejects with any error such as a permissions error.
+  A Promise that resolves when the write is complete or rejects with any error such as a permissions error.
 
 ##### Example
 
@@ -808,34 +808,6 @@ componentWillMount() {
   });
 }
 ```
-
-### addToCollection(refOrPath, data, id)
-
-##### Purpose
-
-Add a new Document to a Collection.
-
-##### Arguments
-  1. CollectionReference or path (CollectionReference or String)
-  2. Data (Object) the document data
-  3. ID (String - optional) the id for the document. If omitted, the Firestore will generate an id for you.
-
-##### Return Value
-  A Promise thats resolve when the write is complete or rejects with any error such as a permissions error.
-
-##### Example
-
-```javascript
-componentWillMount() {
-  base.addToCollection('myCollection', data, 'myCustomId')
-    .then(() => {
-      //document is added to the collection
-    }).catch(err => {
-    //handle error
-  });
-}
-```
-
 
 ### updateDoc(refOrPath, data)
 
@@ -948,7 +920,7 @@ Syncs a component's local state with a document in Firestore.
 
 ```javascript
 componentWillMount() {
-  base.updateDoc('myCollection/myDoc', data)
+  base.syncDoc('myCollection/myDoc', data)
     .then(() => {
       //document is updated
     }).catch(err => {
