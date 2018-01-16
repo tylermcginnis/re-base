@@ -531,7 +531,7 @@ The binding above will sort the `users` endpoint by iq, retrieve the last three 
 - [*listenToDoc*](#listentodocreforpath-options) : One way data binding. When your Document changes, it will invoke a callback passing it the new data.
 - [*bindCollection*](#bindcollectionreforpath-options) : One way binding. When the collection changes, your component will update with the new data.
 - [*listenToCollection*](#listentocollectionreforpath-options): One way binding. When the collection changes, it will invoke a callback passing it the new data.
-- [*get*](#getreforpath-options) : One way binding. When the collection changes, it will invoke a callback passing it the new data.
+- [*get*](#getreforpath-options) : Fetch either a Collection or Document.
 - [*addToCollection*](#addtocollectionreforpath-data-id) : Add a new document to a collection.
 - [*updateDoc*](#updatedocreforpath-data) : Add a new document to a collection.
 - [*removeDoc*](#removedocreforpath) : Deletes a document.
