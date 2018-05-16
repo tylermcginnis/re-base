@@ -565,7 +565,12 @@ var app = firebase.initializeApp({
       storageBucket: "bucket.appspot.com",
       messagingSenderId: "xxxxxxxxxxxxxx"
 });
-var base = Rebase.createClass(app.firestore());
+
+var firestore = app.firestore();
+var settings = { timestampsInSnapshots: true };
+firestore.settings(settings);
+
+var base = Rebase.createClass(firestore);
 
 ```
 
@@ -582,7 +587,11 @@ var app = firebase.initializeApp({
     storageBucket: "bucket.appspot.com",
     messagingSenderId: "xxxxxxxxxxxxxx"
 });
+
 var db = firebase.firestore(app);
+var settings = { timestampsInSnapshots: true };
+db.settings(settings);
+
 var base = Rebase.createClass(db);
 ```
 
