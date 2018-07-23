@@ -1,7 +1,7 @@
 const Rebase = require('../../../src/rebase');
 var React = require('react');
 var ReactDOM = require('react-dom');
-var firebase = require('firebase');
+var firebase = require('firebase/app');
 require('firebase/database');
 
 var invalidEndpoints = require('../../fixtures/invalidEndpoints');
@@ -546,15 +546,13 @@ describe('syncState()', function() {
           this.setState({
             users: { foo: { a: { name: 'Tyler' } } }
           });
-          ref.child(`${testEndpoint}/userData5`).on('value', snapshot => {
-            var data = snapshot.val();
-            if (data) {
-              expect(data).toEqual({ name: 'Tyler' });
-              expect(data).toEqual(this.state.users.foo.a);
-              expect('bar').toEqual(this.state.users.foo.b);
-              done();
-            }
-          });
+        }
+        componentDidUpdate() {
+          if (this.state.users.foo.a.name) {
+            expect({ name: 'Tyler' }).toEqual(this.state.users.foo.a);
+            expect('bar').toEqual(this.state.users.foo.b);
+            done();
+          }
         }
         render() {
           return <div>No Data</div>;

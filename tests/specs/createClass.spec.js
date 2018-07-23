@@ -1,9 +1,7 @@
 const Rebase = require('../../src/rebase');
-var React = require('react');
-var ReactDOM = require('react-dom');
 var firebase = require('firebase/app');
-var database = require('firebase/database');
-var firestore = require('firebase/firestore');
+require('firebase/database');
+require('firebase/firestore');
 
 var firebaseConfig = require('../fixtures/config');
 
@@ -75,6 +73,7 @@ describe('createClass()', function() {
     //setup
     var app = firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore(app);
+    db.settings({ timestampsInSnapshots: true });
     var base = Rebase.createClass(db);
 
     expect(base.bindDoc).toEqual(
@@ -155,7 +154,7 @@ describe('createClass()', function() {
       )
     );
     expect(function() {
-      Rebase.createClass(database);
+      Rebase.createClass(undefined);
     }).toThrow(
       new Error(
         'REBASE: Rebase.createClass failed. Expected an initialized firebase or firestore database object.'

@@ -1,5 +1,4 @@
 import { _isObject, _isValid, _throwError, _getSegmentCount } from './utils';
-import firebase from 'firebase/app';
 
 const optionValidators = {
   notObject(options) {
@@ -82,15 +81,9 @@ const optionValidators = {
 };
 
 const _validateEndpoint = function(endpoint) {
-  if (firebase.firestore) {
-    const { DocumentReference, CollectionReference } = firebase.firestore;
-    if (typeof endpoint === 'object') {
-      if (
-        endpoint instanceof DocumentReference ||
-        endpoint instanceof CollectionReference
-      ) {
-        return;
-      }
+  if (typeof endpoint === 'object') {
+    if (endpoint.hasOwnProperty('firestore')) {
+      return;
     }
   }
   var defaultError = 'The Firebase endpoint you are trying to listen to';
@@ -122,8 +115,7 @@ const _validateDatabase = function(db) {
 };
 
 const _validateDocumentPath = function(path) {
-  const { DocumentReference } = firebase.firestore;
-  if (typeof path === 'object' && path instanceof DocumentReference) return;
+  if (typeof path === 'object' && path.hasOwnProperty('firestore')) return;
   var defaultError = 'Invalid document path or reference.';
   if (typeof path !== 'string') _throwError(defaultError, 'INVALID_ENDPOINT');
   const segmentCount = _getSegmentCount(path);
@@ -131,8 +123,7 @@ const _validateDocumentPath = function(path) {
 };
 
 const _validateCollectionPath = function(path) {
-  const { CollectionReference } = firebase.firestore;
-  if (typeof path === 'object' && path instanceof CollectionReference) return;
+  if (typeof path === 'object' && path.hasOwnProperty('firestore')) return;
   var defaultError = 'Invalid collection path or reference.';
   if (typeof path !== 'string') _throwError(defaultError, 'INVALID_ENDPOINT');
   const segmentCount = _getSegmentCount(path);

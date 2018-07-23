@@ -1,7 +1,7 @@
 const Rebase = require('../../../src/rebase');
 const React = require('react');
 const ReactDOM = require('react-dom');
-const firebase = require('firebase');
+const firebase = require('firebase/app');
 require('firebase/firestore');
 
 var invalidEndpoints = require('../../fixtures/invalidEndpoints');
@@ -20,7 +20,9 @@ describe('reset()', function() {
 
   beforeAll(() => {
     testApp = firebase.initializeApp(firebaseConfig, 'DB_CHECK');
-    collectionRef = testApp.firestore().collection(collectionPath);
+    var db = testApp.firestore();
+    db.settings({ timestampsInSnapshots: true });
+    collectionRef = db.collection(collectionPath);
     var mountNode = document.createElement('div');
     mountNode.setAttribute('id', 'mount');
     document.body.appendChild(mountNode);
@@ -35,6 +37,7 @@ describe('reset()', function() {
   beforeEach(() => {
     app = firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore(app);
+    db.settings({ timestampsInSnapshots: true });
     base = Rebase.createClass(db);
   });
 

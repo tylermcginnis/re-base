@@ -1,7 +1,7 @@
 const Rebase = require('../../../src/rebase');
 const React = require('react');
 const ReactDOM = require('react-dom');
-const firebase = require('firebase');
+const firebase = require('firebase/app');
 require('firebase/firestore');
 
 var invalidEndpoints = require('../../fixtures/invalidEndpoints');
@@ -20,7 +20,9 @@ describe('syncDoc()', function() {
 
   beforeAll(() => {
     testApp = firebase.initializeApp(firebaseConfig, 'DB_CHECK');
-    collectionRef = testApp.firestore().collection(collectionPath);
+    var db = testApp.firestore();
+    db.settings({ timestampsInSnapshots: true });
+    collectionRef = db.collection(collectionPath);
     var mountNode = document.createElement('div');
     mountNode.setAttribute('id', 'mount');
     document.body.appendChild(mountNode);
@@ -35,6 +37,7 @@ describe('syncDoc()', function() {
   beforeEach(() => {
     app = firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore(app);
+    db.settings({ timestampsInSnapshots: true });
     base = Rebase.createClass(db);
   });
 
@@ -485,7 +488,9 @@ describe('syncDoc()', function() {
         }
         componentWillUpdate(nextProps, nextState) {
           if (nextState.user.timestamp) {
-            expect(this.state.user.timestamp).toEqual(jasmine.any(Date));
+            expect(this.state.user.timestamp.toDate()).toEqual(
+              jasmine.any(Date)
+            );
             ReactDOM.unmountComponentAtNode(document.body);
             done();
           }
@@ -521,7 +526,9 @@ describe('syncDoc()', function() {
         }
         componentWillUpdate(nextProps, nextState) {
           if (this.state.user.timestamp) {
-            expect(this.state.user.timestamp).toEqual(jasmine.any(Date));
+            expect(this.state.user.timestamp.toDate()).toEqual(
+              jasmine.any(Date)
+            );
             ReactDOM.unmountComponentAtNode(document.body);
             done();
           }

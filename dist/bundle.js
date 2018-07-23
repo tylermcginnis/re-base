@@ -67,6 +67,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _validators = __webpack_require__(5);
 
+	var _app = __webpack_require__(6);
+
+	var _app2 = _interopRequireDefault(_app);
+
 	var _push2 = __webpack_require__(7);
 
 	var _push3 = _interopRequireDefault(_push2);
@@ -142,7 +146,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	//database
-	//helpers
 	module.exports = function () {
 	  function init(db) {
 	    return function () {
@@ -153,6 +156,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (typeof db.ref === 'function') {
 	        var rebase = {
 	          initializedApp: db.app,
+	          timestamp: _app2.default.database.ServerValue.TIMESTAMP,
 	          listenTo: function listenTo(endpoint, options) {
 	            return _bind3.default.call(this, endpoint, options, 'listenTo', {
 	              db: db,
@@ -209,6 +213,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      } else {
 	        var rebase = {
 	          initializedApp: db.app,
+	          timestamp: _app2.default.firestore.FieldValue.serverTimestamp(),
 	          bindDoc: function bindDoc(path, options) {
 	            return _fsBind3.default.call(this, path, options, 'bindDoc', {
 	              db: db,
@@ -289,6 +294,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}();
 
 	//firestore
+	//helpers
 
 /***/ }),
 /* 2 */
@@ -792,12 +798,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils = __webpack_require__(2);
 
-	var _app = __webpack_require__(6);
-
-	var _app2 = _interopRequireDefault(_app);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 	var optionValidators = {
 	  notObject: function notObject(options) {
 	    if (!(0, _utils._isObject)(options)) {
@@ -852,15 +852,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	var _validateEndpoint = function _validateEndpoint(endpoint) {
-	  if (_app2.default.firestore) {
-	    var _firebase$firestore = _app2.default.firestore,
-	        DocumentReference = _firebase$firestore.DocumentReference,
-	        CollectionReference = _firebase$firestore.CollectionReference;
-
-	    if ((typeof endpoint === 'undefined' ? 'undefined' : _typeof(endpoint)) === 'object') {
-	      if (endpoint instanceof DocumentReference || endpoint instanceof CollectionReference) {
-	        return;
-	      }
+	  if ((typeof endpoint === 'undefined' ? 'undefined' : _typeof(endpoint)) === 'object') {
+	    if (endpoint.hasOwnProperty('firestore')) {
+	      return;
 	    }
 	  }
 	  var defaultError = 'The Firebase endpoint you are trying to listen to';
@@ -892,9 +886,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	var _validateDocumentPath = function _validateDocumentPath(path) {
-	  var DocumentReference = _app2.default.firestore.DocumentReference;
-
-	  if ((typeof path === 'undefined' ? 'undefined' : _typeof(path)) === 'object' && path instanceof DocumentReference) return;
+	  if ((typeof path === 'undefined' ? 'undefined' : _typeof(path)) === 'object' && path.hasOwnProperty('firestore')) return;
 	  var defaultError = 'Invalid document path or reference.';
 	  if (typeof path !== 'string') (0, _utils._throwError)(defaultError, 'INVALID_ENDPOINT');
 	  var segmentCount = (0, _utils._getSegmentCount)(path);
@@ -902,9 +894,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	var _validateCollectionPath = function _validateCollectionPath(path) {
-	  var CollectionReference = _app2.default.firestore.CollectionReference;
-
-	  if ((typeof path === 'undefined' ? 'undefined' : _typeof(path)) === 'object' && path instanceof CollectionReference) return;
+	  if ((typeof path === 'undefined' ? 'undefined' : _typeof(path)) === 'object' && path.hasOwnProperty('firestore')) return;
 	  var defaultError = 'Invalid collection path or reference.';
 	  if (typeof path !== 'string') (0, _utils._throwError)(defaultError, 'INVALID_ENDPOINT');
 	  var segmentCount = (0, _utils._getSegmentCount)(path);

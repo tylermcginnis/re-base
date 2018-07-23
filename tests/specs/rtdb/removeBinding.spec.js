@@ -1,10 +1,9 @@
 const Rebase = require('../../../src/rebase');
-var firebase = require('firebase');
 var React = require('react');
 var ReactDOM = require('react-dom');
 var firebaseConfig = require('../../fixtures/config');
-var dummyObjData = require('../../fixtures/dummyObjData');
-var database = require('firebase/database');
+var firebase = require('firebase/app');
+require('firebase/database');
 
 describe('removeBinding()', function() {
   var base;

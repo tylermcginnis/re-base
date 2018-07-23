@@ -1,8 +1,6 @@
 const Rebase = require('../../../src/rebase');
-var React = require('react');
-var ReactDOM = require('react-dom');
-var firebase = require('firebase');
-var database = require('firebase/database');
+var firebase = require('firebase/app');
+require('firebase/database');
 
 var invalidEndpoints = require('../../fixtures/invalidEndpoints');
 var dummyObjData = require('../../fixtures/dummyObjData');
@@ -32,8 +30,7 @@ describe('update()', function() {
   });
 
   afterEach(done => {
-    firebase.Promise
-      .all([app.delete(), ref.child(testEndpoint).set(null)])
+    firebase.Promise.all([app.delete(), ref.child(testEndpoint).set(null)])
       .then(done)
       .catch(done.fail);
   });

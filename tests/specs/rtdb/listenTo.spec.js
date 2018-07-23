@@ -1,8 +1,8 @@
 const Rebase = require('../../../src/rebase');
 var React = require('react');
 var ReactDOM = require('react-dom');
-var firebase = require('firebase');
-var database = require('firebase/database');
+var firebase = require('firebase/app');
+require('firebase/database');
 
 var invalidEndpoints = require('../../fixtures/invalidEndpoints');
 var dummyObjData = require('../../fixtures/dummyObjData');
@@ -36,9 +36,10 @@ describe('listenTo()', function() {
 
   afterEach(done => {
     ReactDOM.unmountComponentAtNode(document.body);
-    firebase.Promise
-      .all([app.delete(), ref.child(testEndpoint).set(null)])
-      .then(done);
+    firebase.Promise.all([
+      app.delete(),
+      ref.child(testEndpoint).set(null)
+    ]).then(done);
   });
 
   it('listenTo() returns a valid ref', function() {

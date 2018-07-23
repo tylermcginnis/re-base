@@ -1,7 +1,7 @@
 const Rebase = require('../../../src/rebase');
 const React = require('react');
 const ReactDOM = require('react-dom');
-const firebase = require('firebase');
+const firebase = require('firebase/app');
 require('firebase/firestore');
 
 var dummyCollection = require('../../fixtures/dummyCollection');
@@ -16,7 +16,9 @@ describe('bindCollection()', function() {
 
   beforeAll(() => {
     testApp = firebase.initializeApp(firebaseConfig, 'DB_CHECK');
-    collectionRef = testApp.firestore().collection(collectionPath);
+    var db = testApp.firestore();
+    db.settings({ timestampsInSnapshots: true });
+    collectionRef = db.collection(collectionPath);
     var mountNode = document.createElement('div');
     mountNode.setAttribute('id', 'mount');
     document.body.appendChild(mountNode);
@@ -31,6 +33,7 @@ describe('bindCollection()', function() {
   beforeEach(() => {
     app = firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore(app);
+    db.settings({ timestampsInSnapshots: true });
     base = Rebase.createClass(db);
   });
 
@@ -253,7 +256,7 @@ describe('bindCollection()', function() {
         constructor(props) {
           super(props);
           this.state = {
-            data: {}
+            data: []
           };
         }
         componentWillMount() {
@@ -267,10 +270,12 @@ describe('bindCollection()', function() {
           collectionRef.doc('testDoc').set(dummyCollection[0]);
         }
         componentDidUpdate() {
-          expect(this.state.data[0].ref).toEqual(
-            jasmine.any(firebase.firestore.DocumentReference)
-          );
-          done();
+          if (this.state.data.length) {
+            expect(this.state.data[0].ref).toEqual(
+              jasmine.any(firebase.firestore.DocumentReference)
+            );
+            done();
+          }
         }
         render() {
           return <div>No Data</div>;
@@ -284,7 +289,7 @@ describe('bindCollection()', function() {
         constructor(props) {
           super(props);
           this.state = {
-            data: {}
+            data: []
           };
         }
         componentWillMount() {
@@ -298,7 +303,8 @@ describe('bindCollection()', function() {
           collectionRef.doc('testDoc').set(dummyCollection[0]);
         }
         componentDidUpdate() {
-          expect(this.state.data[0].id).toEqual(jasmine.any(String));
+          if (this.state.data.length)
+            expect(this.state.data[0].id).toEqual(jasmine.any(String));
           done();
         }
         render() {
@@ -410,11 +416,13 @@ describe('bindCollection()', function() {
         }
 
         componentDidUpdate() {
-          component1DidUpdate = true;
-          expect(arrayLength).toBeLessThan(this.state.data.length);
-          arrayLength = this.state.data.length;
-          if (component1DidUpdate && component2DidUpdate) {
-            cleanUp(done);
+          if (this.state.data.length) {
+            component1DidUpdate = true;
+            expect(arrayLength).toBeLessThan(this.state.data.length);
+            arrayLength = this.state.data.length;
+            if (component1DidUpdate && component2DidUpdate) {
+              cleanUp(done);
+            }
           }
         }
         render() {
