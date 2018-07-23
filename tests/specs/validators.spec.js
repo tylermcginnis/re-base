@@ -10,7 +10,7 @@ describe('Validators', () => {
   const firebaseConfig = require('../fixtures/config');
 
   //firebase and firestore should be globally available
-  const firebase = require('firebase');
+  const firebase = require('firebase/app');
   require('firebase/firestore');
 
   describe('optionValidators', () => {

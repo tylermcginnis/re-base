@@ -1,7 +1,7 @@
 const Rebase = require('../../../src/rebase');
 var React = require('react');
 var ReactDOM = require('react-dom');
-var firebase = require('firebase');
+var firebase = require('firebase/app');
 require('firebase/database');
 
 var invalidEndpoints = require('../../fixtures/invalidEndpoints');
