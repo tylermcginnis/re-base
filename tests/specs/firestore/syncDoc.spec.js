@@ -488,7 +488,9 @@ describe('syncDoc()', function() {
         }
         componentWillUpdate(nextProps, nextState) {
           if (nextState.user.timestamp) {
-            expect(this.state.user.timestamp).toEqual(jasmine.any(Date));
+            expect(this.state.user.timestamp.toDate()).toEqual(
+              jasmine.any(Date)
+            );
             ReactDOM.unmountComponentAtNode(document.body);
             done();
           }
@@ -524,7 +526,9 @@ describe('syncDoc()', function() {
         }
         componentWillUpdate(nextProps, nextState) {
           if (this.state.user.timestamp) {
-            expect(this.state.user.timestamp).toEqual(jasmine.any(Date));
+            expect(this.state.user.timestamp.toDate()).toEqual(
+              jasmine.any(Date)
+            );
             ReactDOM.unmountComponentAtNode(document.body);
             done();
           }
