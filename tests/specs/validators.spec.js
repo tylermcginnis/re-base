@@ -211,6 +211,11 @@ describe('Validators', () => {
         _validateEndpoint(null);
       }).toThrow();
     });
+    it('should throw if endpoint is an empty object', () => {
+      expect(() => {
+        _validateEndpoint({});
+      }).toThrow();
+    });
     it('should throw if endpoint is empty string', () => {
       expect(() => {
         _validateEndpoint('');

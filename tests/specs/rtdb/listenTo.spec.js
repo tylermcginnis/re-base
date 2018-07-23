@@ -36,9 +36,10 @@ describe('listenTo()', function() {
 
   afterEach(done => {
     ReactDOM.unmountComponentAtNode(document.body);
-    firebase.Promise
-      .all([app.delete(), ref.child(testEndpoint).set(null)])
-      .then(done);
+    firebase.Promise.all([
+      app.delete(),
+      ref.child(testEndpoint).set(null)
+    ]).then(done);
   });
 
   it('listenTo() returns a valid ref', function() {

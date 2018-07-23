@@ -154,7 +154,7 @@ describe('createClass()', function() {
       )
     );
     expect(function() {
-      Rebase.createClass(database);
+      Rebase.createClass(undefined);
     }).toThrow(
       new Error(
         'REBASE: Rebase.createClass failed. Expected an initialized firebase or firestore database object.'

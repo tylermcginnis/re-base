@@ -256,7 +256,7 @@ describe('bindCollection()', function() {
         constructor(props) {
           super(props);
           this.state = {
-            data: {}
+            data: []
           };
         }
         componentWillMount() {
@@ -270,10 +270,12 @@ describe('bindCollection()', function() {
           collectionRef.doc('testDoc').set(dummyCollection[0]);
         }
         componentDidUpdate() {
-          expect(this.state.data[0].ref).toEqual(
-            jasmine.any(firebase.firestore.DocumentReference)
-          );
-          done();
+          if (this.state.data.length) {
+            expect(this.state.data[0].ref).toEqual(
+              jasmine.any(firebase.firestore.DocumentReference)
+            );
+            done();
+          }
         }
         render() {
           return <div>No Data</div>;
@@ -287,7 +289,7 @@ describe('bindCollection()', function() {
         constructor(props) {
           super(props);
           this.state = {
-            data: {}
+            data: []
           };
         }
         componentWillMount() {
@@ -301,7 +303,8 @@ describe('bindCollection()', function() {
           collectionRef.doc('testDoc').set(dummyCollection[0]);
         }
         componentDidUpdate() {
-          expect(this.state.data[0].id).toEqual(jasmine.any(String));
+          if (this.state.data.length)
+            expect(this.state.data[0].id).toEqual(jasmine.any(String));
           done();
         }
         render() {
@@ -413,11 +416,13 @@ describe('bindCollection()', function() {
         }
 
         componentDidUpdate() {
-          component1DidUpdate = true;
-          expect(arrayLength).toBeLessThan(this.state.data.length);
-          arrayLength = this.state.data.length;
-          if (component1DidUpdate && component2DidUpdate) {
-            cleanUp(done);
+          if (this.state.data.length) {
+            component1DidUpdate = true;
+            expect(arrayLength).toBeLessThan(this.state.data.length);
+            arrayLength = this.state.data.length;
+            if (component1DidUpdate && component2DidUpdate) {
+              cleanUp(done);
+            }
           }
         }
         render() {

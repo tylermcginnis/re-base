@@ -30,8 +30,7 @@ describe('update()', function() {
   });
 
   afterEach(done => {
-    firebase.Promise
-      .all([app.delete(), ref.child(testEndpoint).set(null)])
+    firebase.Promise.all([app.delete(), ref.child(testEndpoint).set(null)])
       .then(done)
       .catch(done.fail);
   });

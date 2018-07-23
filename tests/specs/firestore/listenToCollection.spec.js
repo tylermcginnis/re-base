@@ -132,9 +132,11 @@ describe('listenToCollection()', function() {
       const ref = base.listenToCollection(testRef, {
         context: {},
         then(data) {
-          expect(data).toEqual([dummyCollection[0]]);
-          base.removeBinding(ref);
-          done();
+          if (data.length) {
+            expect(data).toEqual([dummyCollection[0]]);
+            base.removeBinding(ref);
+            done();
+          }
         }
       });
       collectionRef.doc('testDoc').set(dummyCollection[0]);

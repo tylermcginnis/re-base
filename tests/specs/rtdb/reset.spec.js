@@ -33,8 +33,7 @@ describe('reset()', function() {
   });
 
   afterEach(done => {
-    firebase.Promise
-      .all([ref.child(testEndpoint).set(null), app.delete()])
+    firebase.Promise.all([ref.child(testEndpoint).set(null), app.delete()])
       .then(done)
       .catch(done.fail);
   });

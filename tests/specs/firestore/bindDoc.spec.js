@@ -349,9 +349,11 @@ describe('bindDoc()', function() {
           collectionRef.doc('testDoc').set(dummyObjData);
         }
         componentDidUpdate() {
-          expect(this.state.name).toEqual('Tyler McGinnis');
-          expect(this.state.otherKey).toEqual(['something']);
-          done();
+          if (this.state.name) {
+            expect(this.state.name).toEqual('Tyler McGinnis');
+            expect(this.state.otherKey).toEqual(['something']);
+            done();
+          }
         }
         render() {
           return <div>No Data</div>;
