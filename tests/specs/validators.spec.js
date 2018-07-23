@@ -232,6 +232,7 @@ describe('Validators', () => {
     it('should not throw if endpoint is a document reference', done => {
       expect(() => {
         const app = firebase.initializeApp(firebaseConfig);
+        app.firestore().settings({ timestampsInSnapshots: true });
         const docRef = app
           .firestore()
           .collection('testCollection')
@@ -243,6 +244,7 @@ describe('Validators', () => {
     it('should not throw if endpoint is a collection reference', done => {
       expect(() => {
         const app = firebase.initializeApp(firebaseConfig);
+        app.firestore().settings({ timestampsInSnapshots: true });
         const collectionRef = app.firestore().collection('testCollection');
         _validateEndpoint(collectionRef);
         app.delete().then(done);
@@ -304,6 +306,7 @@ describe('Validators', () => {
     it('should not throw if argument a document reference', done => {
       expect(() => {
         const app = firebase.initializeApp(firebaseConfig);
+        firebase.firestore().settings({ timestampsInSnapshots: true });
         const docRef = firebase.firestore().doc('testCollection/testDoc');
         _validateDocumentPath(docRef);
         app.delete().then(done);
@@ -340,6 +343,7 @@ describe('Validators', () => {
     it('should not throw if argument a collection reference', done => {
       expect(() => {
         const app = firebase.initializeApp(firebaseConfig);
+        app.firestore().settings({ timestampsInSnapshots: true });
         const collectionRef = firebase.firestore().collection('testCollection');
         _validateCollectionPath(collectionRef);
         app.delete().then(done);

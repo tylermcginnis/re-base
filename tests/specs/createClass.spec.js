@@ -73,6 +73,7 @@ describe('createClass()', function() {
     //setup
     var app = firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore(app);
+    db.settings({ timestampsInSnapshots: true });
     var base = Rebase.createClass(db);
 
     expect(base.bindDoc).toEqual(

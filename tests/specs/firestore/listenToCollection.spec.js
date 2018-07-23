@@ -16,7 +16,9 @@ describe('listenToCollection()', function() {
 
   beforeAll(() => {
     testApp = firebase.initializeApp(firebaseConfig, 'DB_CHECK');
-    collectionRef = testApp.firestore().collection(collectionPath);
+    var db = testApp.firestore();
+    db.settings({ timestampsInSnapshots: true });
+    collectionRef = db.collection(collectionPath);
     var mountNode = document.createElement('div');
     mountNode.setAttribute('id', 'mount');
     document.body.appendChild(mountNode);
@@ -31,6 +33,7 @@ describe('listenToCollection()', function() {
   beforeEach(() => {
     app = firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore(app);
+    db.settings({ timestampsInSnapshots: true });
     base = Rebase.createClass(db);
   });
 

@@ -22,7 +22,9 @@ describe('Firebase/Firestore Interop', function() {
   beforeAll(() => {
     testApp = firebase.initializeApp(firebaseConfig, 'DB_CHECK');
     ref = testApp.database().ref();
-    collectionRef = testApp.firestore().collection(collectionPath);
+    var db = testApp.firestore();
+    db.settings({ timestampsInSnapshots: true });
+    collectionRef = db.collection(collectionPath);
     var mountNode = document.createElement('div');
     mountNode.setAttribute('id', 'mount');
     document.body.appendChild(mountNode);
@@ -38,6 +40,7 @@ describe('Firebase/Firestore Interop', function() {
     app = firebase.initializeApp(firebaseConfig);
     var db = firebase.database(app);
     var fsDb = firebase.firestore(app);
+    fsDb.settings({ timestampsInSnapshots: true });
     base = Rebase.createClass(db);
     fsBase = Rebase.createClass(fsDb);
   });
